@@ -1,0 +1,551 @@
+﻿<UserControl x:Class="Carcassonne.WPF.TileViewOld"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:local="clr-namespace:Carcassonne.WPF"
+    xmlns:model="clr-namespace:Carcassonne.Model;assembly=Carcassonne.Model"
+    xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+    Background="LightGray" MouseLeave="clearActiveRegion" DataContextChanged="GameTileView_DataContextChanged">
+    <UserControl.Resources>
+        <Style x:Key ="RegionShape"  TargetType="{x:Type Shape}">
+            <EventSetter Event="MouseEnter" Handler="setActiveElement"/>
+            <Setter Property="Visibility" Value="Hidden"/>
+        </Style>
+        <Style x:Key ="MonestaryCanvas"  TargetType="{x:Type Canvas}">
+            <EventSetter Event="MouseEnter" Handler="setActiveElement"/>
+            <Setter Property="DataContext">
+                <Setter.Value>
+                    <Binding Path="TileRegion" Converter="{local:TileRegionFilter}">
+                        <Binding.ConverterParameter>
+                            <model:TileRegionType>Monestary</model:TileRegionType>
+                        </Binding.ConverterParameter>
+                    </Binding>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="{x:Type Rectangle}"/>
+        <Style x:Key ="FlowerRectangle"  TargetType="{x:Type Rectangle}">
+            <EventSetter Event="MouseEnter" Handler="setActiveElement"/>
+            <Setter Property="Fill" Value="Orange"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Width" Value="25"/>
+            <Setter Property="DataContext">
+                <Setter.Value>
+                    <Binding Path="TileRegion" Converter="{local:TileRegionFilter}">
+                        <Binding.ConverterParameter>
+                            <model:TileRegionType>Flower</model:TileRegionType>
+                        </Binding.ConverterParameter>
+                    </Binding>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key ="ShieldPolygon" TargetType="{x:Type Polygon}">
+            <Setter Property="Fill" Value="DarkBlue"/>
+            <Setter Property="Points" Value="40,0 40,4 39,8 39,12 37,16 36,20 34,24 31,28 28,32 25,36 20,40
+                                             15,36 12,32 9,28 6,24 4,20 3,16 1,12 1,8 0,4 0,0"/>
+        </Style>
+    </UserControl.Resources>
+    <Canvas Name="canvas">
+        <Canvas.RenderTransform>
+            <TransformGroup>
+                <RotateTransform Angle="{Binding Path=Rotation, Converter={local:RotationToDegrees}}">
+                    <RotateTransform.CenterX>
+                        <MultiBinding Converter="{local:DoubleFormulaConverter}" ConverterParameter="A:A/2">
+                            <Binding ElementName="rGrass" Path="ActualWidth"/>
+                        </MultiBinding>
+                    </RotateTransform.CenterX>
+                    <RotateTransform.CenterY>
+                        <MultiBinding Converter="{local:DoubleFormulaConverter}" ConverterParameter="A:A/2">
+                            <Binding ElementName="rGrass" Path="ActualHeight"/>
+                        </MultiBinding>
+                    </RotateTransform.CenterY>
+                </RotateTransform>
+                <ScaleTransform>
+                    <ScaleTransform.ScaleX>
+                        <MultiBinding Converter="{local:DoubleFormulaConverter}" ConverterParameter="A,B:A/B">
+                            <Binding ElementName="canvas" Path="ActualWidth"/>
+                            <Binding ElementName="rGrass" Path="ActualWidth"/>
+                        </MultiBinding>
+                    </ScaleTransform.ScaleX>
+                    <ScaleTransform.ScaleY>
+                        <MultiBinding Converter="{local:DoubleFormulaConverter}" ConverterParameter="A,B:A/B">
+                            <Binding ElementName="canvas" Path="ActualHeight"/>
+                            <Binding ElementName="rGrass" Path="ActualHeight"/>
+                        </MultiBinding>
+                    </ScaleTransform.ScaleY>
+                </ScaleTransform>
+            </TransformGroup>
+        </Canvas.RenderTransform>
+        <Rectangle Name="rGrass" Fill="DarkGreen" Height="150" Width="150" MouseEnter="clearActiveRegion"/>
+        <Rectangle Name="rAll" Height="150" Width="150" Fill="{Binding CityBrush}"/>
+        <Rectangle Name="rNorthPath"
+                   Canvas.Left="65" Height="60" Width="20"/>
+        <Rectangle Name="rEastPath" 
+                   Canvas.Top="65" Canvas.Left="90" Height="20" Width="60"/>
+        <Rectangle Name="rSouthPath" Style="{StaticResource RegionShape}"
+                 Canvas.Top="90" Canvas.Left="65" Height="60" Width="20"/>
+        <Rectangle Name="rWestPath" Style="{StaticResource RegionShape}"
+                 Canvas.Top="65" Height="20" Width="60"/>
+        <Rectangle Name="rEastWestPath" Style="{StaticResource RegionShape}"
+                 Canvas.Top="65" Height="20" Width="150"/>
+        <Rectangle Name="rNorthSouthPath" Tag="NSP" Style="{StaticResource RegionShape}"
+                 Canvas.Left="65" Height="150" Width="20"/>
+        <Polygon Name="pgNorthEastPath" Tag="NEP" Style="{StaticResource RegionShape}"
+                 Canvas.Left="65" Points="0,0 20,0 85,65 85,85"/>
+        <Polygon Name="pgEastSouthPath" Tag="ESP" Style="{StaticResource RegionShape}"
+                 Canvas.Top="65" Canvas.Left="65" Points="85,0 85,20 20,85 0,85"/>
+        <Polygon Name="pgSouthWestPath" Tag="SWP" Style="{StaticResource RegionShape}"
+                 Canvas.Top="65" Points="0,0 0,20 65,85 85,85"/>
+        <Rectangle Name="rPathEnd"
+                 Canvas.Top="60" Canvas.Left="60" Height="30" Width="30" Fill="Black" MouseEnter="clearActiveRegion">
+            <Rectangle.Visibility>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" FallbackValue="Hidden"
+                              ConverterParameter= "A,B,C,D,E,G,H,I:A||B||C||D*(E||G||H||I)">
+                    <Binding ElementName="rNorthPath" Path="Visibility"/>
+                    <Binding ElementName="rEastPath" Path="Visibility"/>
+                    <Binding ElementName="rSouthPath" Path="Visibility"/>
+                    <Binding ElementName="rWestPath" Path="Visibility"/>
+                    <Binding ElementName="rNorthPath" Path="DataContext.Type"
+                             FallbackValue="Hidden" Converter="{local:EqualityConverter}">
+                        <Binding.ConverterParameter>
+                            <model:RegionType>Road</model:RegionType>
+                        </Binding.ConverterParameter>
+                    </Binding>
+                    <Binding ElementName="rEastPath" Path="DataContext.Type"
+                             FallbackValue="Hidden" Converter="{local:EqualityConverter}">
+                        <Binding.ConverterParameter>
+                            <model:RegionType>Road</model:RegionType>
+                        </Binding.ConverterParameter>
+                    </Binding>
+                    <Binding ElementName="rSouthPath" Path="DataContext.Type"
+                             FallbackValue="Hidden" Converter="{local:EqualityConverter}">
+                        <Binding.ConverterParameter>
+                            <model:RegionType>Road</model:RegionType>
+                        </Binding.ConverterParameter>
+                    </Binding>
+                    <Binding ElementName="rWestPath" Path="DataContext.Type"
+                             FallbackValue="Hidden" Converter="{local:EqualityConverter}">
+                        <Binding.ConverterParameter>
+                            <model:RegionType>Road</model:RegionType>
+                        </Binding.ConverterParameter>
+                    </Binding>
+                </MultiBinding>
+            </Rectangle.Visibility>
+        </Rectangle>
+        <Polygon Name="pgNorth" Tag="N" Style="{StaticResource RegionShape}"
+                 Points="0,0 15,10 30,17 45,21 60,24 75,25 90,24 105,21 120,17 135,10 150,0"/>
+        <Polygon Name="pgEast" Tag="E" Style="{StaticResource RegionShape}"
+                 Points="150,0 140,15 133,30 129,45 126,60 125,75 126,90 129,105 133,120 140,135 150,150" />
+        <Polygon Name="pgSouth" Tag="S" Style="{StaticResource RegionShape}"
+                 Points="0,150 15,140 30,133 45,129 60,126 75,125 90,126 105,129 120,133 135,140 150,150"/>
+        <Polygon Name="pgWest" Tag="W" Style="{StaticResource RegionShape}"
+                 Points="0,0 10,15 17,30 21,45 24,60 25,75 24,90 21,105 17,120 10,135 0,150"/>
+        <Polygon Name="pgNorthEastWest" Tag="NEW" Style="{StaticResource RegionShape}"
+                 Points="0,0 150,0 150,150 135,140 120,133 105,129 90,126 75,125 60,126 45,129 30,133 15,140 0,150"/>
+        <Polygon Name="pgEastWest" Tag="EW" Style="{StaticResource RegionShape}"
+                 Points="0,0 15,10 30,17 45,21 60,24 75,25 90,24 105,21 120,17 135,10 150,0
+                         150,150 135,140 120,133 105,129 90,126 75,125 60,126 45,129 30,133 15,140 0,150"/>
+        <Polygon Name="pgNorthSouth" Tag="NS" Style="{StaticResource RegionShape}"
+                 Points="150,0 140,15 133,30 129,45 126,60 125,75 126,90 129,105 133,120 140,135 150,150
+                         0,150 10,135 17,120 21,105 24,90 25,75 24,60 21,45 17,30 10,15 0,0 "/>
+        <Polygon Name="pgNorthEast" Tag="NE" Style="{StaticResource RegionShape}"
+                 Points="0,0 150,0 150,150"/>
+        <Polygon Name="pgEastSouth" Tag="ES" Style="{StaticResource RegionShape}"
+                 Points="150,0 150,150 0,150"/>
+        <Polygon Name="pgSouthWest" Tag="SW" Style="{StaticResource RegionShape}"
+                 Points="0,0 150,150 0,150"/>
+        <Polygon Name="pgNorthEastWestShield" Canvas.Left="25" Canvas.Top="25" Style="{StaticResource ShieldPolygon}">
+            <Polygon.Visibility>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B,C,D:A*B+C*D" FallbackValue="Hidden">
+                    <Binding ElementName="pgNorthEastWest" Path="Visibility"/>
+                    <Binding ElementName="pgNorthEastWest" Path="DataContext.HasShield"/>
+                    <Binding ElementName="rAll" Path="Visibility"/>
+                    <Binding ElementName="rAll" Path="DataContext.HasShield"/>
+                </MultiBinding>
+            </Polygon.Visibility>
+        </Polygon>
+        <Polygon Name="pgEastWestShield" 
+                 Canvas.Left="25" Canvas.Top="35"
+                 Style="{StaticResource ShieldPolygon}">
+            <Polygon.Visibility>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B:A*B" FallbackValue="Hidden">
+                    <Binding ElementName="pgEastWest" Path="Visibility"/>
+                    <Binding ElementName="pgEastWest" Path="DataContext.HasShield"/>
+                </MultiBinding>
+            </Polygon.Visibility>
+        </Polygon>
+        <Polygon Name="pgNorthEastShield" Tag="NE" 
+                 Canvas.Left="85" Canvas.Top="25"
+                 Style="{StaticResource ShieldPolygon}">
+            <Polygon.Visibility>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B:A*B" FallbackValue="Hidden">
+                    <Binding ElementName="pgNorthEast" Path="Visibility"/>
+                    <Binding ElementName="pgNorthEast" Path="DataContext.HasShield"/>
+                </MultiBinding>
+            </Polygon.Visibility>
+        </Polygon>
+        <Canvas Name="cMonestary" Canvas.Left="35" Canvas.Top="35"
+                 Background="DarkRed"
+                 Height="80" Width="80"
+                 Style="{StaticResource MonestaryCanvas}">
+            <Canvas.Visibility>
+                <Binding Converter="{local:ObjectVisibilityConverter}" FallbackValue="Hidden"/>
+            </Canvas.Visibility>
+            <Polygon Canvas.Left="20" Canvas.Top="10" Fill="Black"
+                 Points="15,0 25,0 25,15 40,15 40,25, 25,25 25,60, 15,60 15,25 0,25 0,15 15,15"/>
+        </Canvas>
+        <Rectangle Name="rCenterFlower" Canvas.Left="62.5" Canvas.Top="62.5" Style="{StaticResource FlowerRectangle}">
+            <Rectangle.Visibility>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B,C,D,E,G:(A+B+C+D+E)*G" FallbackValue="Hidden">
+                    <Binding ElementName="pgNorth" Path="Visibility"/>
+                    <Binding ElementName="pgEast" Path="Visibility"/>
+                    <Binding ElementName="pgSouth" Path="Visibility"/>
+                    <Binding ElementName="pgWest" Path="Visibility"/>
+                    <Binding ElementName="pgNorthEastPath" Path="Visibility"/>
+                    <Binding Converter="{local:ObjectVisibilityConverter}"/>
+                </MultiBinding>
+            </Rectangle.Visibility>
+        </Rectangle>
+        <Rectangle Name="rNorthSouthPathFlower" Canvas.Left="20" Canvas.Top="62.5" Style="{StaticResource FlowerRectangle}">
+            <Rectangle.Visibility>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B:A*B" FallbackValue="Hidden">
+                    <Binding ElementName="rNorthSouthPath" Path="Visibility"/>
+                    <Binding Converter="{local:ObjectVisibilityConverter}"/>
+                </MultiBinding>
+            </Rectangle.Visibility>
+        </Rectangle>
+        <Ellipse Name="eSmall" Canvas.Left="60" Canvas.Top="60"
+                 Width="30" Height="30" Style="{StaticResource RegionShape}"/>
+        <Ellipse Name="eLarge" Canvas.Left="50" Canvas.Top="50"
+                 Width="50" Height="50" Style="{StaticResource RegionShape}"/>
+        <Rectangle Name="rSouthWestFlower" Canvas.Left="27.5" Canvas.Top="92.5" Style="{StaticResource FlowerRectangle}">
+            <Rectangle.Visibility>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B:A*B" FallbackValue="Hidden">
+                    <Binding ElementName="pgNorthEast" Path="Visibility"/>
+                    <Binding Converter="{local:ObjectVisibilityConverter}"/>
+                </MultiBinding>
+            </Rectangle.Visibility>
+        </Rectangle>
+        <Rectangle Name="rSouthFlower" Canvas.Left="62.5" Canvas.Top="125" Style="{StaticResource FlowerRectangle}">
+            <Rectangle.Visibility>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B:A*B" FallbackValue="Hidden">
+                    <Binding ElementName="pgNorthEastWest" Path="Visibility"/>
+                    <Binding Converter="{local:ObjectVisibilityConverter}"/>
+                </MultiBinding>
+            </Rectangle.Visibility>
+        </Rectangle>
+        <local:MeepleView x:Name="mCenter"
+                 Canvas.Left="58" Canvas.Top="43">
+            <local:MeepleView.Outlined>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B,C,D,E,G,H,I,J:(A+B+C+D+E+G+H+I)*!J" FallbackValue="false">
+                    <Binding ElementName="rAll" Path="DataContext.IsClosed"/>
+                    <Binding ElementName="pgNorthSouth" Path="DataContext.IsClosed"/>
+                    <Binding ElementName="rNorthSouthPath" Path="DataContext.IsClosed"/>
+                    <Binding ElementName="pgEastWest" Path="DataContext.IsClosed"/>
+                    <Binding ElementName="rEastWestPath" Path="DataContext.IsClosed"/>
+                    <Binding ElementName="pgNorthEastWest" Path="DataContext.IsClosed"/>
+                    <Binding ElementName="cMonestary" Path="DataContext.IsClosed"/>
+                    <Binding ElementName="rCenterFlower" Path="DataContext.IsClosed"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveMeeple"
+                        Converter="{local:ObjectVisibilityConverter}"/>
+                </MultiBinding>
+            </local:MeepleView.Outlined>
+            <local:MeepleView.Visibility>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" FallbackValue="Hidden" ConverterParameter=
+                              "A,B,C,D,E,G,H,I,J,K,L,M,N,O,P,Q,R,S,U,V,W,X,Y,Z:
+                                A*(B+C)+D*(E+G)+H*(I+J)+K*(L+M)+N*(O+P)+Q*(R+S)+U*(V+W)+X*(Y+Z)">
+                    <Binding ElementName="rAll" Path="Visibility"/>
+                    <Binding ElementName="rAll" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="rAll"/>
+                    <Binding ElementName="pgNorthSouth" Path="Visibility"/>
+                    <Binding ElementName="pgNorthSouth" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="pgNorthSouth"/>
+                    <Binding ElementName="rNorthSouthPath" Path="Visibility"/>
+                    <Binding ElementName="rNorthSouthPath" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="rNorthSouthPath"/>
+                    <Binding ElementName="pgEastWest" Path="Visibility"/>
+                    <Binding ElementName="pgEastWest" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="pgEastWest"/>
+                    <Binding ElementName="rEastWestPath" Path="Visibility"/>
+                    <Binding ElementName="rEastWestPath" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="rEastWestPath"/>
+                    <Binding ElementName="pgNorthEastWest" Path="Visibility"/>
+                    <Binding ElementName="pgNorthEastWest" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="pgNorthEastWest"/>
+                    <Binding ElementName="cMonestary" Path="Visibility"/>
+                    <Binding ElementName="cMonestary" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="cMonestary"/>
+                    <Binding ElementName="rCenterFlower" Path="Visibility"/>
+                    <Binding ElementName="rCenterFlower" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="rCenterFlower"/>
+                </MultiBinding>
+            </local:MeepleView.Visibility>
+            <local:MeepleView.DataContext>
+                <MultiBinding Converter="{local:ChooseOneConverter}">
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveMeeple"/>
+                    <Binding ElementName="rAll" Path="DataContext.Claimer"/>
+                    <Binding ElementName="pgNorthSouth" Path="DataContext.Claimer"/>
+                    <Binding ElementName="rNorthSouthPath" Path="DataContext.Claimer"/>
+                    <Binding ElementName="pgEastWest" Path="DataContext.Claimer"/>
+                    <Binding ElementName="rEastWestPath" Path="DataContext.Claimer"/>
+                    <Binding ElementName="pgNorthEastWest" Path="DataContext.Claimer"/>
+                    <Binding ElementName="cMonestary" Path="DataContext.Claimer"/>
+                    <Binding ElementName="rCenterFlower" Path="DataContext.Claimer"/>
+                </MultiBinding>
+            </local:MeepleView.DataContext>
+        </local:MeepleView>
+        <local:MeepleView x:Name="mNorthSouthPath" Canvas.Left="15.5" Canvas.Top="43">
+            <local:MeepleView.Outlined>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B:A*!B" FallbackValue="false">
+                    <Binding ElementName="rNorthSouthPathFlower" Path="DataContext.IsClosed"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveMeeple"
+                        Converter="{local:ObjectVisibilityConverter}"/>
+                </MultiBinding>
+            </local:MeepleView.Outlined>
+            <local:MeepleView.Visibility>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B,C:A*(B+C)" FallbackValue="Hidden">
+                    <Binding ElementName="rNorthSouthPathFlower" Path="Visibility"/>
+                    <Binding ElementName="rNorthSouthPathFlower" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="rNorthSouthPathFlower"/>
+                </MultiBinding>
+            </local:MeepleView.Visibility>
+            <local:MeepleView.DataContext>
+                <MultiBinding Converter="{local:ChooseOneConverter}">
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveMeeple"/>
+                    <Binding ElementName="rNorthSouthPathFlower" Path="DataContext.Claimer"/>
+                </MultiBinding>
+            </local:MeepleView.DataContext>
+            </local:MeepleView>
+            <local:MeepleView x:Name="mNorthEast"
+                 Canvas.Left="93" Canvas.Top="-2">
+            <local:MeepleView.Outlined>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B,C:(A+B)*!C" FallbackValue="false">
+                    <Binding ElementName="pgNorthEast" Path="DataContext.IsClosed"/>
+                    <Binding ElementName="pgNorthEastPath" Path="DataContext.IsClosed"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveMeeple"
+                        Converter="{local:ObjectVisibilityConverter}"/>
+                </MultiBinding>
+            </local:MeepleView.Outlined>
+            <local:MeepleView.Visibility>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B,C,D,E,G:A*(B+C)+D*(E+G)" FallbackValue="Hidden">
+                    <Binding ElementName="pgNorthEast" Path="Visibility"/>
+                    <Binding ElementName="pgNorthEast" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="pgNorthEast"/>
+                    <Binding ElementName="pgNorthEastPath" Path="Visibility"/>
+                    <Binding ElementName="pgNorthEastPath" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="pgNorthEastPath"/>
+                </MultiBinding>
+            </local:MeepleView.Visibility>
+            <local:MeepleView.DataContext>
+                <MultiBinding Converter="{local:ChooseOneConverter}">
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveMeeple"/>
+                    <Binding ElementName="pgNorthEast" Path="DataContext.Claimer"/>
+                    <Binding ElementName="pgNorthEastPath" Path="DataContext.Claimer"/>
+                </MultiBinding>
+            </local:MeepleView.DataContext>
+        </local:MeepleView>
+        <local:MeepleView x:Name="mEastSouth"
+                 Canvas.Left="93" Canvas.Top="73">
+            <local:MeepleView.Outlined>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B,C:(A+B)*!C" FallbackValue="false">
+                    <Binding ElementName="pgEastSouth" Path="DataContext.IsClosed"/>
+                    <Binding ElementName="pgEastSouthPath" Path="DataContext.IsClosed"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveMeeple"
+                        Converter="{local:ObjectVisibilityConverter}"/>
+                </MultiBinding>
+            </local:MeepleView.Outlined>
+            <local:MeepleView.Visibility>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B,C,D,E,G:A*(B+C)+D*(E+G)" FallbackValue="Hidden">
+                    <Binding ElementName="pgEastSouth" Path="Visibility"/>
+                    <Binding ElementName="pgEastSouth" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="pgEastSouth"/>
+                    <Binding ElementName="pgEastSouthPath" Path="Visibility"/>
+                    <Binding ElementName="pgEastSouthPath" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="pgEastSouthPath"/>
+                </MultiBinding>
+            </local:MeepleView.Visibility>
+            <local:MeepleView.DataContext>
+                <MultiBinding Converter="{local:ChooseOneConverter}">
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveMeeple"/>
+                    <Binding ElementName="pgEastSouth" Path="DataContext.Claimer"/>
+                    <Binding ElementName="pgEastSouthPath" Path="DataContext.Claimer"/>
+                </MultiBinding>
+            </local:MeepleView.DataContext>
+        </local:MeepleView>
+        <local:MeepleView x:Name="mSouthWest"
+                 Canvas.Left="23" Canvas.Top="73">
+            <local:MeepleView.Outlined>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B,C,D:(A+B+C)*!D" FallbackValue="false">
+                    <Binding ElementName="pgSouthWest" Path="DataContext.IsClosed"/>
+                    <Binding ElementName="pgSouthWestPath" Path="DataContext.IsClosed"/>
+                    <Binding ElementName="rSouthWestFlower" Path="DataContext.IsClosed"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveMeeple"
+                        Converter="{local:ObjectVisibilityConverter}"/>
+                </MultiBinding>
+            </local:MeepleView.Outlined>
+            <local:MeepleView.Visibility>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B,C,D,E,G,H,I,J:A*(B+C)+D*(E+G)+H*(I+J)" FallbackValue="Hidden">
+                    <Binding ElementName="pgSouthWest" Path="Visibility"/>
+                    <Binding ElementName="pgSouthWest" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="pgSouthWest"/>
+                    <Binding ElementName="pgSouthWestPath" Path="Visibility"/>
+                    <Binding ElementName="pgSouthWestPath" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="pgSouthWestPath"/>
+                    <Binding ElementName="rSouthWestFlower" Path="Visibility"/>
+                    <Binding ElementName="rSouthWestFlower" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="rSouthWestFlower"/>
+                </MultiBinding>
+            </local:MeepleView.Visibility>
+            <local:MeepleView.DataContext>
+                <MultiBinding Converter="{local:ChooseOneConverter}">
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveMeeple"/>
+                    <Binding ElementName="pgSouthWest" Path="DataContext.Claimer"/>
+                    <Binding ElementName="pgSouthWestPath" Path="DataContext.Claimer"/>
+                    <Binding ElementName="rSouthWestFlower" Path="DataContext.Claimer"/>
+                </MultiBinding>
+            </local:MeepleView.DataContext>
+        </local:MeepleView>
+        <local:MeepleView x:Name="mNorth"
+                 Canvas.Left="58" Canvas.Top="-10">
+            <local:MeepleView.Outlined>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B,C:(A+B)*!C" FallbackValue="false">
+                    <Binding ElementName="pgNorth" Path="DataContext.IsClosed"/>
+                    <Binding ElementName="rNorthPath" Path="DataContext.IsClosed"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveMeeple"
+                        Converter="{local:ObjectVisibilityConverter}"/>
+                </MultiBinding>
+            </local:MeepleView.Outlined>
+            <local:MeepleView.Visibility>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B,C,D,E,G:A*(B+C)+D*(E+G)" FallbackValue="Hidden">
+                    <Binding ElementName="pgNorth" Path="Visibility"/>
+                    <Binding ElementName="pgNorth" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="pgNorth"/>
+                    <Binding ElementName="rNorthPath" Path="Visibility"/>
+                    <Binding ElementName="rNorthPath" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="rNorthPath"/>
+                </MultiBinding>
+            </local:MeepleView.Visibility>
+            <local:MeepleView.DataContext>
+                <MultiBinding Converter="{local:ChooseOneConverter}">
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveMeeple"/>
+                    <Binding ElementName="pgNorth" Path="DataContext.Claimer"/>
+                    <Binding ElementName="rNorthPath" Path="DataContext.Claimer"/>
+                </MultiBinding>
+            </local:MeepleView.DataContext>
+        </local:MeepleView>
+        <local:MeepleView x:Name="mEast"
+                 Canvas.Left="113" Canvas.Top="43">
+            <local:MeepleView.Outlined>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B,C:(A+B)*!C" FallbackValue="false">
+                    <Binding ElementName="pgEast" Path="DataContext.IsClosed"/>
+                    <Binding ElementName="rEastPath" Path="DataContext.IsClosed"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveMeeple"
+                        Converter="{local:ObjectVisibilityConverter}"/>
+                </MultiBinding>
+            </local:MeepleView.Outlined>
+            <local:MeepleView.Visibility>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B,C,D,E,G:A*(B+C)+D*(E+G)" FallbackValue="Hidden">
+                    <Binding ElementName="pgEast" Path="Visibility"/>
+                    <Binding ElementName="pgEast" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="pgEast"/>
+                    <Binding ElementName="rEastPath" Path="Visibility"/>
+                    <Binding ElementName="rEastPath" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="rEastPath"/>
+                </MultiBinding>
+            </local:MeepleView.Visibility>
+            <local:MeepleView.DataContext>
+                <MultiBinding Converter="{local:ChooseOneConverter}">
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveMeeple"/>
+                    <Binding ElementName="pgEast" Path="DataContext.Claimer"/>
+                    <Binding ElementName="rEastPath" Path="DataContext.Claimer"/>
+                </MultiBinding>
+            </local:MeepleView.DataContext>
+        </local:MeepleView>
+        <local:MeepleView x:Name="mSouth"
+                 Canvas.Left="58" Canvas.Top="103">
+            <local:MeepleView.Outlined>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B,C,D:(A+B+C)*!D" FallbackValue="false">
+                    <Binding ElementName="pgSouth" Path="DataContext.IsClosed"/>
+                    <Binding ElementName="rSouthPath" Path="DataContext.IsClosed"/>
+                    <Binding ElementName="rSouthFlower" Path="DataContext.IsClosed"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveMeeple"
+                        Converter="{local:ObjectVisibilityConverter}"/>
+                </MultiBinding>
+            </local:MeepleView.Outlined>
+            <local:MeepleView.Visibility>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B,C,D,E,G,H,I,J:A*(B+C)+D*(E+G)+H*(I+J)" FallbackValue="Hidden">
+                    <Binding ElementName="pgSouth" Path="Visibility"/>
+                    <Binding ElementName="pgSouth" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="pgSouth"/>
+                    <Binding ElementName="rSouthPath" Path="Visibility"/>
+                    <Binding ElementName="rSouthPath" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="rSouthPath"/>
+                    <Binding ElementName="rSouthFlower" Path="Visibility"/>
+                    <Binding ElementName="rSouthFlower" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="rSouthFlower"/>
+                </MultiBinding>
+            </local:MeepleView.Visibility>
+            <local:MeepleView.DataContext>
+                <MultiBinding Converter="{local:ChooseOneConverter}">
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveMeeple"/>
+                    <Binding ElementName="pgSouth" Path="DataContext.Claimer"/>
+                    <Binding ElementName="rSouthPath" Path="DataContext.Claimer"/>
+                    <Binding ElementName="rSouthFlower" Path="DataContext.Claimer"/>
+                </MultiBinding>
+            </local:MeepleView.DataContext>
+        </local:MeepleView>
+        <local:MeepleView x:Name="mWest"
+                 Canvas.Left="3" Canvas.Top="43">
+            <local:MeepleView.Outlined>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B,C:(A+B)*!C" FallbackValue="false">
+                    <Binding ElementName="pgWest" Path="DataContext.IsClosed"/>
+                    <Binding ElementName="rWestPath" Path="DataContext.IsClosed"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveMeeple"
+                        Converter="{local:ObjectVisibilityConverter}"/>
+                </MultiBinding>
+            </local:MeepleView.Outlined>
+            <local:MeepleView.Visibility>
+                <MultiBinding Converter="{local:BooleanFormulaConverter}" ConverterParameter="A,B,C,D,E,G:A*(B+C)+D*(E+G)" FallbackValue="Hidden">
+                    <Binding ElementName="pgWest" Path="Visibility"/>
+                    <Binding ElementName="pgWest" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="pgWest"/>
+                    <Binding ElementName="rWestPath" Path="Visibility"/>
+                    <Binding ElementName="rWestPath" Path="DataContext.Claimer"/>
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
+                        Converter="{local:EqualityConverter}" ConverterParameter="rWestPath"/>
+                </MultiBinding>
+            </local:MeepleView.Visibility>
+            <local:MeepleView.DataContext>
+                <MultiBinding Converter="{local:ChooseOneConverter}">
+                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveMeeple"/>
+                    <Binding ElementName="pgWest" Path="DataContext.Claimer"/>
+                    <Binding ElementName="rWestPath" Path="DataContext.Claimer"/>
+                </MultiBinding>
+            </local:MeepleView.DataContext>
+        </local:MeepleView>
+    </Canvas>
+</UserControl>

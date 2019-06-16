@@ -1,0 +1,53 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Carcassonne.Model
+{
+    public enum Rotation
+    {
+        None,
+        CounterClockwise,
+        UpsideDown,
+        Clockwise,
+    }
+
+    public static class RotationExtensions
+    {
+        public static int ToInt(this Rotation rotation)
+        {
+            return (int)rotation;
+        }
+
+        public static float ToDegrees(this Rotation rot)
+        {
+            switch (rot)
+            {
+                case Rotation.Clockwise:
+                    return 90f;
+                case Rotation.UpsideDown:
+                    return 180f;
+                case Rotation.CounterClockwise:
+                    return 270f;
+            }
+            return 0f;
+        }
+
+        public static Rotation RotateCW(this Rotation rot)
+        {
+            int newRotation = rot.ToInt() - 1;
+            if (newRotation < 0)
+            {
+                newRotation = (int)Rotation.Clockwise;
+            }
+            return (Rotation)newRotation;
+        }
+
+        public static Rotation RotateCCW(this Rotation rot)
+        {
+            int newRotation = (rot.ToInt() + 1) % 4;
+            return (Rotation)newRotation;
+        }
+    }
+}

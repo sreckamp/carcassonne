@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{328A43DD-0438-4298-865E-0335FD638E8A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Carcassonne.Model</RootNamespace>
+    <AssemblyName>Carcassonne.Model</AssemblyName>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CityPointRegion.cs" />
+    <Compile Include="CarcassonneGameBoard.cs" />
+    <Compile Include="MeepleCollection.cs" />
+    <Compile Include="ObservableStack.cs" />
+    <Compile Include="IClaimProvider.cs" />
+    <Compile Include="Deck.cs" />
+    <Compile Include="EdgeDirection.cs" />
+    <Compile Include="EdgeRegion.cs" />
+    <Compile Include="Expansions\AbbotExpansion.cs" />
+    <Compile Include="Expansions\FarmerExpansion.cs" />
+    <Compile Include="Expansions\RiverExpansion.cs" />
+    <Compile Include="Game.cs" />
+    <Compile Include="IClaimable.cs" />
+    <Compile Include="AbstractExpansionPack.cs" />
+    <Compile Include="IMoveProvider.cs" />
+    <Compile Include="PointRegion.cs" />
+    <Compile Include="Rules\CityRegionScoreRule.cs" />
+    <Compile Include="Rules\RoadRegionScoreRule.cs" />
+    <Compile Include="Rules\IClaimRule.cs" />
+    <Compile Include="Rules\IPlayerCreationRule.cs" />
+    <Compile Include="IPointRegion.cs" />
+    <Compile Include="Meeple.cs" />
+    <Compile Include="MeepleType.cs" />
+    <Compile Include="Player.cs" />
+    <Compile Include="CarcassonneMove.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RegionType.cs" />
+    <Compile Include="Rotation.cs" />
+    <Compile Include="RuleSet.cs" />
+    <Compile Include="Rules\CreateMeeplePlayerCreationRule.cs" />
+    <Compile Include="Rules\DefaultPlaceRule.cs" />
+    <Compile Include="Rules\CityRoadRegionClaimRule.cs" />
+    <Compile Include="Rules\IScoreRule.cs" />
+    <Compile Include="Rules\MonestaryClaimRule.cs" />
+    <Compile Include="Rules\OccupiedPlaceRule.cs" />
+    <Compile Include="Rules\NullPlaceRule.cs" />
+    <Compile Include="Rules\EmptyBoardPlaceRule.cs" />
+    <Compile Include="Rules\TileRegionScoreRule.cs" />
+    <Compile Include="Tile.cs" />
+    <Compile Include="TileRegion.cs" />
+    <Compile Include="TileRegionType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\GameBase\src\GameBase.Model\GameBase.Model.csproj">
+      <Project>{45cfc74e-2b9d-4ed3-82ef-617e3f4404b2}</Project>
+      <Name>GameBase.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

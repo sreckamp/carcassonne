@@ -1,0 +1,7 @@
+﻿<Application x:Class="Carcassonne.WPF.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    StartupUri="GameView.xaml" DispatcherUnhandledException="Application_DispatcherUnhandledException">
+    <Application.Resources>
+    </Application.Resources>
+</Application>
