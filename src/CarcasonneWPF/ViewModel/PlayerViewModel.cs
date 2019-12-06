@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
-using System.Text;
 using Carcassonne.Model;
-using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Collections.Specialized;
-using System.Windows.Threading;
-using GameBoard.WPF.ViewModel;
-using GameBoard.Model;
+using GameBase.Model;
 
 namespace Carcassonne.WPF.ViewModel
 {
@@ -52,9 +45,9 @@ namespace Carcassonne.WPF.ViewModel
             private set;
         }
 
-        public Brush Color { get { return ColorsForName[m_player.Name]; } }
-        public string Name { get { return m_player.Name; } }
-        public int Score { get { return m_player.Score; } }
+        public Brush Color => ColorsForName[m_player.Name];
+        public string Name => m_player.Name;
+        public int Score => m_player.Score;
 
         public CarcassonneMove GetMove(Game game)
         {

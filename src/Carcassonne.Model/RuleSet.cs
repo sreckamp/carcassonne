@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Carcassonne.Model.Rules;
-using System.Windows;
 using GameBase.Model.Rules;
 using GameBase.Model;
 

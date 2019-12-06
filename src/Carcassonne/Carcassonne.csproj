@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Carcassonne</RootNamespace>
     <AssemblyName>Carcassonne</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -115,6 +115,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\game-base\src\GameBase.Model\GameBase.Model.csproj">
+      <Project>{45cfc74e-2b9d-4ed3-82ef-617e3f4404b2}</Project>
+      <Name>GameBase.Model</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Carcassonne.Model\Carcassonne.Model.csproj">
       <Project>{328A43DD-0438-4298-865E-0335FD638E8A}</Project>
       <Name>Carcassonne.Model</Name>

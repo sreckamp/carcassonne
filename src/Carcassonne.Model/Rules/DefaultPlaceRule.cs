@@ -1,10 +1,6 @@
 ﻿using GameBase.Model;
 using GameBase.Model.Rules;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
 
 namespace Carcassonne.Model.Rules
 {
@@ -19,7 +15,7 @@ namespace Carcassonne.Model.Rules
 
         public virtual bool Fits(IGameBoard<Tile, CarcassonneMove> board, Tile tile, CarcassonneMove move)
         {
-            bool hasNeighbor = false;
+            var hasNeighbor = false;
             var b = board as CarcassonneGameBoard;
             foreach (EdgeDirection d in Enum.GetValues(typeof(EdgeDirection)))
             {

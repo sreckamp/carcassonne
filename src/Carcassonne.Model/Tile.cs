@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.ComponentModel;
-using System.Windows;
 using GameBase.Model;
 
 namespace Carcassonne.Model
@@ -20,22 +17,17 @@ namespace Carcassonne.Model
         private TileRegion m_tileRegion;
         public TileRegion TileRegion
         {
-            get { return m_tileRegion; }
-            internal set
-            {
-                m_tileRegion = value;
-                //m_tileRegion.PropertyChanged += new PropertyChangedEventHandler(region_PropertyChanged);
-                //OnPropertyChanged("TileRegion");
-            }
+            get => m_tileRegion;
+            internal set => m_tileRegion = value;
         }
 
         public List<EdgeRegion> Regions { get; private set; }
 
-        public bool HasMonestary { get { return TileRegion?.Type == TileRegionType.Monestary; } }
+        public bool HasMonestary => TileRegion?.Type == TileRegionType.Monestary;
 
-        public bool HasFlower { get { return TileRegion?.Type == TileRegionType.Flower; } }
+        public bool HasFlower => TileRegion?.Type == TileRegionType.Flower;
 
-        public Meeple ClaimingMeeple { get { return ClaimedRegion?.Claimer; } }
+        public Meeple ClaimingMeeple => ClaimedRegion?.Claimer;
 
         public IClaimable ClaimedRegion
         {
@@ -201,7 +193,7 @@ namespace Carcassonne.Model
             public TileBuilder AddShield(EdgeDirection edge)
             {
                 var region = Tile.GetRegion(edge) as CityEdgeRegion ??
-                    throw new InvalidOperationException(string.Format("{0} edge not part of a City region!", edge));
+                    throw new InvalidOperationException($"{edge} edge not part of a City region!");
                 region.HasShield = true;
                 return this;
             }

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel;
 using Carcassonne.Model;
 using System.Windows.Threading;
@@ -12,22 +9,23 @@ namespace Carcassonne.WPF.ViewModel
 {
     public class MeepleViewModel: INotifyPropertyChanged
     {
-        protected readonly Dispatcher m_dispatcher;
-        protected readonly Meeple m_meeple;
+        protected readonly Dispatcher Dispatcher;
+        protected readonly Meeple Meeple;
 
         public MeepleViewModel(Meeple meeple)
         {
-            m_dispatcher = Application.Current.Dispatcher;
-            m_meeple = meeple;
+            Dispatcher = Application.Current.Dispatcher;
+            Meeple = meeple;
         }
 
-        public Brush Fill { get { return PlayerViewModel.ColorsForName[m_meeple.Player.Name]; } }
-        public Brush Stroke { get { return new SolidColorBrush(Colors.Transparent); } }
+        public Brush Fill => PlayerViewModel.ColorsForName[Meeple.Player.Name];
+        public Brush Stroke => new SolidColorBrush(Colors.Transparent);
+
         public Visibility MeepleVisibility
         {
             get
             {
-                if (m_meeple.Type == MeepleType.Meeple)
+                if (Meeple.Type == MeepleType.Meeple)
                 {
                     return Visibility.Visible;
                 }
@@ -39,7 +37,7 @@ namespace Carcassonne.WPF.ViewModel
         {
             get
             {
-                if (m_meeple.Type == MeepleType.Abbot)
+                if (Meeple.Type == MeepleType.Abbot)
                 {
                     return Visibility.Visible;
                 }
@@ -53,13 +51,13 @@ namespace Carcassonne.WPF.ViewModel
 
         protected void NotifyPropertyChanged(string name)
         {
-            if (m_dispatcher.CheckAccess())
+            if (Dispatcher.CheckAccess())
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
             }
             else
             {
-                m_dispatcher.Invoke(new Action<string>((n) =>
+                Dispatcher.Invoke(new Action<string>((n) =>
                 { NotifyPropertyChanged(n); }), name);
             }
         }

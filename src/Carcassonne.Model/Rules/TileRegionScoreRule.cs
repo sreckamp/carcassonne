@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Carcassonne.Model.Rules
+﻿namespace Carcassonne.Model.Rules
 {
     public class TileRegionScoreRule : IScoreRule
     {
@@ -18,10 +13,10 @@ namespace Carcassonne.Model.Rules
 
         public bool Applies(IPointRegion region)
         {
-            return applies(region, out TileRegion tr);
+            return Applies(region, out var tr);
         }
 
-        private bool applies(IPointRegion region, out TileRegion tr)
+        private bool Applies(IPointRegion region, out TileRegion tr)
         {
             tr = region as TileRegion;
             return (tr?.Type == m_type);
@@ -29,12 +24,12 @@ namespace Carcassonne.Model.Rules
 
         public int GetScore(IPointRegion region)
         {
-            return applies(region, out TileRegion tr) && tr.IsClosed ? tr.Score:0;
+            return Applies(region, out var tr) && tr.IsClosed ? tr.Score:0;
         }
 
         public int GetEndScore(IPointRegion region)
         {
-            return applies(region, out TileRegion tr) ? tr.Score : 0;
+            return Applies(region, out var tr) ? tr.Score : 0;
         }
 
         #endregion

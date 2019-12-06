@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Carcassonne.Model.Rules
+﻿namespace Carcassonne.Model.Rules
 {
     public class MonestaryClaimRule : IClaimRule
     {

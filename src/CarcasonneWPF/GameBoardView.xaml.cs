@@ -1,9 +1,5 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using Carcassonne.WPF.ViewModel;
+﻿using System.Windows.Controls;
 using DPoint = System.Drawing.Point;
-using GameBase.WPF;
 
 namespace Carcassonne.WPF
 {

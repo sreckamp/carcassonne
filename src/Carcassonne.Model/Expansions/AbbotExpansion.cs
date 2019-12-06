@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Carcassonne.Model.Rules;
+﻿using Carcassonne.Model.Rules;
 
 namespace Carcassonne.Model.Expansions
 {
@@ -10,9 +6,9 @@ namespace Carcassonne.Model.Expansions
     {
         public AbbotExpansion()
         {
-            m_claimRules.Add(new AbbotClaimRule());
-            m_playerRules.Add(new CreateMeeplePlayerCreationRule(1, MeepleType.Abbot));
-            m_scoreRules.Add(new TileRegionScoreRule(TileRegionType.Flower));
+            _ClaimRules.Add(new AbbotClaimRule());
+            _PlayerRules.Add(new CreateMeeplePlayerCreationRule(1, MeepleType.Abbot));
+            _ScoreRules.Add(new TileRegionScoreRule(TileRegionType.Flower));
         }
 
         private class AbbotClaimRule : IClaimRule
@@ -27,7 +23,7 @@ namespace Carcassonne.Model.Expansions
 
             public bool IsAvailable(IClaimable region, MeepleType type)
             {
-                return Applies(region, type) && (region as TileRegion).Owners.Count == 0;
+                return Applies(region, type) && ((TileRegion) region).Owners.Count == 0;
             }
 
             #endregion

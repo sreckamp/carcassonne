@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace Carcassonne.Model
@@ -12,7 +9,7 @@ namespace Carcassonne.Model
 
         public CityPointRegion():base(RegionType.City){ }
 
-        public int ShieldCount { get { return m_shieldTiles.Count; } }
+        public int ShieldCount => m_shieldTiles.Count;
 
         protected override bool UpdateEdges(EdgeRegion r)
         {

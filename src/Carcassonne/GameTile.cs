@@ -1,24 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using Carcassonne.Model;
-using System.Drawing.Drawing2D;
 
 namespace Carcassonne
 {
     public partial class GameTile : UserControl
     {
-        private List<AbstractTileRenderer> m_renderers = new List<AbstractTileRenderer>();
+        private List<AbstractTileRenderer> _renderers = new List<AbstractTileRenderer>();
         public GameTile()
         {
             InitializeComponent();
-            Paint += new PaintEventHandler(GameTile_Paint);
-            Resize += new EventHandler(GameTile_Resize);
+            Paint += GameTile_Paint;
+            Resize += GameTile_Resize;
         }
 
         void GameTile_Resize(object sender, EventArgs e)
@@ -42,7 +37,7 @@ namespace Carcassonne
         private Tile m_tile;
         public Tile Tile
         {
-            get { return m_tile; }
+            get => m_tile;
             set
             {
                 m_tile = value;
@@ -55,7 +50,7 @@ namespace Carcassonne
         private bool m_active = false;
         public bool Active
         {
-            get { return m_active; }
+            get => m_active;
             set
             {
                 m_active = value;
@@ -68,10 +63,10 @@ namespace Carcassonne
             Rectangle canvas = new Rectangle(Padding.Left, Padding.Top,
                 Size.Width - Padding.Left - Padding.Right,
                 Size.Height - Padding.Top - Padding.Bottom);
-            m_renderers.Clear();
+            _renderers.Clear();
             if (Tile != null)
             {
-                m_renderers.Add(new BackgroundRenderer(canvas, Color.DarkGreen));
+                _renderers.Add(new BackgroundRenderer(canvas, Color.DarkGreen));
                 var done = new List<EdgeDirection>();
                 foreach (EdgeDirection dir in Enum.GetValues(typeof(EdgeDirection)))
                 {
@@ -80,7 +75,7 @@ namespace Carcassonne
                         var r = Tile.GetRegion(dir);
                         if (r != null && r.Type == RegionType.River)
                         {
-                            m_renderers.Add(new RiverRegionRenderer(canvas, r, 40));
+                            _renderers.Add(new RiverRegionRenderer(canvas, r, 40));
                             done.AddRange(r.Edges);
                         }
                     }
@@ -92,7 +87,7 @@ namespace Carcassonne
                         var r = Tile.GetRegion(dir);
                         if (r != null && r.Type == RegionType.Road)
                         {
-                            m_renderers.Add(new RoadRegionRenderer(canvas, r, 40));
+                            _renderers.Add(new RoadRegionRenderer(canvas, r, 40));
                             done.AddRange(r.Edges);
                         }
                     }
@@ -104,7 +99,7 @@ namespace Carcassonne
                         var r = Tile.GetRegion(dir) as CityEdgeRegion;
                         if (r != null && r.Type == RegionType.City)
                         {
-                            m_renderers.Add(new CityRegionRenderer(canvas, r));
+                            _renderers.Add(new CityRegionRenderer(canvas, r));
                             done.AddRange(r.Edges);
                         }
                     }
@@ -114,17 +109,17 @@ namespace Carcassonne
                     switch (Tile.TileRegion.Type)
                     {
                         case TileRegionType.Monestary:
-                            m_renderers.Add(new MonestaryRegionRenderer(canvas, Tile));
+                            _renderers.Add(new MonestaryRegionRenderer(canvas, Tile));
                             break;
                         case TileRegionType.Flower:
-                            m_renderers.Add(new FlowerRegionRenderer(canvas, Tile));
+                            _renderers.Add(new FlowerRegionRenderer(canvas, Tile));
                             break;
                     }
                 }
             }
             else
             {
-                m_renderers.Add(new BackgroundRenderer(canvas, Color.Gainsboro));
+                _renderers.Add(new BackgroundRenderer(canvas, Color.Gainsboro));
             }
             Invalidate();
         }
@@ -132,7 +127,7 @@ namespace Carcassonne
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-            foreach (var r in m_renderers)
+            foreach (var r in _renderers)
             {
                 r.Draw(e.Graphics);
             }
@@ -392,9 +387,9 @@ namespace Carcassonne
                 else
                 {
                     var last = (PointF)lastNullable;
-                    if (last.X != next.X)
+                    if (Math.Abs(last.X - next.X) > 0.5f)
                     {
-                        if (last.Y == next.Y)
+                        if (Math.Abs(last.Y - next.Y) < 0.5f)
                         {
                             for (int i = 1; i < 10; i++)
                             {
@@ -503,21 +498,22 @@ namespace Carcassonne
             {
             }
 
-            private CityEdgeRegion m_typedRegion { get { return m_region as CityEdgeRegion; } }
+            private CityEdgeRegion _typedRegion => m_region as CityEdgeRegion;
+
             public override void UpdateRegion(RectangleF region)
             {
                 base.CreateSolidRegion(region, Color.SaddleBrown);
-                if (m_typedRegion.HasShield)
+                if (_typedRegion.HasShield)
                 {
-                    AddRectangle(region, Color.DarkBlue, new RectangleF(SHIELD_POS, SHIELD_SIZE),
-                        m_region.Parent.Rotation);
+//                    AddRectangle(region, Color.DarkBlue, new RectangleF(SHIELD_POS, SHIELD_SIZE),
+//                        m_region.Parent.Rotation);
                 }
             }
         }
 
         private class MonestaryRegionRenderer : AbstractTileRenderer
         {
-            private const float MONESTARY_SIZE = 0.4f;
+            private const float MonestarySize = 0.4f;
             private readonly Tile m_parent;
 
             public MonestaryRegionRenderer(RectangleF canvas, Tile parent)
@@ -531,18 +527,18 @@ namespace Carcassonne
             {
                 if (m_parent != null)
                 {
-                    float x = (1 - MONESTARY_SIZE) / 2;
+                    float x = (1 - MonestarySize) / 2;
                     float y = x;
-                    AddRectangle(canvas, Color.Red, new RectangleF(x, y, MONESTARY_SIZE, MONESTARY_SIZE),
-                            m_parent.Rotation);
-                    float crossX = x + MONESTARY_SIZE / 2 - MONESTARY_SIZE / 16;
-                    float crossY = y + MONESTARY_SIZE / 4;
-                    AddRectangle(canvas, Color.Black, new RectangleF(crossX, crossY, MONESTARY_SIZE / 8, MONESTARY_SIZE / 2),
-                            m_parent.Rotation);
-                    crossX = x + MONESTARY_SIZE / 2 - MONESTARY_SIZE / 6;
-                    crossY = y + MONESTARY_SIZE / 4 + MONESTARY_SIZE / 8;
-                    AddRectangle(canvas, Color.Black, new RectangleF(crossX, crossY, MONESTARY_SIZE / 3, MONESTARY_SIZE / 8),
-                            m_parent.Rotation);
+//                    AddRectangle(canvas, Color.Red, new RectangleF(x, y, MONESTARY_SIZE, MONESTARY_SIZE),
+//                            m_parent.Rotation);
+                    float crossX = x + MonestarySize / 2 - MonestarySize / 16;
+                    float crossY = y + MonestarySize / 4;
+//                    AddRectangle(canvas, Color.Black, new RectangleF(crossX, crossY, MONESTARY_SIZE / 8, MONESTARY_SIZE / 2),
+//                            m_parent.Rotation);
+                    crossX = x + MonestarySize / 2 - MonestarySize / 6;
+                    crossY = y + MonestarySize / 4 + MonestarySize / 8;
+//                    AddRectangle(canvas, Color.Black, new RectangleF(crossX, crossY, MONESTARY_SIZE / 3, MONESTARY_SIZE / 8),
+//                            m_parent.Rotation);
                 }
             }
         }

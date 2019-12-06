@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
     xmlns:local="clr-namespace:Carcassonne.WPF"
-    xmlns:base="clr-namespace:GameBase.WPF;assembly=GameBase.Wpf"
+    xmlns:base="clr-namespace:GameBase.WPF;assembly=GameBase.WPF"
     xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
     xmlns:vm="clr-namespace:Carcassonne.WPF.ViewModel"

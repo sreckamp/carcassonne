@@ -1,7 +1,7 @@
 ﻿<UserControl x:Class="Carcassonne.WPF.MeepleView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:base="clr-namespace:GameBase.WPF;assembly=GameBase.Wpf"
+    xmlns:base="clr-namespace:GameBase.WPF;assembly=GameBase.WPF"
     xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase">
     <UserControl.Resources>
         <Style x:Key="MeepleMarkerPolygon" TargetType="{x:Type Polygon}">
@@ -9,7 +9,7 @@
             <Setter Property="Stroke" Value="{Binding Stroke}"/>
         </Style>
     </UserControl.Resources>
-        <Canvas Name="canvas">
+        <Canvas Name="Canvas">
             <Canvas.RenderTransform>
                 <TransformGroup>
 <!--                    <RotateTransform
@@ -19,13 +19,13 @@
                     <ScaleTransform>
                         <ScaleTransform.ScaleX>
                             <MultiBinding Converter="{base:DoubleFormulaConverter}" ConverterParameter="A,B:A/B">
-                                <Binding ElementName="canvas" Path="ActualWidth"/>
+                                <Binding ElementName="Canvas" Path="ActualWidth"/>
                                 <Binding ElementName="SizeBase" Path="ActualWidth"/>
                             </MultiBinding>
                         </ScaleTransform.ScaleX>
                         <ScaleTransform.ScaleY>
                             <MultiBinding Converter="{base:DoubleFormulaConverter}" ConverterParameter="A,B:A/B">
-                                <Binding ElementName="canvas" Path="ActualHeight"/>
+                                <Binding ElementName="Canvas" Path="ActualHeight"/>
                                 <Binding ElementName="SizeBase" Path="ActualHeight"/>
                             </MultiBinding>
                         </ScaleTransform.ScaleY>
@@ -33,7 +33,7 @@
                 </TransformGroup>
             </Canvas.RenderTransform>
             <Rectangle Name="SizeBase" Height="45.9" Width="33.8"/>
-            <Polygon Name="pgAbbot" Canvas.Top="12" Canvas.Left="16.9"
+            <Polygon Name="PgAbbot" Canvas.Top="12" Canvas.Left="16.9"
                      Visibility="{Binding AbbotVisibility}"
                      Style="{StaticResource MeepleMarkerPolygon}"
                      Points="
@@ -62,7 +62,7 @@
                         -14.9,11.2 -14.6,11 -14.2,10.7 -13.8,10.5 -13.5,10.3 -13.1,10.1 -12.7,9.9 -12.2,9.6 -11.8,9.5 -11.5,9.3 
                         -10.9,9.1 -10.3,8.8 -9.5,8.5 -8.7,8.3 -7.3,7.8 -5.8,7.3 -5.7,7.2 -5.5,7.2 -5.5,7.1 -5.5,7 -5.4,6.4 -5.4,5.9 
                         -5.3,5.4 -5.3,4.9 -5.2,4.4 -5.1,4 -4.9,3.5 -4.8,3.1 -4.6,2.7 -4.4,2.4 -4.2,2.1 -4,1.8 -3.6,1.3 -8.0,-2.0 0.0,-12.0"/>
-            <Polygon Name="pgMeeple" Canvas.Left="16.9" Canvas.Top="12" 
+            <Polygon Name="PgMeeple" Canvas.Left="16.9" Canvas.Top="12" 
                      Visibility="{Binding MeepleVisibility}"
                      Style="{StaticResource MeepleMarkerPolygon}"
                      Points="

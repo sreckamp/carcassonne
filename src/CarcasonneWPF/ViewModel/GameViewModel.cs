@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Carcassonne.Model;
 using System.ComponentModel;
 using System.Windows.Media;
 using System.Windows.Threading;
 using System.Diagnostics;
-using System.Windows.Input;
 using GameBase.Model;
-using GameBoard.WPF.ViewModel;
-using GameBoard.Model;
-using GalaSoft.MvvmLight.CommandWpf;
-using GameBase.WPF;
+using GameBase.WPF.ViewModel;
 
 namespace Carcassonne.WPF.ViewModel
 {
@@ -28,12 +21,12 @@ namespace Carcassonne.WPF.ViewModel
             Game = new Game(expansions);
             BoardViewModel = new GameBoardViewModel(Game.Board);
             BoardViewModel.Placed += boardViewModel_Placed;
-            Game.ActivePlayerChanged += new EventHandler<ChangedValueArgs<Player>>(game_ActivePlayerChanged);
-            Game.ActiveTileChanged += new EventHandler<ChangedValueArgs<Tile>>(game_ActiveTileChanged);
+            Game.ActivePlayerChanged += game_ActivePlayerChanged;
+            Game.ActiveTileChanged += game_ActiveTileChanged;
             PlayerViewModels = new MappingCollection<PlayerViewModel, Player>(Game.Players);
             DeckViewModel = new DispatchedObservableList<PlacementViewModel>(/*m_dispatcher, */new ObservableList<PlacementViewModel>());
             Game.Shuffle();
-            foreach(var t in Game.m_deck)
+            foreach(var t in Game.Deck)
             {
                 DeckViewModel.Add(new PlacementViewModel(t, null));
             }
@@ -58,7 +51,7 @@ namespace Carcassonne.WPF.ViewModel
 
         void game_ActivePlayerChanged(object sender, ChangedValueArgs<Player> e)
         {
-            notifyPropertyChanged("ActivePlayer");
+            NotifyPropertyChanged("ActivePlayer");
         }
 
         public DispatchedObservableList<PlacementViewModel> DeckViewModel { get; private set; }
@@ -69,7 +62,7 @@ namespace Carcassonne.WPF.ViewModel
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void notifyPropertyChanged(string name)
+        private void NotifyPropertyChanged(string name)
         {
             if (m_dispatcher.CheckAccess())
             {
@@ -80,19 +73,13 @@ namespace Carcassonne.WPF.ViewModel
             {
                 Debug.WriteLine("GameViewModel.PropChanged Invoke:" + name);
                 m_dispatcher.Invoke(new Action<string>((n) =>
-                { notifyPropertyChanged(n); }), name);
+                { NotifyPropertyChanged(n); }), name);
             }
         }
 
         #endregion
 
-        public PlayerViewModel ActivePlayerViewModel
-        {
-            get
-            {
-                return PlayerViewModels[Game.ActivePlayer];
-            }
-        }
+        public PlayerViewModel ActivePlayerViewModel => PlayerViewModels[Game.ActivePlayer];
 
         internal void AddPlayer(string name, Color color)
         {

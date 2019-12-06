@@ -1,20 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Carcassonne.Model;
-using System.Diagnostics;
 using System.ComponentModel;
-using System.Windows.Markup;
 using System.Collections.Specialized;
 using Carcassonne.Model.Expansions;
 using Carcassonne.WPF.ViewModel;
@@ -52,18 +41,18 @@ namespace Carcassonne.WPF
                 }
             }
             var exp = new AbstractExpansionPack[packs.Count];
-            for (int i = 0; i < exp.Length; i++)
+            for (var i = 0; i < exp.Length; i++)
             {
                 exp[i] = (AbstractExpansionPack)packs[i].GetConstructor(new Type[0]).Invoke(new object[0]);
             }
             m_gameVm = new GameViewModel(exp);
-            m_propChanged = new PropertyChangedEventHandler(activeTile_PropertyChanged);
+            m_propChanged = activeTile_PropertyChanged;
 //            m_gameVm.PropertyChanging += new PropertyChangingEventHandler(m_game_PropertyChanging);
-            m_gameVm.PropertyChanged += new PropertyChangedEventHandler(m_game_PropertyChanged);
+            m_gameVm.PropertyChanged += m_game_PropertyChanged;
             InitializeComponent();
 //            m_gameVm.Game.PointRegions.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(PointRegions_CollectionChanged);
-            m_worker.DoWork += new DoWorkEventHandler(m_worker_DoWork);
-            m_worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(m_worker_RunWorkerCompleted);
+            m_worker.DoWork += m_worker_DoWork;
+            m_worker.RunWorkerCompleted += m_worker_RunWorkerCompleted;
 
             m_gameVm.AddPlayer("Luke", Colors.Blue);
             m_gameVm.AddPlayer("Vader", Colors.Red);
@@ -88,8 +77,7 @@ namespace Carcassonne.WPF
             }
             else
             {
-                Dispatcher.Invoke(new Action<object, NotifyCollectionChangedEventArgs>(
-                    (_sender, _e) => { pointRegions_CollectionChanged(_sender, _e); }), sender, e);
+                Dispatcher.Invoke(new Action<object, NotifyCollectionChangedEventArgs>(pointRegions_CollectionChanged), sender, e);
             }
         }
 
@@ -162,7 +150,7 @@ namespace Carcassonne.WPF
         //    }
         //}
 
-        private bool updateDimming(Point location)
+        private bool UpdateDimming(Point location)
         {
             if (ActiveTileView != null)
             {

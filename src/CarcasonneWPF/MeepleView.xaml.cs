@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.ComponentModel;
 using Carcassonne.Model;
 using System.Diagnostics;
@@ -24,25 +14,25 @@ namespace Carcassonne.WPF
     public partial class MeepleView : UserControl, INotifyPropertyChanged
     {
         public static readonly DependencyProperty OutlinedProperty = DependencyProperty.Register("Outlined", typeof(bool),
-            typeof(MeepleView), new PropertyMetadata(false, new PropertyChangedCallback(updateColors)));
+            typeof(MeepleView), new PropertyMetadata(false, UpdateColors));
         public static readonly DependencyProperty ColorProperty = DependencyProperty.Register("Color", typeof(Brush),
-            typeof(MeepleView), new PropertyMetadata(s_defaultBrush, new PropertyChangedCallback(updateColors)));
+            typeof(MeepleView), new PropertyMetadata(SDefaultBrush, UpdateColors));
 
-        private static void updateColors(DependencyObject sender, DependencyPropertyChangedEventArgs args)
+        private static void UpdateColors(DependencyObject sender, DependencyPropertyChangedEventArgs args)
         {
             if (sender is MeepleView mc)
             {
-                mc.updateMeepleColoring();
+                mc.UpdateMeepleColoring();
             }
         }
 
-        private static readonly Brush s_defaultBrush = new SolidColorBrush(Colors.DarkGray);
+        private static readonly Brush SDefaultBrush = new SolidColorBrush(Colors.DarkGray);
 
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void notifyPropertyChanged(string name)
+        private void NotifyPropertyChanged(string name)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
@@ -51,51 +41,51 @@ namespace Carcassonne.WPF
         public MeepleView()
         {
             InitializeComponent();
-            DataContextChanged += new DependencyPropertyChangedEventHandler(MeepleControl_DataContextChanged);
+            DataContextChanged += MeepleControl_DataContextChanged;
         }
 
         void MeepleControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            updateMeepleColoring();
+            UpdateMeepleColoring();
         }
 
         public bool Outlined
         {
-            get { return (bool)GetValue(OutlinedProperty); }
-            set { SetValue(OutlinedProperty, value); }
+            get => (bool)GetValue(OutlinedProperty);
+            set => SetValue(OutlinedProperty, value);
         }
 
         public Brush Color
         {
-            get { return (Brush)GetValue(ColorProperty); }
-            set { SetValue(ColorProperty, value); }
+            get => (Brush)GetValue(ColorProperty);
+            set => SetValue(ColorProperty, value);
         }
 
-        private Brush m_meepleFill = s_defaultBrush;
+        private Brush m_meepleFill = SDefaultBrush;
         public Brush MeepleFill
         {
-            get { return m_meepleFill; }
+            get => m_meepleFill;
             private set
             {
                 m_meepleFill = value;
-                notifyPropertyChanged("MeepleFill");
+                NotifyPropertyChanged("MeepleFill");
             }
         }
 
-        private Brush m_meepleStroke = s_defaultBrush;
+        private Brush m_meepleStroke = SDefaultBrush;
         public Brush MeepleStroke
         {
-            get { return m_meepleStroke; }
+            get => m_meepleStroke;
             private set
             {
                 m_meepleStroke = value;
-                notifyPropertyChanged("MeepleStroke");
+                NotifyPropertyChanged("MeepleStroke");
             }
         }
 
-        private void updateMeepleColoring()
+        private void UpdateMeepleColoring()
         {
-            Brush c = Color;
+            var c = Color;
             if (DataContext is Meeple)
             {
                 //var p = (DataContext as Meeple).Player as PlayerViewModel;
@@ -108,13 +98,13 @@ namespace Carcassonne.WPF
             if (Outlined)
             {
                 Debug.WriteLine("Outlined!");
-                MeepleFill = s_defaultBrush;
+                MeepleFill = SDefaultBrush;
                 MeepleStroke = c;
             }
             else
             {
                 MeepleFill = c;
-                MeepleStroke = s_defaultBrush;
+                MeepleStroke = SDefaultBrush;
             }
         }
     }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Collections.Specialized;
-using System.Windows;
-using Carcassonne.Model.Rules;
+﻿using Carcassonne.Model.Rules;
 using GameBase.Model;
 
 namespace Carcassonne.Model.Expansions
@@ -17,10 +11,10 @@ namespace Carcassonne.Model.Expansions
 
         public RiverExpansion()
         {
-            m_placeRules.Add(new RiverFitRule());
+            _PlaceRules.Add(new RiverFitRule());
         }
 
-        public override bool IgnoreDefaultStart { get { return true; } }
+        public override bool IgnoreDefaultStart => true;
 
         public override void AfterDeckShuffle(Deck deck)
         {
@@ -96,9 +90,9 @@ namespace Carcassonne.Model.Expansions
                     if ((myRegion.Edges.Length == 2 && myRegion.Edges[0].Opposite() != myRegion.Edges[1])
                         && (thierRegion.Edges.Length == 2 && thierRegion.Edges[0].Opposite() != thierRegion.Edges[1]))
                     {
-                        for (int j = 0; j < myRegion.Edges.Length; j++)
+                        for (var j = 0; j < myRegion.Edges.Length; j++)
                         {
-                            for (int k = 0; k < thierRegion.Edges.Length; k++)
+                            for (var k = 0; k < thierRegion.Edges.Length; k++)
                             {
                                 if (myRegion.Edges[j] == thierRegion.Edges[k])
                                 {

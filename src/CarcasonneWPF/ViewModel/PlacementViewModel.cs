@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Threading;
+﻿using System.Linq;
 using Carcassonne.Model;
-using System.ComponentModel;
 using MBrush = System.Windows.Media.Brush;
-using System.Windows.Shapes;
 using System.Diagnostics;
 using DPoint = System.Drawing.Point;
 //using System.Drawing;
@@ -14,13 +8,12 @@ using System.Windows.Media;
 using System.Windows;
 using GameBase.WPF.ViewModel;
 using GameBase.Model;
-using System.Drawing;
 
 namespace Carcassonne.WPF.ViewModel
 {
     public class PlacementViewModel : AbstractPlacementViewModel<Tile, CarcassonneMove>
     {
-        private static ClaimableViewModel s_defaultIClaimableModel = new ClaimableViewModel(null, null);
+        private static readonly ClaimableViewModel SDefaultIClaimableModel = new ClaimableViewModel(null, null);
 
         public PlacementViewModel(Tile tile, GameBoardViewModel boardModel) :
             this(new Placement<Tile, CarcassonneMove>(tile, null), boardModel)
@@ -30,11 +23,11 @@ namespace Carcassonne.WPF.ViewModel
         {
             if (Tile != null)
             {
-                parseTile();
+                ParseTile();
             }
         }
 
-        private GameBoardViewModel m_boardViewModel => m_GridManager as GameBoardViewModel;
+        private GameBoardViewModel BoardViewModel => GridManager as GameBoardViewModel;
         protected override CarcassonneMove GetMove(int locationX, int locationY)
         {
             return new CarcassonneMove(locationX, locationY, TileRotation);
@@ -50,7 +43,7 @@ namespace Carcassonne.WPF.ViewModel
         {
             get
             {
-                if (m_boardViewModel?.Fits(this) ?? true)
+                if (BoardViewModel?.Fits(this) ?? true)
                 {
                     return 1;
                 }
@@ -69,12 +62,12 @@ namespace Carcassonne.WPF.ViewModel
             {
                 if (this is PointViewModel)
                     Debug.WriteLine($"PointViewModel");
-                if (m_boardViewModel?.IsBackground(this) ?? true)
+                if (BoardViewModel?.IsBackground(this) ?? true)
                 {
                     Debug.WriteLine($"{Name} Depth:150");
                     return 99;
                 }
-                else if (m_boardViewModel?.IsForeground(this) ?? true)
+                else if (BoardViewModel?.IsForeground(this) ?? true)
                 {
                     Debug.WriteLine($"{Name} Depth:100");
                     return 50;
@@ -87,7 +80,7 @@ namespace Carcassonne.WPF.ViewModel
         private Rotation m_tileRotation = Rotation.None;
         public Rotation TileRotation
         {
-            get => m_placement?.Move?.Rotation ?? m_tileRotation;
+            get => Placement?.Move?.Rotation ?? m_tileRotation;
             set
             {
                 m_tileRotation = value;
@@ -97,7 +90,7 @@ namespace Carcassonne.WPF.ViewModel
             }
         }
 
-        public float RotationAngle => m_placement?.Move?.Rotation.ToDegrees() ?? 0;
+        public float RotationAngle => Placement?.Move?.Rotation.ToDegrees() ?? 0;
         public float NegRotationAngle => -RotationAngle;
 
         public string Name => Tile?.ToString() ?? "<<null>>";
@@ -146,10 +139,10 @@ namespace Carcassonne.WPF.ViewModel
         //    }
         //}
 
-        public Tile Tile => m_placement?.Piece;
+        public Tile Tile => Placement?.Piece;
 
-        ClaimableViewModel m_allDataContext = s_defaultIClaimableModel;
-        public object AllDataContext { get { return m_allDataContext; } }
+        ClaimableViewModel m_allDataContext = SDefaultIClaimableModel;
+        public object AllDataContext => m_allDataContext;
 
         //IClaimableViewModel m_allShieldDataContext = s_defaultIClaimableModel;
         //public object AllShieldDataContext { get { return m_allShieldDataContext; } }
@@ -166,47 +159,47 @@ namespace Carcassonne.WPF.ViewModel
         //IClaimableViewModel m_roadEndDataContext = s_defaultIClaimableModel;
         //public object RoadEndDataContext { get { return m_roadEndDataContext; } }
 
-        ClaimableViewModel m_tileDataContext = s_defaultIClaimableModel;
-        public object TileDataContext { get { return m_tileDataContext; } }
+        ClaimableViewModel m_tileDataContext = SDefaultIClaimableModel;
+        public object TileDataContext => m_tileDataContext;
 
-        ClaimableViewModel m_northEastWestDataContext = s_defaultIClaimableModel;
-        public object NorthEastWestDataContext { get { return m_northEastWestDataContext; } }
+        ClaimableViewModel m_northEastWestDataContext = SDefaultIClaimableModel;
+        public object NorthEastWestDataContext => m_northEastWestDataContext;
 
-        ClaimableViewModel m_northDataContext = s_defaultIClaimableModel;
-        public object NorthDataContext { get { return m_northDataContext; } }
+        ClaimableViewModel m_northDataContext = SDefaultIClaimableModel;
+        public object NorthDataContext => m_northDataContext;
 
-        ClaimableViewModel m_southDataContext = s_defaultIClaimableModel;
-        public object SouthDataContext { get { return m_southDataContext; } }
+        ClaimableViewModel m_southDataContext = SDefaultIClaimableModel;
+        public object SouthDataContext => m_southDataContext;
 
-        ClaimableViewModel m_westDataContext = s_defaultIClaimableModel;
-        public object WestDataContext { get { return m_westDataContext; } }
+        ClaimableViewModel m_westDataContext = SDefaultIClaimableModel;
+        public object WestDataContext => m_westDataContext;
 
-        ClaimableViewModel m_eastDataContext = s_defaultIClaimableModel;
-        public object EastDataContext { get { return m_eastDataContext; } }
+        ClaimableViewModel m_eastDataContext = SDefaultIClaimableModel;
+        public object EastDataContext => m_eastDataContext;
 
-        ClaimableViewModel m_southWestDataContext = s_defaultIClaimableModel;
-        public object SouthWestDataContext { get { return m_southWestDataContext; } }
+        ClaimableViewModel m_southWestDataContext = SDefaultIClaimableModel;
+        public object SouthWestDataContext => m_southWestDataContext;
 
-        ClaimableViewModel m_eastWestDataContext = s_defaultIClaimableModel;
-        public object EastWestDataContext { get { return m_eastWestDataContext; } }
+        ClaimableViewModel m_eastWestDataContext = SDefaultIClaimableModel;
+        public object EastWestDataContext => m_eastWestDataContext;
 
-        ClaimableViewModel m_northSouthDataContext = s_defaultIClaimableModel;
-        public object NorthSouthDataContext { get { return m_northSouthDataContext; } }
+        ClaimableViewModel m_northSouthDataContext = SDefaultIClaimableModel;
+        public object NorthSouthDataContext => m_northSouthDataContext;
 
-        ClaimableViewModel m_northSouthFlowerDataContext = s_defaultIClaimableModel;
-        public object NorthSouthFlowerDataContext { get { return m_northSouthFlowerDataContext; } }
+        ClaimableViewModel m_northSouthFlowerDataContext = SDefaultIClaimableModel;
+        public object NorthSouthFlowerDataContext => m_northSouthFlowerDataContext;
 
-        ClaimableViewModel m_northEastDataContext = s_defaultIClaimableModel;
-        public object NorthEastDataContext { get { return m_northEastDataContext; } }
+        ClaimableViewModel m_northEastDataContext = SDefaultIClaimableModel;
+        public object NorthEastDataContext => m_northEastDataContext;
 
-        ClaimableViewModel m_eastSouthDataContext = s_defaultIClaimableModel;
-        public object EastSouthDataContext { get { return m_eastSouthDataContext; } }
+        ClaimableViewModel m_eastSouthDataContext = SDefaultIClaimableModel;
+        public object EastSouthDataContext => m_eastSouthDataContext;
 
-        private void parseTile()
+        private void ParseTile()
         {
             foreach (var r in Tile.Regions)
             {
-                ClaimableViewModel cvm = new ClaimableViewModel(r, Tile.TileRegion);
+                var cvm = new ClaimableViewModel(r, Tile.TileRegion);
                 if (r.RawEdges.Length == 1)
                 {
                     switch (r.RawEdges[0])
@@ -263,21 +256,21 @@ namespace Carcassonne.WPF.ViewModel
                     //m_northEastWestDataContext = cvm;
                 }
             }
-            if (m_allDataContext == s_defaultIClaimableModel)
+            if (m_allDataContext == SDefaultIClaimableModel)
             {
                 m_allDataContext = new ClaimableViewModel(null, Tile.TileRegion);
             }
         }
         public override string ToString()
         {
-            return m_placement?.ToString() ?? "<<null>>";
+            return Placement?.ToString() ?? "<<null>>";
         }
 
         private class ClaimableViewModel
         {
-            private static readonly MBrush s_riverBrush = new SolidColorBrush(Colors.DarkBlue);
-            private static readonly MBrush s_roadBrush = new SolidColorBrush(Colors.Khaki);
-            private static readonly MBrush s_cityBrush = new SolidColorBrush(Colors.SaddleBrown);
+            private static readonly MBrush SRiverBrush = new SolidColorBrush(Colors.DarkBlue);
+            private static readonly MBrush SRoadBrush = new SolidColorBrush(Colors.Khaki);
+            private static readonly MBrush SCityBrush = new SolidColorBrush(Colors.SaddleBrown);
 
             private readonly EdgeRegion m_edge;
             private readonly TileRegion m_tile;
@@ -402,11 +395,11 @@ namespace Carcassonne.WPF.ViewModel
                     switch (m_edge?.Type)
                     {
                         case RegionType.City:
-                            return s_cityBrush;
+                            return SCityBrush;
                         case RegionType.River:
-                            return s_riverBrush;
+                            return SRiverBrush;
                         case RegionType.Road:
-                            return s_roadBrush;
+                            return SRoadBrush;
                     }
                     return null;
                 }

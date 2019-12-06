@@ -1,17 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel;
 using Carcassonne.Model;
-using System.Windows.Threading;
-using System.Collections.Specialized;
-using System.Diagnostics;
-using System.Windows.Media;
 using GameBase.Model;
 using System.Drawing;
-using GameBoard.WPF.ViewModel;
-using GameBoard.Model;
 using GameBase.WPF.ViewModel;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -31,10 +23,10 @@ namespace Carcassonne.WPF.ViewModel
             m_board = board;
             m_placements = new MappingCollection<PlacementViewModel, Placement<Tile, CarcassonneMove>>(board.Placements, this);
             Grid = new OverlayDispatchableObservableList<PlacementViewModel>(m_grid, m_placements, m_active);
-            board.MinXChanged += new EventHandler<ChangedValueArgs<int>>(board_MinXChanged);
-            board.MaxXChanged += new EventHandler<ChangedValueArgs<int>>(board_MaxXChanged);
-            board.MinYChanged += new EventHandler<ChangedValueArgs<int>>(board_MinYChanged);
-            board.MaxYChanged += new EventHandler<ChangedValueArgs<int>>(board_MaxYChanged);
+            board.MinXChanged += board_MinXChanged;
+            board.MaxXChanged += board_MaxXChanged;
+            board.MinYChanged += board_MinYChanged;
+            board.MaxYChanged += board_MaxYChanged;
             initializeGrid();
         }
 
@@ -50,7 +42,7 @@ namespace Carcassonne.WPF.ViewModel
             {
                 var old = m_startColumn;
                 m_startColumn = value;
-                ChangedValueArgs<int>.Trigger(StartColumnChanged, this, old, value);
+                StartColumnChanged?.Invoke(this, new ChangedValueArgs<int>(old, value));
             }
         }
 
@@ -63,7 +55,7 @@ namespace Carcassonne.WPF.ViewModel
             {
                 var old = m_startRow;
                 m_startRow = value;
-                ChangedValueArgs<int>.Trigger(StartRowChanged, this, old, value);
+                StartRowChanged?.Invoke(this, new ChangedValueArgs<int>(old, value));
             }
         }
 

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel;
 
 namespace Carcassonne.Model
 {
@@ -32,18 +29,14 @@ namespace Carcassonne.Model
         private TileRegionType m_type;
         public TileRegionType Type
         {
-            get { return m_type; }
-            private set
-            {
-                m_type = value;
-                //notifyPropertyChanged("Type");
-            }
+            get => m_type;
+            private set => m_type = value;
         }
 
         private Meeple m_claimer;
         public Meeple Claimer
         {
-            get { return m_claimer; }
+            get => m_claimer;
             private set
             {
                 m_claimer = value;
@@ -58,10 +51,7 @@ namespace Carcassonne.Model
         }
 
         private readonly List<Player> m_owners = new List<Player>();
-        public List<Player> Owners
-        {
-            get { return m_owners; }
-        }
+        public List<Player> Owners => m_owners;
 
         public void Claim(Meeple meeple)
         {
@@ -92,16 +82,12 @@ namespace Carcassonne.Model
 
         private bool m_isForcedOpened = false;
         public bool IsForcedOpened {
-            get { return m_isForcedOpened; }
-            set
-            {
-                m_isForcedOpened = value;
-                //notifyPropertyChanged("IsClosed");
-            }
+            get => m_isForcedOpened;
+            set => m_isForcedOpened = value;
         }
 
-        public bool IsClosed { get { return !IsForcedOpened && (Score == 9); } }
-        public int Score { get { return m_tiles.Count; } }
+        public bool IsClosed => !IsForcedOpened && (Score == 9);
+        public int Score => m_tiles.Count;
 
         public void ReturnMeeple()
         {

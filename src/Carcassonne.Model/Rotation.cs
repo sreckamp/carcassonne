@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Carcassonne.Model
+﻿namespace Carcassonne.Model
 {
     public enum Rotation
     {
@@ -34,9 +29,9 @@ namespace Carcassonne.Model
             return 0f;
         }
 
-        public static Rotation RotateCW(this Rotation rot)
+        public static Rotation RotateCw(this Rotation rot)
         {
-            int newRotation = rot.ToInt() - 1;
+            var newRotation = rot.ToInt() - 1;
             if (newRotation < 0)
             {
                 newRotation = (int)Rotation.Clockwise;
@@ -44,9 +39,9 @@ namespace Carcassonne.Model
             return (Rotation)newRotation;
         }
 
-        public static Rotation RotateCCW(this Rotation rot)
+        public static Rotation RotateCcw(this Rotation rot)
         {
-            int newRotation = (rot.ToInt() + 1) % 4;
+            var newRotation = (rot.ToInt() + 1) % 4;
             return (Rotation)newRotation;
         }
     }

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Collections.Specialized;
 using System.Collections;
 using GameBase.Model;
@@ -31,7 +29,7 @@ namespace Carcassonne.Model
                 AvailableTypes.Add(m.Type);
             }
             m_meeple[m.Type].Push(m);
-            updateAllMeepleList();
+            UpdateAllMeepleList();
             var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, m, m_allMeeple.IndexOf(m));
             CollectionChanged?.Invoke(this, args);
         }
@@ -46,7 +44,7 @@ namespace Carcassonne.Model
                     AvailableTypes.Remove(t);
                 }
                 var idx = m_allMeeple.IndexOf(m);
-                updateAllMeepleList();
+                UpdateAllMeepleList();
                 var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, m, idx);
                 CollectionChanged?.Invoke(this, args);
             }
@@ -72,7 +70,7 @@ namespace Carcassonne.Model
 
         public List<MeepleType> AvailableTypes { get; private set; }
 
-        private void updateAllMeepleList()
+        private void UpdateAllMeepleList()
         {
             m_allMeeple.Clear();
             foreach (var meeple in m_meeple.Values)
@@ -118,14 +116,8 @@ namespace Carcassonne.Model
 
         public Meeple this[int index]
         {
-            get
-            {
-                return m_allMeeple[index];
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get => m_allMeeple[index];
+            set => throw new NotImplementedException();
         }
 
         #endregion
@@ -147,15 +139,9 @@ namespace Carcassonne.Model
             m_allMeeple.CopyTo(array, arrayIndex);
         }
 
-        public int Count
-        {
-            get { return m_allMeeple.Count; }
-        }
+        public int Count => m_allMeeple.Count;
 
-        public bool IsReadOnly
-        {
-            get { return true; }
-        }
+        public bool IsReadOnly => true;
 
         public bool Remove(Meeple item)
         {

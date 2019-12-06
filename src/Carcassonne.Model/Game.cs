@@ -1,13 +1,5 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel;
-using System.Windows;
-using System.Diagnostics;
-using Carcassonne.Model.Rules;
-using System.Collections.ObjectModel;
 using GameBase.Model;
 
 namespace Carcassonne.Model
@@ -26,15 +18,15 @@ namespace Carcassonne.Model
     /// </summary>
     public class Game
     {
-        protected Tile m_defaultStartTile = null;
-        private readonly ObservableList<IPointRegion> m_pointRegions =
+        protected Tile _defaultStartTile = null;
+        private readonly ObservableList<IPointRegion> _pointRegions =
                                     new ObservableList<IPointRegion>();
-        private readonly AbstractExpansionPack[] m_expansions;
+        private readonly AbstractExpansionPack[] _expansions;
         public static RuleSet RuleSet;
 
         public Game(params AbstractExpansionPack[] expansions)
         {
-            m_expansions = expansions;
+            _expansions = expansions;
             RuleSet = new RuleSet(expansions);
             Board = new CarcassonneGameBoard(RuleSet);
             Players = new ObservableList<Player>();
@@ -42,54 +34,48 @@ namespace Carcassonne.Model
         }
 
         public CarcassonneGameBoard Board { get; private set; }
-        public ObservableList<IPointRegion> PointRegions => m_pointRegions;
+        public ObservableList<IPointRegion> PointRegions => _pointRegions;
 
-        public readonly Deck m_deck = new Deck();
+        public readonly Deck Deck = new Deck();
 
-        private GameState m_state;
+        private GameState _state;
         public GameState State
         {
-            get => m_state;
-            private set
-            {
-                m_state = value;
-            }
+            get => _state;
+            private set => _state = value;
         }
 
         public event EventHandler<ChangedValueArgs<Tile>> ActiveTileChanged;
-        private Tile m_activeTile;
+        private Tile _activeTile;
         public Tile ActiveTile
         {
-            get => m_activeTile;
+            get => _activeTile;
             private set
             {
-                var old = m_activeTile;
-                m_activeTile = value;
-                ChangedValueArgs<Tile>.Trigger(ActiveTileChanged, this, old, value);
+                var old = _activeTile;
+                _activeTile = value;
+                ActiveTileChanged?.Invoke(this, new ChangedValueArgs<Tile>(old, value));
             }
         }
 
         public event EventHandler<ChangedValueArgs<Player>> ActivePlayerChanged;
-        private int m_activePlayerIndex = int.MaxValue;
-        public Player ActivePlayer
-        {
-            get { return m_activePlayerIndex < Players.Count ? Players[m_activePlayerIndex] : null; }
-        }
+        private int _activePlayerIndex = int.MaxValue;
+        public Player ActivePlayer => _activePlayerIndex < Players.Count ? Players[_activePlayerIndex] : null;
 
         public ObservableList<Player> Players { get; private set; }
 
-        private Player nextPlayer()
+        private Player NextPlayer()
         {
-            Player prev = ActivePlayer;
-            if (m_activePlayerIndex >= Players.Count - 1)
+            var old = ActivePlayer;
+            if (_activePlayerIndex >= Players.Count - 1)
             {
-                m_activePlayerIndex = 0;
+                _activePlayerIndex = 0;
             }
             else
             {
-                m_activePlayerIndex++;
+                _activePlayerIndex++;
             }
-            ChangedValueArgs<Player>.Trigger(ActivePlayerChanged, this, prev, ActivePlayer);
+            ActivePlayerChanged?.Invoke(this, new ChangedValueArgs<Player>(old, ActivePlayer));
             return ActivePlayer;
         }
 
@@ -112,9 +98,9 @@ namespace Carcassonne.Model
 
         private void end()
         {
-            foreach (var pr in m_pointRegions)
+            foreach (var pr in _pointRegions)
             {
-                int score = RuleSet.GetEndScore(pr);
+                var score = RuleSet.GetEndScore(pr);
                 if (score > 0)
                 {
                     foreach (var o in pr.Owners)
@@ -126,7 +112,7 @@ namespace Carcassonne.Model
             }
         }
 
-        private void score(List<IPointRegion> changed)
+        private void Score(IList<IPointRegion> changed)
         {
             State = GameState.Score;
             if (changed != null)
@@ -150,11 +136,11 @@ namespace Carcassonne.Model
             }
         }
 
-        private Tile draw()
+        private Tile Draw()
         {
-            if (m_deck.Count > 0)
+            if (Deck.Count > 0)
             {
-                var t = m_deck.Pop();
+                var t = Deck.Pop();
                 ActiveTile = t;
             }
             else
@@ -167,13 +153,13 @@ namespace Carcassonne.Model
         protected virtual void ResetGame()
         {
             Players.Clear();
-            m_deck.Clear();
-            populateDeck();
+            Deck.Clear();
+            PopulateDeck();
             Board.Clear();
             State = GameState.NotStarted;
         }
 
-        private void populateDeck()
+        private void PopulateDeck()
         {
             var builder = new Tile.TileBuilder();
             AddTile(1, builder.NewTile()
@@ -268,7 +254,7 @@ namespace Carcassonne.Model
                 .AddCityRegion(EdgeDirection.North)
                 .AddRoadRegion(EdgeDirection.East, EdgeDirection.West)
                 );
-            m_defaultStartTile = builder.Tile.TileClone();
+            _defaultStartTile = builder.Tile.TileClone();
             AddTile(4, builder.NewTile()
                 .AddCityRegion(EdgeDirection.North)
                 );
@@ -316,7 +302,7 @@ namespace Carcassonne.Model
             {
                 Shuffle();
                 var useDefaultStart = true;
-                foreach (var exp in m_expansions)
+                foreach (var exp in _expansions)
                 {
                     if (exp.IgnoreDefaultStart)
                     {
@@ -326,14 +312,14 @@ namespace Carcassonne.Model
                 }
                 if (useDefaultStart)
                 {
-                    place(m_defaultStartTile, new CarcassonneMove(0, 0, Rotation.None));
+                    place(_defaultStartTile, new CarcassonneMove(0, 0, Rotation.None));
                 }
                 do
                 {
-                    var player = nextPlayer();
+                    var player = NextPlayer();
                     if (player != null)
                     {
-                        if (draw() == null)
+                        if (Draw() == null)
                         {
                             break;
                         }
@@ -369,7 +355,7 @@ namespace Carcassonne.Model
                                     break;
                                 }
                             } while (claimed == null);
-                            score(changed);
+                            Score(changed);
                         }
                     }
                 } while (ActiveTile != null);
@@ -380,14 +366,14 @@ namespace Carcassonne.Model
 
         public void Shuffle()
         {
-            foreach (var e in m_expansions)
+            foreach (var e in _expansions)
             {
-                e.BeforeDeckShuffle(m_deck);
+                e.BeforeDeckShuffle(Deck);
             }
-            m_deck.Shuffle();
-            foreach (var e in m_expansions)
+            Deck.Shuffle();
+            foreach (var e in _expansions)
             {
-                e.AfterDeckShuffle(m_deck);
+                e.AfterDeckShuffle(Deck);
             }
         }
 
@@ -395,9 +381,9 @@ namespace Carcassonne.Model
         {
             for (int i = 1; i < count; i++)
             {
-                m_deck.Push(tile.TileClone());
+                Deck.Push(tile.TileClone());
             }
-            m_deck.Push(tile);
+            Deck.Push(tile);
         }
 
         private List<IPointRegion> place(CarcassonneMove move)
@@ -418,7 +404,7 @@ namespace Carcassonne.Model
             Board.Add(new Placement<Tile, CarcassonneMove>(tile, move));
             if (tile.TileRegion != null)
             {
-                m_pointRegions.Add(tile.TileRegion);
+                _pointRegions.Add(tile.TileRegion);
                 changedPointRegions.Add(tile.TileRegion);
             }
             var allNeighbors = Board.GetAllNeighbors(move.Location);
@@ -461,15 +447,15 @@ namespace Carcassonne.Model
                             var dup = regions[1];
                             regions[0].Merge(dup);
                             regions.Remove(dup);
-                            if (m_pointRegions.Contains(dup))
+                            if (_pointRegions.Contains(dup))
                             {
-                                m_pointRegions.Remove(dup);
+                                _pointRegions.Remove(dup);
                             }
                         }
                         regions[0].Add(r);
-                        if (!m_pointRegions.Contains(regions[0]))
+                        if (!_pointRegions.Contains(regions[0]))
                         {
-                            m_pointRegions.Add(regions[0]);
+                            _pointRegions.Add(regions[0]);
                         }
                         if (!changedPointRegions.Contains(regions[0]))
                         {
@@ -483,7 +469,7 @@ namespace Carcassonne.Model
                             case RegionType.City:
                                 var cpr = new CityPointRegion();
                                 cpr.Add(r);
-                                m_pointRegions.Add(cpr);
+                                _pointRegions.Add(cpr);
                                 if (!changedPointRegions.Contains(cpr))
                                 {
                                     changedPointRegions.Add(cpr);
@@ -496,7 +482,7 @@ namespace Carcassonne.Model
                             case RegionType.Road:
                                 var rpr = new PointRegion(r.Type);
                                 rpr.Add(r);
-                                m_pointRegions.Add(rpr);
+                                _pointRegions.Add(rpr);
                                 if (!changedPointRegions.Contains(rpr))
                                 {
                                     changedPointRegions.Add(rpr);

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Carcassonne.Model
+﻿namespace Carcassonne.Model
 {
     public enum EdgeDirection
     {
@@ -22,14 +17,14 @@ namespace Carcassonne.Model
 
         public static EdgeDirection Rotate(this EdgeDirection dir, Rotation rot)
         {
-            int newDir = dir.ToInt() - rot.ToInt();
+            var newDir = dir.ToInt() - rot.ToInt();
             if (newDir < 0) newDir += 4;
             return (EdgeDirection)newDir;
         }
 
         public static EdgeDirection Opposite(this EdgeDirection dir)
         {
-            int newDir = (dir.ToInt() + 2) % 4;
+            var newDir = (dir.ToInt() + 2) % 4;
             return (EdgeDirection)newDir;
         }
 

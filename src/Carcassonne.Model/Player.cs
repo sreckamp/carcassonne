@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.ComponentModel;
 using GameBase.Model;
 
 namespace Carcassonne.Model
@@ -24,26 +20,20 @@ namespace Carcassonne.Model
         public event EventHandler<ChangedValueArgs<int>> ScoreChanged;
         private int m_score;
         public int Score {
-            get { return m_score; }
+            get => m_score;
             internal set
             {
                 var old = m_score;
                 m_score = value;
-                ChangedValueArgs<int>.Trigger(ScoreChanged, this, old, value);
+                ScoreChanged?.Invoke(this, new ChangedValueArgs<int>(old, value));
             }
         }
 
-        public List<MeepleType> AvailableMeepleTypes
-        {
-            get
-            {
-                return Meeple.AvailableTypes;
-            }
-        }
+        public List<MeepleType> AvailableMeepleTypes => Meeple.AvailableTypes;
 
         public void CreateMeeple(int count, MeepleType type)
         {
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 Meeple.Push(new Meeple(type, this));
             }

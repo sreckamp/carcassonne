@@ -1,10 +1,5 @@
 ﻿using GameBase.Model;
 using GameBase.Model.Rules;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
 
 namespace Carcassonne.Model.Rules
 {

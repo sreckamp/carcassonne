@@ -1,20 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Carcassonne.Model;
 using System.Windows.Markup;
-using System.Diagnostics;
-using System.ComponentModel;
 
 namespace Carcassonne.WPF
 {
@@ -83,12 +73,12 @@ namespace Carcassonne.WPF
             InitializeComponent();
         }
 
-        private void setActiveElement(object sender, MouseEventArgs e)
+        private void SetActiveElement(object sender, MouseEventArgs e)
         {
 
         }
 
-        private void clearActiveElement(object sender, MouseEventArgs e)
+        private void ClearActiveElement(object sender, MouseEventArgs e)
         {
 
         }

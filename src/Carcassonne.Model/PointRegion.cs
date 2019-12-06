@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel;
 
 namespace Carcassonne.Model
@@ -31,7 +29,7 @@ namespace Carcassonne.Model
         public event EventHandler IsClosedChanged;
         public RegionType Type { get; private set; }
 
-        private void onIsClosedChange()
+        private void OnIsClosedChange()
         {
             NotifyPropertyChanged("IsClosed");
             IsClosedChanged?.Invoke(this, new EventArgs());
@@ -40,27 +38,28 @@ namespace Carcassonne.Model
         private bool m_isForcedOpened = false;
         public bool IsForcedOpened
         {
-            get { return m_isForcedOpened; }
+            get => m_isForcedOpened;
             set
             {
                 m_isForcedOpened = value;
-                onIsClosedChange();
+                OnIsClosedChange();
             }
         }
-        public bool IsClosed { get { return !IsForcedOpened && (OpenEdges == 0); } }
+        public bool IsClosed => !IsForcedOpened && (OpenEdges == 0);
         private int m_edges = 0;
         public int OpenEdges
         {
-            get { return m_edges; }
+            get => m_edges;
             set
             {
                 m_edges = value;
                 NotifyPropertyChanged("OpenEdges");
-                onIsClosedChange();
+                OnIsClosedChange();
             }
         }
 
-        public int TileCount { get { return m_tiles.Count; } }
+        public int TileCount => m_tiles.Count;
+
         public void ReturnMeeple()
         {
             var markers = new List<Player>();
@@ -83,13 +82,11 @@ namespace Carcassonne.Model
         }
 
         private readonly List<Player> m_owners = new List<Player>();
-        public List<Player> Owners
-        {
-            get { return m_owners; }
-        }
+        public List<Player> Owners => m_owners;
+
         public void Add(EdgeRegion r)
         {
-            bool updated = UpdateEdges(r);
+            var updated = UpdateEdges(r);
             if (updated)
             {
                 NotifyPropertyChanged("Score");
@@ -98,7 +95,7 @@ namespace Carcassonne.Model
 
         protected virtual bool UpdateEdges(EdgeRegion r)
         {
-            bool updated = false;
+            var updated = false;
             if (!m_regions.Contains(r))
             {
                 var openEdges = OpenEdges + r.Edges.Length;
@@ -122,7 +119,7 @@ namespace Carcassonne.Model
         public void UpdateOwners()
         {
             var claims = new Dictionary<Player, int>();
-            int high = 0;
+            var high = 0;
             foreach (var r in m_regions)
             {
                 if (r.Claimer != null)
@@ -172,7 +169,7 @@ namespace Carcassonne.Model
 
         public override string ToString()
         {
-            return string.Format("{0} {1}", GetType().Name, m_tiles.Count);
+            return $"{GetType().Name} {m_tiles.Count}";
         }
     }
 }
