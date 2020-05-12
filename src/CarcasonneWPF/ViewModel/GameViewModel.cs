@@ -47,16 +47,16 @@ namespace Carcassonne.WPF.ViewModel
             //}
         }
 
-        public MappingCollection<PlayerViewModel, Player> PlayerViewModels { get; private set; }
+        public MappingCollection<PlayerViewModel, Player> PlayerViewModels { get; }
 
         void game_ActivePlayerChanged(object sender, ChangedValueArgs<Player> e)
         {
             NotifyPropertyChanged("ActivePlayer");
         }
 
-        public DispatchedObservableList<PlacementViewModel> DeckViewModel { get; private set; }
-        public Game Game { get; private set; }
-        public GameBoardViewModel BoardViewModel { get; private set; }
+        public DispatchedObservableList<PlacementViewModel> DeckViewModel { get; }
+        public Game Game { get; }
+        public GameBoardViewModel BoardViewModel { get; }
 
         #region INotifyPropertyChanged Members
 
@@ -72,8 +72,7 @@ namespace Carcassonne.WPF.ViewModel
             else
             {
                 Debug.WriteLine("GameViewModel.PropChanged Invoke:" + name);
-                m_dispatcher.Invoke(new Action<string>((n) =>
-                { NotifyPropertyChanged(n); }), name);
+                m_dispatcher.Invoke(new Action<string>(NotifyPropertyChanged), name);
             }
         }
 

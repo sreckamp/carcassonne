@@ -83,16 +83,14 @@ namespace Carcassonne.WPF.ViewModel
 
         private void initializeGrid()
         {
-            if (m_board != null)
+            if (m_board == null) return;
+            Columns = m_board.MaxX - m_board.MinX + 3;
+            Rows = m_board.MaxY - m_board.MinY + 3;
+            StartColumn = m_board.MinX - 1;
+            StartRow = m_board.MinY - 1;
+            for (var x = StartColumn; x <= m_board.MaxX + 1; x++)
             {
-                Columns = m_board.MaxX - m_board.MinX + 3;
-                Rows = m_board.MaxY - m_board.MinY + 3;
-                StartColumn = m_board.MinX - 1;
-                StartRow = m_board.MinY - 1;
-                for (int x = StartColumn; x <= m_board.MaxX + 1; x++)
-                {
-                    addColumn(x);
-                }
+                addColumn(x);
             }
         }
 
@@ -236,6 +234,6 @@ namespace Carcassonne.WPF.ViewModel
             Move = move;
         }
 
-        public CarcassonneMove Move { get; private set; }
+        public CarcassonneMove Move { get; }
     }
 }

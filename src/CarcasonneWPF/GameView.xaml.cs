@@ -13,7 +13,7 @@ namespace Carcassonne.WPF
     /// <summary>
     /// Interaction logic for CarcasonneWindow.xaml
     /// </summary>
-    public partial class GameView : Window
+    public partial class GameView
     {
         public TileView ActiveTileView { get; private set; }
         //private readonly Game m_game = new Game();

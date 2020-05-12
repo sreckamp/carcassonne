@@ -17,7 +17,7 @@ namespace Carcassonne.Model
             AvailableLocations.Add(new Point(0, 0));
         }
 
-        protected override List<CarcassonneMove> GetOptions(Point point)
+        protected override IEnumerable<CarcassonneMove> GetOptions(Point point)
         {
             var moves = new List<CarcassonneMove>();
             foreach (Rotation rot in Enum.GetValues(typeof(Rotation)))
