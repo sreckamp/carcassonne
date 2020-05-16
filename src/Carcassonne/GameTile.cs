@@ -103,8 +103,6 @@ namespace Carcassonne
                         case TileRegionType.Flower:
                             m_renderers.Add(new FlowerRegionRenderer(canvas, Tile));
                             break;
-                        default:
-                            break;
                     }
                 }
             }
@@ -146,28 +144,28 @@ namespace Carcassonne
 
         private abstract class AbstractTileRenderer
         {
-            protected const float PATH_WIDTH = 0.25f;
-            protected const float SINGLE_PATH_WIDTH = 0.35f;
-            protected const float SINGLE_REGION_WIDTH = (1f-SINGLE_PATH_WIDTH)/4f;
+            protected const float PathWidth = 0.25f;
+            protected const float SinglePathWidth = 0.35f;
+            protected const float SingleRegionWidth = (1f-SinglePathWidth)/4f;
 
-            protected EdgeRegion m_region;
-            protected Dictionary<PointF[], Brush> m_shapes = new Dictionary<PointF[],Brush>();
-            protected Dictionary<RectangleF, Brush> m_ellipses = new Dictionary<RectangleF, Brush>();
+            protected EdgeRegion Region;
+            protected Dictionary<PointF[], Brush> Shapes = new Dictionary<PointF[],Brush>();
+            protected Dictionary<RectangleF, Brush> Ellipses = new Dictionary<RectangleF, Brush>();
 
             protected AbstractTileRenderer(RectangleF canvas, EdgeRegion region)
             {
-                m_region = region;
+                Region = region;
                 UpdateRegion(canvas);
             }
 
             public abstract void UpdateRegion(RectangleF canvas);
             public virtual void Draw(Graphics g)
             {
-                foreach (var kvp in m_shapes)
+                foreach (var kvp in Shapes)
                 {
                     g.FillPolygon(kvp.Value, kvp.Key);
                 }
-                foreach (var kvp in m_ellipses)
+                foreach (var kvp in Ellipses)
                 {
                     g.FillEllipse(kvp.Value, kvp.Key);
                 }
@@ -199,7 +197,7 @@ namespace Carcassonne
                                     rect.Height * canvas.Width, rect.Width * canvas.Height);
                         break;
                 }
-                m_ellipses.Add(scaled, new SolidBrush(color));
+                Ellipses.Add(scaled, new SolidBrush(color));
             }
 
             protected void AddRectangle(RectangleF canvas, Color color, RectangleF rect, Rotation rotation)
@@ -228,23 +226,23 @@ namespace Carcassonne
                                     rect.Height * canvas.Width, rect.Width * canvas.Height);
                         break;
                 }
-                var points = new PointF[]
+                var points = new[]
                 {
                         scaled.Location,
                         new PointF(scaled.Right, scaled.Top),
                         new PointF(scaled.Right, scaled.Bottom),
                         new PointF(scaled.Left, scaled.Bottom),
                 };
-                m_shapes.Add(points, new SolidBrush(color));
+                Shapes.Add(points, new SolidBrush(color));
             }
 
             protected void CreatePathRegion(RectangleF canvas, Color color)
             {
-                if (m_region.Edges.Length == 1)
+                if (Region.Edges.Length == 1)
                 {
                     var rot = Rotation.None;
 
-                    switch (m_region.Edges[0])
+                    switch (Region.Edges[0])
                     {
                         case EdgeDirection.North:
                             break;
@@ -258,18 +256,18 @@ namespace Carcassonne
                             rot = Rotation.CounterClockwise;
                             break;
                     }
-                    AddRectangle(canvas, color, new RectangleF((1 - PATH_WIDTH) / 2, 0, PATH_WIDTH, SINGLE_PATH_WIDTH), rot);
-                    AddRectangle(canvas, Color.Black, new RectangleF(SINGLE_PATH_WIDTH, SINGLE_PATH_WIDTH, 1 - 2 * SINGLE_PATH_WIDTH, 0.5f - SINGLE_PATH_WIDTH), rot);
+                    AddRectangle(canvas, color, new RectangleF((1 - PathWidth) / 2, 0, PathWidth, SinglePathWidth), rot);
+                    AddRectangle(canvas, Color.Black, new RectangleF(SinglePathWidth, SinglePathWidth, 1 - 2 * SinglePathWidth, 0.5f - SinglePathWidth), rot);
                 }
                 else
                 {
-                    var lowX = (1 - PATH_WIDTH) / 2 * canvas.Width + canvas.X;
-                    var highX = (1 + PATH_WIDTH) / 2 * canvas.Width + canvas.X;
-                    var lowY = (1 - PATH_WIDTH) / 2 * canvas.Height + canvas.Y;
-                    var highY = (1 + PATH_WIDTH) / 2 * canvas.Height + canvas.Y;
+                    var lowX = (1 - PathWidth) / 2 * canvas.Width + canvas.X;
+                    var highX = (1 + PathWidth) / 2 * canvas.Width + canvas.X;
+                    var lowY = (1 - PathWidth) / 2 * canvas.Height + canvas.Y;
+                    var highY = (1 + PathWidth) / 2 * canvas.Height + canvas.Y;
 
                     var pts = new List<PointF>();
-                    foreach (var e in m_region.Edges)
+                    foreach (var e in Region.Edges)
                     {
                         switch (e)
                         {
@@ -292,7 +290,7 @@ namespace Carcassonne
                         }
                     }
                     var points = pts.ToArray();
-                    m_shapes.Add(points, new SolidBrush(color));
+                    Shapes.Add(points, new SolidBrush(color));
                 }
             }
 
@@ -303,9 +301,9 @@ namespace Carcassonne
                 var tr = new PointF(canvas.Right, canvas.Top);
                 var bl = new PointF(canvas.Left, canvas.Bottom);
                 var br = new PointF(canvas.Right, canvas.Bottom);
-                if (m_region.Edges.Length == 1)
+                if (Region.Edges.Length == 1)
                 {
-                    switch (m_region.Edges[0])
+                    switch (Region.Edges[0])
                     {
                         case EdgeDirection.North:
                             pts.Add(tl);
@@ -329,7 +327,7 @@ namespace Carcassonne
                 {
                     PointF? firstPt = null;
                     PointF? lastPt = null;
-                    foreach (var e in m_region.Edges)
+                    foreach (var e in Region.Edges)
                     {
                         var pt1 = new PointF();
                         var pt2 = new PointF();
@@ -363,7 +361,7 @@ namespace Carcassonne
                     }
                 }
                 var points = pts.ToArray();
-                m_shapes.Add(points, new SolidBrush(color));
+                Shapes.Add(points, new SolidBrush(color));
             }
 
             private void InsertExtraPoint(List<PointF> points, PointF? lastNullable, PointF next, RectangleF canvas)
@@ -384,16 +382,16 @@ namespace Carcassonne
                                 float x;
                                 if (last.X < next.X)
                                 {
-                                    x = last.X + 0.1f * canvas.Width * (float)i;
+                                    x = last.X + 0.1f * canvas.Width * i;
                                 }
                                 else
                                 {
-                                    x = last.X - 0.1f * canvas.Width * (float)i;
+                                    x = last.X - 0.1f * canvas.Width * i;
                                 }
                                 var y = GetCirclePoint(x, canvas);
                                 if (next.Y > canvas.Y)
                                 {
-                                    y = (canvas.Bottom - y);
+                                    y = canvas.Bottom - y;
                                 }
                                 points.Add(new PointF(x, y));
                             }
@@ -409,16 +407,16 @@ namespace Carcassonne
                                 float y;
                                 if (last.Y < next.Y)
                                 {
-                                    y = last.Y + 0.1f * canvas.Height * (float)i;
+                                    y = last.Y + 0.1f * canvas.Height * i;
                                 }
                                 else
                                 {
-                                    y = last.Y - 0.1f * canvas.Height * (float)i;
+                                    y = last.Y - 0.1f * canvas.Height * i;
                                 }
                                 var x = GetCirclePoint(y, canvas);
                                 if (next.X > canvas.X)
                                 {
-                                    x = (canvas.Right - x);
+                                    x = canvas.Right - x;
                                 }
                                 points.Add(new PointF(x, y));
                             }
@@ -432,7 +430,7 @@ namespace Carcassonne
             private static float GetCirclePoint(float x, RectangleF canvas)
             {
                 var h = canvas.Width / 2 + canvas.X;
-                var d = SINGLE_REGION_WIDTH * canvas.Height + canvas.Y;
+                var d = SingleRegionWidth * canvas.Height + canvas.Y;
                 var k = (float)(Math.Pow(d, 2) - Math.Pow(h, 2)) / (2 * d);
                 var r = d - k;
                 var y = (float)Math.Sqrt(r * r - (float)Math.Pow(x - h,2)) + k;
@@ -469,7 +467,7 @@ namespace Carcassonne
             public override void UpdateRegion(RectangleF canvas)
             {
                 CreatePathRegion(canvas, Color.Blue);
-                if (m_region.Edges.Length == 1)
+                if (Region.Edges.Length == 1)
                 {
                     AddEllipse(canvas, Color.Blue, new RectangleF(0.25f, 0.25f, 0.5f, 0.5f), Rotation.None);
                 }
@@ -478,19 +476,19 @@ namespace Carcassonne
 
         private class CityRegionRenderer : AbstractTileRenderer
         {
-            private readonly PointF SHIELD_POS = new PointF(0.125f, 0.125f);
-            private readonly SizeF SHIELD_SIZE = new SizeF(0.1f,0.175f);
+            private readonly PointF m_shieldPos = new PointF(0.125f, 0.125f);
+            private readonly SizeF m_shieldSize = new SizeF(0.1f,0.175f);
             public CityRegionRenderer(RectangleF canvas, CityEdgeRegion region)
                 : base(canvas, region)
             {
             }
 
-            private CityEdgeRegion _typedRegion => m_region as CityEdgeRegion;
+            private CityEdgeRegion TypedRegion => Region as CityEdgeRegion;
 
             public override void UpdateRegion(RectangleF region)
             {
-                base.CreateSolidRegion(region, Color.SaddleBrown);
-                if (_typedRegion.HasShield)
+                CreateSolidRegion(region, Color.SaddleBrown);
+                if (TypedRegion.HasShield)
                 {
 //                    AddRectangle(region, Color.DarkBlue, new RectangleF(SHIELD_POS, SHIELD_SIZE),
 //                        m_region.Parent.Rotation);
@@ -532,9 +530,9 @@ namespace Carcassonne
 
         private class FlowerRegionRenderer : AbstractTileRenderer
         {
-            private const float FLOWER_OFFSET_SINGLE = 0.05f;
-            private const float FLOWER_OFFSET_DUAL = 0.175f;
-            private const float FLOWER_SIZE = 0.15f;
+            private const float FlowerOffsetSingle = 0.05f;
+            private const float FlowerOffsetDual = 0.175f;
+            private const float FlowerSize = 0.15f;
             private readonly Tile m_parent;
 
             public FlowerRegionRenderer(RectangleF canvas, Tile parent)
@@ -563,16 +561,16 @@ namespace Carcassonne
                         switch (grass[0])
                         {
                             case EdgeDirection.North:
-                                y = FLOWER_OFFSET_SINGLE;
+                                y = FlowerOffsetSingle;
                                 break;
                             case EdgeDirection.East:
-                                x = (1 - FLOWER_OFFSET_SINGLE - FLOWER_SIZE);
+                                x = 1 - FlowerOffsetSingle - FlowerSize;
                                 break;
                             case EdgeDirection.South:
-                                y = (1 - FLOWER_OFFSET_SINGLE - FLOWER_SIZE);
+                                y = 1 - FlowerOffsetSingle - FlowerSize;
                                 break;
                             case EdgeDirection.West:
-                                x = FLOWER_OFFSET_SINGLE;
+                                x = FlowerOffsetSingle;
                                 break;
                         }
                     }
@@ -582,34 +580,34 @@ namespace Carcassonne
                         var max = (EdgeDirection)Math.Max((int)grass[0], (int)grass[1]);
                         if (min == EdgeDirection.North && max == EdgeDirection.East)
                         {
-                            x = (1 - FLOWER_SIZE - FLOWER_OFFSET_DUAL);
-                            y = FLOWER_OFFSET_DUAL;
+                            x = 1 - FlowerSize - FlowerOffsetDual;
+                            y = FlowerOffsetDual;
                         }
                         else if (min == EdgeDirection.North && max == EdgeDirection.West)
                         {
-                            x = y = FLOWER_OFFSET_DUAL;
+                            x = y = FlowerOffsetDual;
                         }
                         else if (min == EdgeDirection.East && max == EdgeDirection.South)
                         {
-                            x = y = (1 - FLOWER_SIZE - FLOWER_OFFSET_DUAL);
+                            x = y = 1 - FlowerSize - FlowerOffsetDual;
                         }
                         else if (min == EdgeDirection.South && max == EdgeDirection.West)
                         {
-                            x = FLOWER_OFFSET_DUAL;
-                            y = (1 - FLOWER_SIZE - FLOWER_OFFSET_DUAL);
+                            x = FlowerOffsetDual;
+                            y = 1 - FlowerSize - FlowerOffsetDual;
                         }
                         else if (min == EdgeDirection.North && max == EdgeDirection.South
                             && m_parent.GetRegion(EdgeDirection.West).Edges.Length == 2)
                         {
-                            y = FLOWER_OFFSET_SINGLE;
+                            y = FlowerOffsetSingle;
                         }
                         else if (min == EdgeDirection.East && max == EdgeDirection.West
                             && m_parent.GetRegion(EdgeDirection.North).Edges.Length == 2)
                         {
-                            x = FLOWER_OFFSET_SINGLE;
+                            x = FlowerOffsetSingle;
                         }
                     }
-                    AddRectangle(canvas, Color.Yellow, new RectangleF(x, y, FLOWER_SIZE, FLOWER_SIZE),
+                    AddRectangle(canvas, Color.Yellow, new RectangleF(x, y, FlowerSize, FlowerSize),
                             Rotation.None);
                 }
             }

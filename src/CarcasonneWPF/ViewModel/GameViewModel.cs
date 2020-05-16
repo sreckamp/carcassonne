@@ -1,9 +1,10 @@
 ﻿using System;
-using Carcassonne.Model;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
-using System.Diagnostics;
+using Carcassonne.Model;
 using GameBase.Model;
 using GameBase.WPF.ViewModel;
 
@@ -16,7 +17,7 @@ namespace Carcassonne.WPF.ViewModel
 
         public GameViewModel(params AbstractExpansionPack[] expansions)
         {
-            m_dispatcher = System.Windows.Application.Current.Dispatcher;
+            m_dispatcher = Application.Current.Dispatcher;
             PropertyChanged += (sender, args) => { };
             Game = new Game(expansions);
             BoardViewModel = new GameBoardViewModel(Game.Board);

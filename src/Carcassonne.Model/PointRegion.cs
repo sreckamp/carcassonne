@@ -49,7 +49,7 @@ namespace Carcassonne.Model
                 OnIsClosedChange();
             }
         }
-        public bool IsClosed => !IsForcedOpened && (OpenEdges == 0);
+        public bool IsClosed => !IsForcedOpened && OpenEdges == 0;
 
         private int m_edges;
         public int OpenEdges

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
 using Carcassonne.Model;
-using System.ComponentModel;
-using System.Collections.Specialized;
 using Carcassonne.Model.Expansions;
 using Carcassonne.WPF.ViewModel;
 

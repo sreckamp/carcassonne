@@ -1,6 +1,6 @@
-﻿using GameBase.Model;
-using System;
+﻿using System;
 using System.Drawing;
+using GameBase.Model;
 
 namespace Carcassonne.Model
 {
@@ -16,7 +16,6 @@ namespace Carcassonne.Model
         public CarcassonneMove(Point location, Rotation rotation)
             : base(location)
         {
-            Location = location;
             Rotation = rotation;
         }
 
@@ -24,7 +23,7 @@ namespace Carcassonne.Model
 
         public override bool Equals(object other)
         {
-            return Equals(other as CarcassonneMove ?? CarcassonneMove.None);
+            return Equals(other as CarcassonneMove ?? None);
         }
 
         public override int GetHashCode()

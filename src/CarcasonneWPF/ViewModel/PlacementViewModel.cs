@@ -1,13 +1,13 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
+using System.Windows;
+using System.Windows.Media;
 using Carcassonne.Model;
+using GameBase.Model;
+using GameBase.WPF.ViewModel;
 using MBrush = System.Windows.Media.Brush;
-using System.Diagnostics;
 using DPoint = System.Drawing.Point;
 //using System.Drawing;
-using System.Windows.Media;
-using System.Windows;
-using GameBase.WPF.ViewModel;
-using GameBase.Model;
 
 namespace Carcassonne.WPF.ViewModel
 {
@@ -49,13 +49,14 @@ namespace Carcassonne.WPF.ViewModel
             get
             {
                 if (this is PointViewModel)
-                    Debug.WriteLine($"PointViewModel");
+                    Debug.WriteLine("PointViewModel");
                 if (BoardViewModel?.IsBackground(this) ?? true)
                 {
                     Debug.WriteLine($"{Name} Depth:150");
                     return 99;
                 }
-                else if (BoardViewModel?.IsForeground(this) ?? true)
+
+                if (BoardViewModel?.IsForeground(this) ?? true)
                 {
                     Debug.WriteLine($"{Name} Depth:100");
                     return 50;
@@ -263,22 +264,22 @@ namespace Carcassonne.WPF.ViewModel
             }
 
             public Visibility FullVisibility =>
-                (m_edge != null || m_tile != null) ? Visibility.Visible : Visibility.Hidden;
+                m_edge != null || m_tile != null ? Visibility.Visible : Visibility.Hidden;
 
             public Visibility CityVisibility =>
-                (m_edge.Type == RegionType.City) ? Visibility.Visible : Visibility.Hidden;
+                m_edge.Type == RegionType.City ? Visibility.Visible : Visibility.Hidden;
 
             public Visibility PathVisibility =>
-                (m_edge.Type.IsPath()) ? Visibility.Visible : Visibility.Hidden;
+                m_edge.Type.IsPath() ? Visibility.Visible : Visibility.Hidden;
 
             public Visibility RoadVisibility =>
-                (m_edge.Type == RegionType.Road) ? Visibility.Visible : Visibility.Hidden;
+                m_edge.Type == RegionType.Road ? Visibility.Visible : Visibility.Hidden;
 
             public Visibility RoadEndVisibility =>
-                (m_edge.Type == RegionType.Road) ? Visibility.Visible : Visibility.Hidden;
+                m_edge.Type == RegionType.Road ? Visibility.Visible : Visibility.Hidden;
 
             public Visibility RiverEndVisibility =>
-                (m_edge.Type == RegionType.River) ? Visibility.Visible : Visibility.Hidden;
+                m_edge.Type == RegionType.River ? Visibility.Visible : Visibility.Hidden;
 
             public Visibility ShieldVisibility =>
                 m_edge is CityEdgeRegion cer && cer.HasShield ? Visibility.Visible : Visibility.Hidden;

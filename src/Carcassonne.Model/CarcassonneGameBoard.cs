@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using GameBase.Model;
-using GameBase.Model.Rules;
 using System.Drawing;
 using System.Linq;
+using GameBase.Model;
+using GameBase.Model.Rules;
 
 namespace Carcassonne.Model
 {
     public class CarcassonneGameBoard : GameBoard<Tile, CarcassonneMove>
     {
-        public CarcassonneGameBoard(IPlaceRule<Tile, CarcassonneMove> placeRule) : base(placeRule)
+        public CarcassonneGameBoard(IPlaceRule<Tile, CarcassonneMove> placeRule) : base(placeRule, Tile.None)
         { }
-
-        protected override Tile GetEmptyPiece() => Tile.None;
 
         public override void Clear()
         {
@@ -60,6 +58,8 @@ namespace Carcassonne.Model
                 case EdgeDirection.East:
                     xOffset = 1;
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
             }
             return base[point.X + xOffset, point.Y + yOffset];
         }
@@ -71,8 +71,8 @@ namespace Carcassonne.Model
             {
                 for (var y = -1; y <= 1; y++)
                 {
-                    var px = (int)point.X + x;
-                    var py = (int)point.Y + y;
+                    var px = point.X + x;
+                    var py = point.Y + y;
                     if (x == 0 && y == 0) continue;
                     var tmp = this[px, py];
                     if (tmp != Tile.None)

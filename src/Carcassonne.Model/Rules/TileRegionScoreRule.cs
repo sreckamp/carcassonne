@@ -19,7 +19,7 @@
         private bool Applies(IPointRegion region, out TileRegion tr)
         {
             tr = region as TileRegion;
-            return (tr?.Type == m_type);
+            return tr?.Type == m_type;
         }
 
         public int GetScore(IPointRegion region)

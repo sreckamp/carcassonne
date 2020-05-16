@@ -12,7 +12,7 @@
 
         public bool IsAvailable(IClaimable region, MeepleType type)
         {
-            return (Applies(region, type) && (((EdgeRegion)region).Container?.Owners.Count ?? 0) == 0);
+            return Applies(region, type) && (((EdgeRegion)region).Container?.Owners.Count ?? 0) == 0;
         }
 
         #endregion

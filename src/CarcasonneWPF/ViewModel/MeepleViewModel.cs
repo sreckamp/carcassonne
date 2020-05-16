@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
-using Carcassonne.Model;
-using System.Windows.Threading;
-using System.Windows.Media;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Threading;
+using Carcassonne.Model;
 
 namespace Carcassonne.WPF.ViewModel
 {
@@ -58,7 +58,7 @@ namespace Carcassonne.WPF.ViewModel
             }
             else
             {
-                Dispatcher.Invoke(new Action<string>((n) =>
+                Dispatcher.Invoke(new Action<string>(n =>
                 { NotifyPropertyChanged(n); }), name);
             }
         }

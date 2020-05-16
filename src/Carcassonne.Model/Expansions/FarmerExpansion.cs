@@ -5,6 +5,5 @@
     /// </summary>
     public class FarmerExpansion:AbstractExpansionPack
     {
-        public FarmerExpansion() { }
     }
 }

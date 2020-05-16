@@ -1,6 +1,6 @@
-﻿using GameBase.Model;
+﻿using System;
+using GameBase.Model;
 using GameBase.Model.Rules;
-using System;
 
 namespace Carcassonne.Model.Rules
 {
@@ -8,12 +8,12 @@ namespace Carcassonne.Model.Rules
     {
         #region IPlaceRule Members
 
-        public virtual bool Applies(IGameBoard<Tile, CarcassonneMove> board, Tile tile, CarcassonneMove move)
+        public virtual bool Applies(IGameBoard<Tile> board, Tile tile, CarcassonneMove move)
         {
             return true;
         }
 
-        public virtual bool Fits(IGameBoard<Tile, CarcassonneMove> board, Tile tile, CarcassonneMove move)
+        public virtual bool Fits(IGameBoard<Tile> board, Tile tile, CarcassonneMove move)
         {
             var hasNeighbor = false;
             if(!(board is CarcassonneGameBoard b)) return false;

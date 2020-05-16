@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
-using Carcassonne.Model;
 using System.Windows.Media;
+using Carcassonne.Model;
 using GameBase.Model;
 
 namespace Carcassonne.WPF.ViewModel
@@ -18,7 +18,7 @@ namespace Carcassonne.WPF.ViewModel
         //private readonly MouseButtonEventHandler m_claimRightButtonUpHandler;
         //private readonly TileEnterHandler m_tileEnterHandler;
         //private PlacementViewModel m_activeTile;
-        private CarcassonneMove m_move = null;
+        private CarcassonneMove m_move;
         //private Point? m_overPoint = null;
         private IClaimable m_activeClaim = null;
         //private bool m_rightPressed = false;

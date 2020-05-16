@@ -1,6 +1,4 @@
-﻿using System.Windows.Controls;
-
-namespace Carcassonne.WPF
+﻿namespace Carcassonne.WPF
 {
     /// <summary>
     /// Interaction logic for SimpleMeepleControl.xaml

@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Carcassonne.Model.Rules;
-using GameBase.Model.Rules;
 using GameBase.Model;
+using GameBase.Model.Rules;
 
 namespace Carcassonne.Model
 {
@@ -35,21 +36,14 @@ namespace Carcassonne.Model
 
         #region IPlaceRule Members
 
-        public bool Applies(IGameBoard<Tile, CarcassonneMove> board, Tile tile, CarcassonneMove move)
+        public bool Applies(IGameBoard<Tile> board, Tile tile, CarcassonneMove move)
         {
             return true;
         }
 
-        public bool Fits(IGameBoard<Tile, CarcassonneMove> board, Tile tile, CarcassonneMove move)
+        public bool Fits(IGameBoard<Tile> board, Tile tile, CarcassonneMove move)
         {
-            foreach (var r in m_placeRules)
-            {
-                if (r.Applies(board, tile, move))
-                {
-                    return r.Fits(board, tile, move);
-                }
-            }
-            return false;
+            return (m_placeRules.Where(r => r.Applies(board, tile, move)).Select(r => r.Fits(board, tile, move))).FirstOrDefault();
         }
 
         #endregion

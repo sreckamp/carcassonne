@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel;
+using System.Text;
 
 namespace Carcassonne.Model
 {
@@ -71,7 +71,7 @@ namespace Carcassonne.Model
             Claimer = meeple;
         }
 
-        public bool IsClosed => (Container?.IsClosed ?? false);
+        public bool IsClosed => Container?.IsClosed ?? false;
 
         private PointRegion m_container = PointRegion.None;
         public PointRegion Container

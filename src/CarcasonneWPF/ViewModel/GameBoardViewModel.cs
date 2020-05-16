@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Carcassonne.Model;
-using GameBase.Model;
 using System.Drawing;
 using System.Linq;
-using GameBase.WPF.ViewModel;
 using System.Windows.Input;
+using Carcassonne.Model;
 using GalaSoft.MvvmLight.CommandWpf;
+using GameBase.Model;
 using GameBase.WPF;
+using GameBase.WPF.ViewModel;
 
 namespace Carcassonne.WPF.ViewModel
 {
@@ -41,7 +41,7 @@ namespace Carcassonne.WPF.ViewModel
         public DispatchedObservableList<Point> AvailablePositions { get; }
 
         public event EventHandler<ChangedValueArgs<int>> StartColumnChanged;
-        private int m_startColumn = 0;
+        private int m_startColumn;
         public int StartColumn
         {
             get => m_startColumn;
@@ -54,7 +54,7 @@ namespace Carcassonne.WPF.ViewModel
         }
 
         public event EventHandler<ChangedValueArgs<int>> StartRowChanged;
-        private int m_startRow = 0;
+        private int m_startRow;
         public int StartRow
         {
             get => m_startRow;
@@ -67,7 +67,7 @@ namespace Carcassonne.WPF.ViewModel
         }
 
         public event EventHandler<ChangedValueArgs<int>> ColumnsChanged;
-        private int m_columns = 0;
+        private int m_columns;
         public int Columns
         {
             get => m_columns;
@@ -81,7 +81,7 @@ namespace Carcassonne.WPF.ViewModel
         }
 
         public event EventHandler<ChangedValueArgs<int>> RowsChanged;
-        private int m_rows = 0;
+        private int m_rows;
         public int Rows
         {
             get => m_rows;

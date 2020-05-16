@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using Carcassonne.Model;
 using System.Windows.Markup;
+using Carcassonne.Model;
 
 namespace Carcassonne.WPF
 {
@@ -210,14 +211,14 @@ namespace Carcassonne.WPF
     {
         #region IValueConverter Members
 
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (value is TileRegion tr && parameter is TileRegionType type && tr.Type == type)
+            return value is TileRegion tr && parameter is TileRegionType type && tr.Type == type
                 ? value
                 : DependencyProperty.UnsetValue;
         }
 
-        public object ConvertBack(object value, Type targetTypes, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object value, Type targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

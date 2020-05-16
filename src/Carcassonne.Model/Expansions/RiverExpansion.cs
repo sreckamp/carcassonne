@@ -1,4 +1,5 @@
-﻿using Carcassonne.Model.Rules;
+﻿using System.Linq;
+using Carcassonne.Model.Rules;
 using GameBase.Model;
 
 namespace Carcassonne.Model.Expansions
@@ -12,6 +13,11 @@ namespace Carcassonne.Model.Expansions
         public RiverExpansion()
         {
             WritablePlaceRules.Add(new RiverFitRule());
+            var builder = new Tile.TileBuilder();
+            m_source = builder.NewTile()
+                .AddRiverRegion(EdgeDirection.South);
+            m_sink = builder.NewTile()
+                .AddRiverRegion(EdgeDirection.North);
         }
 
         public override bool IgnoreDefaultStart => true;
@@ -59,10 +65,6 @@ namespace Carcassonne.Model.Expansions
                 .AddRiverRegion(EdgeDirection.North, EdgeDirection.South)
                 );
             m_riverDeck.Push(builder.Tile.TileClone());
-            m_source = builder.NewTile()
-                .AddRiverRegion(EdgeDirection.South);
-            m_sink = builder.NewTile()
-                .AddRiverRegion(EdgeDirection.North);
 
             m_riverDeck.Shuffle();
             deck.Push(m_sink);
@@ -75,35 +77,21 @@ namespace Carcassonne.Model.Expansions
 
         private class RiverFitRule : DefaultPlaceRule
         {
-            public override bool Applies(IGameBoard<Tile, CarcassonneMove> board, Tile tile, CarcassonneMove move)
+            public override bool Applies(IGameBoard<Tile> board, Tile tile, CarcassonneMove move)
             {
                 var riverRegions = tile.GetAvailableRegions(RegionType.River);
                 return riverRegions.Count > 0;
             }
 
-            protected override bool RegionsMatch(EdgeRegion myRegion, EdgeRegion thierRegion)
+            protected override bool RegionsMatch(EdgeRegion myRegion, EdgeRegion theirRegion)
             {
                 // Must map a River region
-                if (myRegion?.Type == RegionType.River && thierRegion?.Type == RegionType.River)
-                {
-                    // Cannot have 2 turns in the same direction
-                    if ((myRegion.Edges.Length == 2 && myRegion.Edges[0].Opposite() != myRegion.Edges[1])
-                        && (thierRegion.Edges.Length == 2 && thierRegion.Edges[0].Opposite() != thierRegion.Edges[1]))
-                    {
-                        for (var j = 0; j < myRegion.Edges.Length; j++)
-                        {
-                            for (var k = 0; k < thierRegion.Edges.Length; k++)
-                            {
-                                if (myRegion.Edges[j] == thierRegion.Edges[k])
-                                {
-                                    return false;
-                                }
-                            }
-                        }
-                    }
-                    return true;
-                }
-                return false;
+                if (myRegion.Type != RegionType.River || theirRegion.Type != RegionType.River) return false;
+                // Cannot have 2 turns in the same direction
+                if (myRegion.Edges.Length != 2 || myRegion.Edges[0].Opposite() == myRegion.Edges[1] ||
+                    theirRegion.Edges.Length != 2 ||
+                    theirRegion.Edges[0].Opposite() == theirRegion.Edges[1]) return true;
+                return myRegion.Edges.All(t => theirRegion.Edges.All(t1 => t != t1));
             }
         }
     }

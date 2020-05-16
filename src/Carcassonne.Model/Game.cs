@@ -19,7 +19,7 @@ namespace Carcassonne.Model
     /// </summary>
     public class Game
     {
-        private Tile DefaultStartTile = Tile.None;
+        private Tile m_defaultStartTile = Tile.None;
         private readonly AbstractExpansionPack[] m_expansions;
         public static RuleSet RuleSet;
 
@@ -237,7 +237,7 @@ namespace Carcassonne.Model
                 .AddCityRegion(EdgeDirection.North)
                 .AddRoadRegion(EdgeDirection.East, EdgeDirection.West)
                 );
-            DefaultStartTile = builder.Tile.TileClone();
+            m_defaultStartTile = builder.Tile.TileClone();
             AddTile(4, builder.NewTile()
                 .AddCityRegion(EdgeDirection.North)
                 );
@@ -286,7 +286,7 @@ namespace Carcassonne.Model
             var useDefaultStart = m_expansions.All(exp => !exp.IgnoreDefaultStart);
             if (useDefaultStart)
             {
-                Place(DefaultStartTile, new CarcassonneMove(0, 0, Rotation.None));
+                Place(m_defaultStartTile, new CarcassonneMove(0, 0, Rotation.None));
             }
             do
             {

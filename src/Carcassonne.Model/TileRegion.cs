@@ -76,7 +76,7 @@ namespace Carcassonne.Model
 
         public bool IsForcedOpened { get; set; } = false;
 
-        public bool IsClosed => !IsForcedOpened && (Score == 9);
+        public bool IsClosed => !IsForcedOpened && Score == 9;
         public int Score => m_tiles.Count;
 
         public void ReturnMeeple()

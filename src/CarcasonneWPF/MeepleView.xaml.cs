@@ -1,7 +1,7 @@
-﻿using System.Windows;
-using System.Windows.Media;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
+using System.Windows;
+using System.Windows.Media;
 using Carcassonne.WPF.ViewModel;
 
 namespace Carcassonne.WPF

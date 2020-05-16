@@ -6,7 +6,7 @@ using GameBase.Model;
 
 namespace Carcassonne.Model
 {
-    public class Tile : Piece
+    public class Tile : IPiece
     {
         public static readonly Tile None = new Tile();
 
@@ -88,10 +88,10 @@ namespace Carcassonne.Model
 
         public Tile TileClone()
         {
-            return Clone() as Tile ?? Tile.None;
+            return Clone() as Tile ?? None;
         }
 
-        public override Piece Clone()
+        public IPiece Clone()
         {
             var tile = new Tile
             {

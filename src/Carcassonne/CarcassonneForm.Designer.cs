@@ -1,11 +1,14 @@
-﻿namespace Carcassonne
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Carcassonne
 {
     partial class CarcassonneForm
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -45,21 +48,21 @@
             // 
             // lstTiles
             // 
-            this.lstTiles.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lstTiles.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.lstTiles.FormattingEnabled = true;
-            this.lstTiles.ItemHeight = 16;
-            this.lstTiles.Location = new System.Drawing.Point(310, 14);
+            this.lstTiles.Location = new System.Drawing.Point(232, 11);
+            this.lstTiles.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.lstTiles.Name = "lstTiles";
-            this.lstTiles.Size = new System.Drawing.Size(476, 228);
+            this.lstTiles.Size = new System.Drawing.Size(358, 186);
             this.lstTiles.TabIndex = 0;
             this.lstTiles.SelectedIndexChanged += new System.EventHandler(this.lstTiles_SelectedIndexChanged);
             // 
             // btnCCW
             // 
-            this.btnCCW.Location = new System.Drawing.Point(84, 205);
+            this.btnCCW.Location = new System.Drawing.Point(63, 167);
+            this.btnCCW.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnCCW.Name = "btnCCW";
-            this.btnCCW.Size = new System.Drawing.Size(41, 23);
+            this.btnCCW.Size = new System.Drawing.Size(31, 19);
             this.btnCCW.TabIndex = 1;
             this.btnCCW.Text = "<<";
             this.btnCCW.UseVisualStyleBackColor = true;
@@ -67,9 +70,10 @@
             // 
             // btnCW
             // 
-            this.btnCW.Location = new System.Drawing.Point(194, 205);
+            this.btnCW.Location = new System.Drawing.Point(146, 167);
+            this.btnCW.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnCW.Name = "btnCW";
-            this.btnCW.Size = new System.Drawing.Size(40, 23);
+            this.btnCW.Size = new System.Drawing.Size(30, 19);
             this.btnCW.TabIndex = 2;
             this.btnCW.Text = ">>";
             this.btnCW.UseVisualStyleBackColor = true;
@@ -78,84 +82,91 @@
             // pnlTile
             // 
             this.pnlTile.BackColor = System.Drawing.Color.Transparent;
-            this.pnlTile.Location = new System.Drawing.Point(84, 32);
+            this.pnlTile.Location = new System.Drawing.Point(63, 26);
+            this.pnlTile.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pnlTile.Name = "pnlTile";
-            this.pnlTile.Size = new System.Drawing.Size(150, 150);
+            this.pnlTile.Size = new System.Drawing.Size(112, 122);
             this.pnlTile.TabIndex = 3;
             // 
             // lblWest
             // 
             this.lblWest.AutoSize = true;
-            this.lblWest.Location = new System.Drawing.Point(24, 96);
+            this.lblWest.Location = new System.Drawing.Point(18, 78);
+            this.lblWest.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblWest.Name = "lblWest";
-            this.lblWest.Size = new System.Drawing.Size(54, 17);
+            this.lblWest.Size = new System.Drawing.Size(42, 13);
             this.lblWest.TabIndex = 4;
             this.lblWest.Text = "lblWest";
             // 
             // lblNorth
             // 
             this.lblNorth.AutoSize = true;
-            this.lblNorth.Location = new System.Drawing.Point(131, 12);
+            this.lblNorth.Location = new System.Drawing.Point(98, 10);
+            this.lblNorth.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblNorth.Name = "lblNorth";
-            this.lblNorth.Size = new System.Drawing.Size(57, 17);
+            this.lblNorth.Size = new System.Drawing.Size(43, 13);
             this.lblNorth.TabIndex = 5;
             this.lblNorth.Text = "lblNorth";
             // 
             // lblEast
             // 
             this.lblEast.AutoSize = true;
-            this.lblEast.Location = new System.Drawing.Point(240, 96);
+            this.lblEast.Location = new System.Drawing.Point(180, 78);
+            this.lblEast.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblEast.Name = "lblEast";
-            this.lblEast.Size = new System.Drawing.Size(50, 17);
+            this.lblEast.Size = new System.Drawing.Size(38, 13);
             this.lblEast.TabIndex = 6;
             this.lblEast.Text = "lblEast";
             // 
             // lblSouth
             // 
             this.lblSouth.AutoSize = true;
-            this.lblSouth.Location = new System.Drawing.Point(129, 185);
+            this.lblSouth.Location = new System.Drawing.Point(97, 150);
+            this.lblSouth.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblSouth.Name = "lblSouth";
-            this.lblSouth.Size = new System.Drawing.Size(59, 17);
+            this.lblSouth.Size = new System.Drawing.Size(45, 13);
             this.lblSouth.TabIndex = 7;
             this.lblSouth.Text = "lblSouth";
             // 
             // lblCount
             // 
             this.lblCount.AutoSize = true;
-            this.lblCount.Location = new System.Drawing.Point(245, 225);
+            this.lblCount.Location = new System.Drawing.Point(184, 183);
+            this.lblCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblCount.Name = "lblCount";
-            this.lblCount.Size = new System.Drawing.Size(59, 17);
+            this.lblCount.Size = new System.Drawing.Size(45, 13);
             this.lblCount.TabIndex = 8;
             this.lblCount.Text = "lblCount";
             // 
             // tlpGameGrid
             // 
             this.tlpGameGrid.ColumnCount = 1;
-            this.tlpGameGrid.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
+            this.tlpGameGrid.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 112F));
             this.tlpGameGrid.Location = new System.Drawing.Point(0, 0);
+            this.tlpGameGrid.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tlpGameGrid.Name = "tlpGameGrid";
             this.tlpGameGrid.RowCount = 1;
-            this.tlpGameGrid.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 150F));
-            this.tlpGameGrid.Size = new System.Drawing.Size(150, 150);
+            this.tlpGameGrid.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 122F));
+            this.tlpGameGrid.Size = new System.Drawing.Size(112, 122);
             this.tlpGameGrid.TabIndex = 9;
             // 
             // pnlGameView
             // 
-            this.pnlGameView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlGameView.Anchor = ((System.Windows.Forms.AnchorStyles) ((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlGameView.AutoScroll = true;
             this.pnlGameView.Controls.Add(this.tlpGameGrid);
-            this.pnlGameView.Location = new System.Drawing.Point(12, 255);
+            this.pnlGameView.Location = new System.Drawing.Point(9, 207);
+            this.pnlGameView.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pnlGameView.Name = "pnlGameView";
-            this.pnlGameView.Size = new System.Drawing.Size(774, 341);
+            this.pnlGameView.Size = new System.Drawing.Size(580, 277);
             this.pnlGameView.TabIndex = 10;
             // 
             // btnPlace
             // 
-            this.btnPlace.Location = new System.Drawing.Point(134, 204);
+            this.btnPlace.Location = new System.Drawing.Point(100, 166);
+            this.btnPlace.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnPlace.Name = "btnPlace";
-            this.btnPlace.Size = new System.Drawing.Size(53, 24);
+            this.btnPlace.Size = new System.Drawing.Size(40, 20);
             this.btnPlace.TabIndex = 11;
             this.btnPlace.Text = "Place";
             this.btnPlace.UseVisualStyleBackColor = true;
@@ -163,9 +174,9 @@
             // 
             // CarcassonneForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(798, 608);
+            this.ClientSize = new System.Drawing.Size(598, 494);
             this.Controls.Add(this.btnPlace);
             this.Controls.Add(this.pnlGameView);
             this.Controls.Add(this.lblCount);
@@ -177,29 +188,28 @@
             this.Controls.Add(this.btnCW);
             this.Controls.Add(this.btnCCW);
             this.Controls.Add(this.lstTiles);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "CarcassonneForm";
             this.Text = "Form1";
             this.pnlGameView.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
-        #endregion
-
-        private System.Windows.Forms.ListBox lstTiles;
         private System.Windows.Forms.Button btnCCW;
         private System.Windows.Forms.Button btnCW;
-        private System.Windows.Forms.Panel pnlTile;
-        private System.Windows.Forms.Label lblWest;
-        private System.Windows.Forms.Label lblNorth;
-        private System.Windows.Forms.Label lblEast;
-        private System.Windows.Forms.Label lblSouth;
-        private System.Windows.Forms.Label lblCount;
-        private System.Windows.Forms.TableLayoutPanel tlpGameGrid;
-        private System.Windows.Forms.Panel pnlGameView;
         private System.Windows.Forms.Button btnPlace;
+        private System.Windows.Forms.Label lblCount;
+        private System.Windows.Forms.Label lblEast;
+        private System.Windows.Forms.Label lblNorth;
+        private System.Windows.Forms.Label lblSouth;
+        private System.Windows.Forms.Label lblWest;
+        private System.Windows.Forms.ListBox lstTiles;
+        private System.Windows.Forms.Panel pnlGameView;
+        private System.Windows.Forms.Panel pnlTile;
+        private System.Windows.Forms.TableLayoutPanel tlpGameGrid;
 
+        #endregion
     }
 }
 
