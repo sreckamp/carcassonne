@@ -1,8 +1,6 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.ComponentModel;
-using Carcassonne.Model;
 using System.Diagnostics;
 using Carcassonne.WPF.ViewModel;
 
@@ -11,8 +9,9 @@ namespace Carcassonne.WPF
     /// <summary>
     /// Interaction logic for MeepleControl.xaml
     /// </summary>
-    public partial class MeepleView : UserControl, INotifyPropertyChanged
+    public partial class MeepleView : INotifyPropertyChanged
     {
+        private static readonly Brush SDefaultBrush = new SolidColorBrush(Colors.DarkGray);
         public static readonly DependencyProperty OutlinedProperty = DependencyProperty.Register("Outlined", typeof(bool),
             typeof(MeepleView), new PropertyMetadata(false, UpdateColors));
         public static readonly DependencyProperty ColorProperty = DependencyProperty.Register("Color", typeof(Brush),
@@ -25,8 +24,6 @@ namespace Carcassonne.WPF
                 mc.UpdateMeepleColoring();
             }
         }
-
-        private static readonly Brush SDefaultBrush = new SolidColorBrush(Colors.DarkGray);
 
         #region INotifyPropertyChanged Members
 
@@ -41,10 +38,11 @@ namespace Carcassonne.WPF
         public MeepleView()
         {
             InitializeComponent();
+            PropertyChanged += (sender, args) => { };
             DataContextChanged += MeepleControl_DataContextChanged;
         }
 
-        void MeepleControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void MeepleControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             UpdateMeepleColoring();
         }
@@ -86,15 +84,18 @@ namespace Carcassonne.WPF
         private void UpdateMeepleColoring()
         {
             var c = Color;
-            if (DataContext is Meeple)
+            // if (DataContext is Meeple m )
+            // {
+            //     //var p = (DataContext as Meeple).Player as PlayerViewModel;
+            //     //c = p.Color;
+            // }
+
+            // else
+            if (DataContext is PlayerViewModel pvm)
             {
-                //var p = (DataContext as Meeple).Player as PlayerViewModel;
-                //c = p.Color;
+                c = pvm.Color;
             }
-            else if (DataContext is PlayerViewModel)
-            {
-                c =((PlayerViewModel)DataContext).Color;
-            }
+
             if (Outlined)
             {
                 Debug.WriteLine("Outlined!");

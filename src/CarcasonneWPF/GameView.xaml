@@ -103,7 +103,11 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.Resources>
                     <DataTemplate DataType="{x:Type vm:PointViewModel}">
-                        <Rectangle StrokeThickness="3" Stroke="{Binding Color}"/>
+                        <Border BorderThickness="3" BorderBrush="{Binding Color}">
+                            <!--TextBlock Text="{Binding Location}"/-->
+                            <TextBlock FontSize="11" FontStyle="Italic" Text="{Binding Location}" Foreground="{Binding Color}"/>
+                        </Border>
+                        <!--Rectangle StrokeThickness="3" Stroke="{Binding Color}"/-->
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:PlacementViewModel}">
                         <local:TileView>

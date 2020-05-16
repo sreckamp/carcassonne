@@ -6,16 +6,19 @@ namespace Carcassonne.Model
 {
     public class Player
     {
+        public static readonly Player None = new Player(string.Empty);
+
         public Player(string name)
         {
             Name = name;
+            ScoreChanged += (sender, args) => { };
             Meeple = new MeepleCollection();
         }
 
-        public string Name { get; private set; }
-        public IMoveProvider MoveChooser { get; set; }
-        public IClaimProvider ClaimChooser { get; set; }
-        public MeepleCollection Meeple { get; private set; }
+        public string Name { get; }
+        public IMoveProvider MoveChooser { get; set; } = EmptyMoveProvider.Instance;
+        public IClaimProvider ClaimChooser { get; set; } = EmptyClaimProvider.Instance;
+        public MeepleCollection Meeple { get; }
 
         public event EventHandler<ChangedValueArgs<int>> ScoreChanged;
         private int m_score;
@@ -25,7 +28,7 @@ namespace Carcassonne.Model
             {
                 var old = m_score;
                 m_score = value;
-                ScoreChanged?.Invoke(this, new ChangedValueArgs<int>(old, value));
+                ScoreChanged.Invoke(this, new ChangedValueArgs<int>(old, value));
             }
         }
 
@@ -55,12 +58,11 @@ namespace Carcassonne.Model
         }
 
         public virtual CarcassonneMove GetMove(Game game) {
-            return MoveChooser?.GetMove(game);
+            return MoveChooser.GetMove(game);
         }
-        public virtual IClaimable GetClaim(Game game, out MeepleType type)
+        public virtual (IClaimable, MeepleType) GetClaim(Game game)
         {
-            type = MeepleType.Meeple;
-            return ClaimChooser?.GetClaim(game, out type);
+            return ClaimChooser.GetClaim(game);
         }
 
         public override string ToString()

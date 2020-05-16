@@ -2,6 +2,7 @@
 {
     public enum MeepleType
     {
+        None,
         Meeple,
         Abbot,
     }

@@ -212,15 +212,9 @@ namespace Carcassonne.WPF
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if (value is TileRegion tr && parameter is TileRegionType)
-            {
-                var type = (TileRegionType)parameter;
-                if (tr.Type == type)
-                {
-                    return value;
-                }
-            }
-            return DependencyProperty.UnsetValue;
+            return (value is TileRegion tr && parameter is TileRegionType type && tr.Type == type)
+                ? value
+                : DependencyProperty.UnsetValue;
         }
 
         public object ConvertBack(object value, Type targetTypes, object parameter, System.Globalization.CultureInfo culture)

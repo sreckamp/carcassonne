@@ -6,9 +6,9 @@ namespace Carcassonne.Model.Expansions
     {
         public AbbotExpansion()
         {
-            _ClaimRules.Add(new AbbotClaimRule());
-            _PlayerRules.Add(new CreateMeeplePlayerCreationRule(1, MeepleType.Abbot));
-            _ScoreRules.Add(new TileRegionScoreRule(TileRegionType.Flower));
+            WritableClaimRules.Add(new AbbotClaimRule());
+            WritablePlayerRules.Add(new CreateMeeplePlayerCreationRule(1, MeepleType.Abbot));
+            WritableScoreRules.Add(new TileRegionScoreRule(TileRegionType.Flower));
         }
 
         private class AbbotClaimRule : IClaimRule
@@ -18,7 +18,7 @@ namespace Carcassonne.Model.Expansions
             public bool Applies(IClaimable region, MeepleType type)
             {
                 return type == MeepleType.Abbot && region is TileRegion tr
-                    && (tr.Type == TileRegionType.Flower || tr.Type == TileRegionType.Monestary);
+                    && (tr.Type == TileRegionType.Flower || tr.Type == TileRegionType.Monastery);
             }
 
             public bool IsAvailable(IClaimable region, MeepleType type)

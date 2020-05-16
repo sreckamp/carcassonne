@@ -17,7 +17,7 @@ namespace Carcassonne.WPF.ViewModel
         public GameViewModel(params AbstractExpansionPack[] expansions)
         {
             m_dispatcher = System.Windows.Application.Current.Dispatcher;
-//            m_dispatcher = dispatcher;
+            PropertyChanged += (sender, args) => { };
             Game = new Game(expansions);
             BoardViewModel = new GameBoardViewModel(Game.Board);
             BoardViewModel.Placed += boardViewModel_Placed;
@@ -82,7 +82,7 @@ namespace Carcassonne.WPF.ViewModel
 
         internal void AddPlayer(string name, Color color)
         {
-            if (Game.AddPlayer(name) != null)
+            if (Game.AddPlayer(name) != Player.None)
             {
                 PlayerViewModel.ColorsForName[name] = new SolidColorBrush(color);
             }

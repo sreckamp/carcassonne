@@ -7,17 +7,17 @@ namespace Carcassonne.Model
 {
     public abstract class AbstractExpansionPack
     {
-        protected readonly List<IPlaceRule<Tile, CarcassonneMove>> _PlaceRules = new List<IPlaceRule<Tile, CarcassonneMove>>();
-        protected readonly List<IClaimRule> _ClaimRules = new List<IClaimRule>();
-        protected readonly List<IPlayerCreationRule> _PlayerRules = new List<IPlayerCreationRule>();
-        protected readonly List<IScoreRule> _ScoreRules = new List<IScoreRule>();
+        protected readonly List<IPlaceRule<Tile, CarcassonneMove>> WritablePlaceRules = new List<IPlaceRule<Tile, CarcassonneMove>>();
+        protected readonly List<IClaimRule> WritableClaimRules = new List<IClaimRule>();
+        protected readonly List<IPlayerCreationRule> WritablePlayerRules = new List<IPlayerCreationRule>();
+        protected readonly List<IScoreRule> WritableScoreRules = new List<IScoreRule>();
 
         protected AbstractExpansionPack()
         {
-            PlaceRules = new ReadOnlyCollection<IPlaceRule<Tile, CarcassonneMove>>(_PlaceRules);
-            ClaimRules = new ReadOnlyCollection<IClaimRule>(_ClaimRules);
-            PlayerCreationRules = new ReadOnlyCollection<IPlayerCreationRule>(_PlayerRules);
-            ScoreRules = new ReadOnlyCollection<IScoreRule>(_ScoreRules);
+            PlaceRules = new ReadOnlyCollection<IPlaceRule<Tile, CarcassonneMove>>(WritablePlaceRules);
+            ClaimRules = new ReadOnlyCollection<IClaimRule>(WritableClaimRules);
+            PlayerCreationRules = new ReadOnlyCollection<IPlayerCreationRule>(WritablePlayerRules);
+            ScoreRules = new ReadOnlyCollection<IScoreRule>(WritableScoreRules);
         }
 
         public virtual bool IgnoreDefaultStart => false;

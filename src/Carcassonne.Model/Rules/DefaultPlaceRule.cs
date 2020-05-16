@@ -16,17 +16,15 @@ namespace Carcassonne.Model.Rules
         public virtual bool Fits(IGameBoard<Tile, CarcassonneMove> board, Tile tile, CarcassonneMove move)
         {
             var hasNeighbor = false;
-            var b = board as CarcassonneGameBoard;
+            if(!(board is CarcassonneGameBoard b)) return false;
             foreach (EdgeDirection d in Enum.GetValues(typeof(EdgeDirection)))
             {
                 var n = b.GetNeighbor(move.Location, d);
-                if (n != null)
+                if (n == Tile.None) continue;
+                hasNeighbor = true;
+                if (!RegionsMatch(tile.GetRegion(d), n.GetRegion(d.Opposite())))
                 {
-                    hasNeighbor = true;
-                    if (!RegionsMatch(tile.GetRegion(d), n.GetRegion(d.Opposite())))
-                    {
-                        return false;
-                    }
+                    return false;
                 }
             }
             return hasNeighbor;
@@ -34,9 +32,9 @@ namespace Carcassonne.Model.Rules
 
         #endregion
 
-        protected virtual bool RegionsMatch(EdgeRegion myRegion, EdgeRegion thierRegion)
+        protected virtual bool RegionsMatch(EdgeRegion myRegion, EdgeRegion theirRegion)
         {
-            return (myRegion?.Type == thierRegion?.Type);
+            return myRegion.Type == theirRegion.Type;
         }
     }
 }

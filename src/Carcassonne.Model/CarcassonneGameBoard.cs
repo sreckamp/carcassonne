@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using GameBase.Model;
 using GameBase.Model.Rules;
 using System.Drawing;
+using System.Linq;
 
 namespace Carcassonne.Model
 {
@@ -10,6 +11,8 @@ namespace Carcassonne.Model
     {
         public CarcassonneGameBoard(IPlaceRule<Tile, CarcassonneMove> placeRule) : base(placeRule)
         { }
+
+        protected override Tile GetEmptyPiece() => Tile.None;
 
         public override void Clear()
         {
@@ -19,12 +22,7 @@ namespace Carcassonne.Model
 
         protected override IEnumerable<CarcassonneMove> GetOptions(Point point)
         {
-            var moves = new List<CarcassonneMove>();
-            foreach (Rotation rot in Enum.GetValues(typeof(Rotation)))
-            {
-                moves.Add(new CarcassonneMove(point, rot));
-            }
-            return moves;
+            return Enum.GetValues(typeof(Rotation)).Cast<Rotation>().Select(rot => new CarcassonneMove(point, rot));
         }
 
         protected override void AddAvailableLocations(Placement<Tile, CarcassonneMove> placement)
@@ -35,7 +33,7 @@ namespace Carcassonne.Model
                 {
                     if (Math.Abs(x) == Math.Abs(y)) continue;
                     var p = new Point(placement.Move.Location.X + x, placement.Move.Location.Y + y);
-                    if (this[p] != null) continue;
+                    if (this[p] != Tile.None) continue;
                     if (!AvailableLocations.Contains(p))
                     {
                         AvailableLocations.Add(p);
@@ -66,7 +64,7 @@ namespace Carcassonne.Model
             return base[point.X + xOffset, point.Y + yOffset];
         }
 
-        public List<Tile> GetAllNeighbors(Point point)
+        public IEnumerable<Tile> GetAllNeighbors(Point point)
         {
             var neighbors = new List<Tile>();
             for (var x = -1; x <= 1; x++)
@@ -77,7 +75,7 @@ namespace Carcassonne.Model
                     var py = (int)point.Y + y;
                     if (x == 0 && y == 0) continue;
                     var tmp = this[px, py];
-                    if (tmp != null)
+                    if (tmp != Tile.None)
                     {
                         neighbors.Add(tmp);
                     }

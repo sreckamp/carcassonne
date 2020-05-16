@@ -6,6 +6,8 @@ namespace Carcassonne.Model
 {
     public class CarcassonneMove : Move, IEquatable<CarcassonneMove>
     {
+        public new static readonly CarcassonneMove None = new CarcassonneMove(-1, -1, Rotation.None) {IsEmpty = true};
+
         public CarcassonneMove(int x, int y, Rotation rotation)
             : this(new Point(x, y), rotation)
         {
@@ -18,17 +20,17 @@ namespace Carcassonne.Model
             Rotation = rotation;
         }
 
-        public Rotation Rotation;
+        public readonly Rotation Rotation;
 
         public override bool Equals(object other)
         {
-            return Equals(other as CarcassonneMove);
+            return Equals(other as CarcassonneMove ?? CarcassonneMove.None);
         }
 
         public override int GetHashCode()
         {
             return Rotation.GetHashCode() ^
-                base.GetHashCode();
+                   base.GetHashCode();
         }
 
         #region IEquatable<Move> Members
@@ -36,9 +38,14 @@ namespace Carcassonne.Model
         public bool Equals(CarcassonneMove other)
         {
             return base.Equals(other)
-                && Rotation.Equals(other?.Rotation);
+                   && Rotation.Equals(other?.Rotation);
         }
 
         #endregion
+        
+        public override string ToString()
+        {
+            return base.ToString() + $"-{Rotation}";
+        }
     }
 }

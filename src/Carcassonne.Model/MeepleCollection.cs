@@ -8,15 +8,15 @@ namespace Carcassonne.Model
 {
     public class MeepleCollection : IObservableList<Meeple>
     {
-        private Dictionary<MeepleType, Stack<Meeple>> m_meeple = new Dictionary<MeepleType, Stack<Meeple>>();
-        private List<Meeple> m_allMeeple = new List<Meeple>();
-
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        private readonly Dictionary<MeepleType, Stack<Meeple>> m_meeple = new Dictionary<MeepleType, Stack<Meeple>>();
+        private readonly List<Meeple> m_allMeeple = new List<Meeple>();
 
         public MeepleCollection()
         {
-            AvailableTypes = new List<MeepleType>();
+            CollectionChanged += (sender, args) => { };
         }
+
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         public void Push(Meeple m)
         {
@@ -36,28 +36,22 @@ namespace Carcassonne.Model
 
         public Meeple Pop(MeepleType t)
         {
-            if (m_meeple.ContainsKey(t))
+            if (!m_meeple.ContainsKey(t)) return Meeple.None;
+            var m = m_meeple[t].Pop();
+            if (m_meeple[t].Count == 0)
             {
-                var m = m_meeple[t].Pop();
-                if (m_meeple[t].Count == 0)
-                {
-                    AvailableTypes.Remove(t);
-                }
-                var idx = m_allMeeple.IndexOf(m);
-                UpdateAllMeepleList();
-                var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, m, idx);
-                CollectionChanged?.Invoke(this, args);
+                AvailableTypes.Remove(t);
             }
-            return null;
+            var idx = m_allMeeple.IndexOf(m);
+            UpdateAllMeepleList();
+            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, m, idx);
+            CollectionChanged?.Invoke(this, args);
+            return m;
         }
 
         public Meeple Peek(MeepleType t)
         {
-            if (m_meeple.ContainsKey(t))
-            {
-                var m = m_meeple[t].Peek();
-            }
-            return null;
+            return m_meeple.ContainsKey(t) ? m_meeple[t].Peek() : Meeple.None;
         }
 
         public void Clear()
@@ -68,7 +62,7 @@ namespace Carcassonne.Model
             CollectionChanged?.Invoke(this, args);
         }
 
-        public List<MeepleType> AvailableTypes { get; private set; }
+        public List<MeepleType> AvailableTypes { get; } = new List<MeepleType>();
 
         private void UpdateAllMeepleList()
         {

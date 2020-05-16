@@ -8,7 +8,8 @@ namespace Carcassonne
 {
     public partial class GameTile : UserControl
     {
-        private List<AbstractTileRenderer> _renderers = new List<AbstractTileRenderer>();
+        private readonly List<AbstractTileRenderer> m_renderers = new List<AbstractTileRenderer>();
+
         public GameTile()
         {
             InitializeComponent();
@@ -16,12 +17,12 @@ namespace Carcassonne
             Resize += GameTile_Resize;
         }
 
-        void GameTile_Resize(object sender, EventArgs e)
+        private void GameTile_Resize(object sender, EventArgs e)
         {
             UpdateRegions();
         }
 
-        void GameTile_Paint(object sender, PaintEventArgs e)
+        private void GameTile_Paint(object sender, PaintEventArgs e)
         {
             if (Active)
             {
@@ -34,7 +35,7 @@ namespace Carcassonne
             }
         }
 
-        private Tile m_tile;
+        private Tile m_tile = Tile.None;
         public Tile Tile
         {
             get => m_tile;
@@ -47,7 +48,7 @@ namespace Carcassonne
 
         public Point GridLocation { get; set; }
 
-        private bool m_active = false;
+        private bool m_active;
         public bool Active
         {
             get => m_active;
@@ -60,66 +61,56 @@ namespace Carcassonne
 
         public void UpdateRegions()
         {
-            Rectangle canvas = new Rectangle(Padding.Left, Padding.Top,
+            var canvas = new Rectangle(Padding.Left, Padding.Top,
                 Size.Width - Padding.Left - Padding.Right,
                 Size.Height - Padding.Top - Padding.Bottom);
-            _renderers.Clear();
-            if (Tile != null)
+            m_renderers.Clear();
+            if (Tile != Tile.None)
             {
-                _renderers.Add(new BackgroundRenderer(canvas, Color.DarkGreen));
+                m_renderers.Add(new BackgroundRenderer(canvas, Color.DarkGreen));
                 var done = new List<EdgeDirection>();
                 foreach (EdgeDirection dir in Enum.GetValues(typeof(EdgeDirection)))
                 {
-                    if (!done.Contains(dir))
-                    {
-                        var r = Tile.GetRegion(dir);
-                        if (r != null && r.Type == RegionType.River)
-                        {
-                            _renderers.Add(new RiverRegionRenderer(canvas, r, 40));
-                            done.AddRange(r.Edges);
-                        }
-                    }
+                    if (done.Contains(dir)) continue;
+                    var r = Tile.GetRegion(dir);
+                    if (r.Type != RegionType.River) continue;
+                    m_renderers.Add(new RiverRegionRenderer(canvas, r, 40));
+                    done.AddRange(r.Edges);
                 }
                 foreach (EdgeDirection dir in Enum.GetValues(typeof(EdgeDirection)))
                 {
-                    if (!done.Contains(dir))
-                    {
-                        var r = Tile.GetRegion(dir);
-                        if (r != null && r.Type == RegionType.Road)
-                        {
-                            _renderers.Add(new RoadRegionRenderer(canvas, r, 40));
-                            done.AddRange(r.Edges);
-                        }
-                    }
+                    if (done.Contains(dir)) continue;
+                    var r = Tile.GetRegion(dir);
+                    if (r.Type != RegionType.Road) continue;
+                    m_renderers.Add(new RoadRegionRenderer(canvas, r, 40));
+                    done.AddRange(r.Edges);
                 }
                 foreach (EdgeDirection dir in Enum.GetValues(typeof(EdgeDirection)))
                 {
-                    if (!done.Contains(dir))
-                    {
-                        var r = Tile.GetRegion(dir) as CityEdgeRegion;
-                        if (r != null && r.Type == RegionType.City)
-                        {
-                            _renderers.Add(new CityRegionRenderer(canvas, r));
-                            done.AddRange(r.Edges);
-                        }
-                    }
+                    if (done.Contains(dir)) continue;
+                    var r = Tile.GetRegion(dir) as CityEdgeRegion;
+                    if (r.Type != RegionType.City) continue;
+                    m_renderers.Add(new CityRegionRenderer(canvas, r));
+                    done.AddRange(r.Edges);
                 }
                 if (Tile.TileRegion != null)
                 {
                     switch (Tile.TileRegion.Type)
                     {
-                        case TileRegionType.Monestary:
-                            _renderers.Add(new MonestaryRegionRenderer(canvas, Tile));
+                        case TileRegionType.Monastery:
+                            m_renderers.Add(new MonasteryRegionRenderer(canvas, Tile));
                             break;
                         case TileRegionType.Flower:
-                            _renderers.Add(new FlowerRegionRenderer(canvas, Tile));
+                            m_renderers.Add(new FlowerRegionRenderer(canvas, Tile));
+                            break;
+                        default:
                             break;
                     }
                 }
             }
             else
             {
-                _renderers.Add(new BackgroundRenderer(canvas, Color.Gainsboro));
+                m_renderers.Add(new BackgroundRenderer(canvas, Color.Gainsboro));
             }
             Invalidate();
         }
@@ -127,7 +118,7 @@ namespace Carcassonne
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-            foreach (var r in _renderers)
+            foreach (var r in m_renderers)
             {
                 r.Draw(e.Graphics);
             }
@@ -184,7 +175,7 @@ namespace Carcassonne
 
             protected void AddEllipse(RectangleF canvas, Color color, RectangleF rect, Rotation rotation)
             {
-                RectangleF scaled = new RectangleF();
+                var scaled = new RectangleF();
                 switch (rotation)
                 {
                     case Rotation.None:
@@ -213,7 +204,7 @@ namespace Carcassonne
 
             protected void AddRectangle(RectangleF canvas, Color color, RectangleF rect, Rotation rotation)
             {
-                RectangleF scaled = new RectangleF();
+                var scaled = new RectangleF();
                 switch (rotation)
                 {
                     case Rotation.None:
@@ -272,10 +263,10 @@ namespace Carcassonne
                 }
                 else
                 {
-                    float lowX = (1 - PATH_WIDTH) / 2 * canvas.Width + canvas.X;
-                    float highX = (1 + PATH_WIDTH) / 2 * canvas.Width + canvas.X;
-                    float lowY = (1 - PATH_WIDTH) / 2 * canvas.Height + canvas.Y;
-                    float highY = (1 + PATH_WIDTH) / 2 * canvas.Height + canvas.Y;
+                    var lowX = (1 - PATH_WIDTH) / 2 * canvas.Width + canvas.X;
+                    var highX = (1 + PATH_WIDTH) / 2 * canvas.Width + canvas.X;
+                    var lowY = (1 - PATH_WIDTH) / 2 * canvas.Height + canvas.Y;
+                    var highY = (1 + PATH_WIDTH) / 2 * canvas.Height + canvas.Y;
 
                     var pts = new List<PointF>();
                     foreach (var e in m_region.Edges)
@@ -318,19 +309,19 @@ namespace Carcassonne
                     {
                         case EdgeDirection.North:
                             pts.Add(tl);
-                            insertExtraPoint(pts, tl, tr, canvas);
+                            InsertExtraPoint(pts, tl, tr, canvas);
                             break;
                         case EdgeDirection.East:
                             pts.Add(tr);
-                            insertExtraPoint(pts, tr, br, canvas);
+                            InsertExtraPoint(pts, tr, br, canvas);
                             break;
                         case EdgeDirection.South:
                             pts.Add(bl);
-                            insertExtraPoint(pts, bl, br, canvas);
+                            InsertExtraPoint(pts, bl, br, canvas);
                             break;
                         case EdgeDirection.West:
                             pts.Add(tl);
-                            insertExtraPoint(pts, tl, bl, canvas);
+                            InsertExtraPoint(pts, tl, bl, canvas);
                             break;
                     }
                 }
@@ -340,8 +331,8 @@ namespace Carcassonne
                     PointF? lastPt = null;
                     foreach (var e in m_region.Edges)
                     {
-                        PointF pt1 = new PointF();
-                        PointF pt2 = new PointF();
+                        var pt1 = new PointF();
+                        var pt2 = new PointF();
                         switch (e)
                         {
                             case EdgeDirection.North:
@@ -361,24 +352,21 @@ namespace Carcassonne
                                 pt2 = tl;
                                 break;
                         }
-                        insertExtraPoint(pts, lastPt, pt1, canvas);
+                        InsertExtraPoint(pts, lastPt, pt1, canvas);
                         pts.Add(pt2);
                         lastPt = pt2;
-                        if (firstPt == null)
-                        {
-                            firstPt = pt1;
-                        }
+                        firstPt ??= pt1;
                     }
                     if (firstPt != null && lastPt != null && firstPt != lastPt)
                     {
-                        insertExtraPoint(pts, lastPt, (PointF)firstPt, canvas);
+                        InsertExtraPoint(pts, lastPt, (PointF)firstPt, canvas);
                     }
                 }
                 var points = pts.ToArray();
                 m_shapes.Add(points, new SolidBrush(color));
             }
 
-            private void insertExtraPoint(List<PointF> points, PointF? lastNullable, PointF next, RectangleF canvas)
+            private void InsertExtraPoint(List<PointF> points, PointF? lastNullable, PointF next, RectangleF canvas)
             {
                 if (lastNullable == null)
                 {
@@ -391,7 +379,7 @@ namespace Carcassonne
                     {
                         if (Math.Abs(last.Y - next.Y) < 0.5f)
                         {
-                            for (int i = 1; i < 10; i++)
+                            for (var i = 1; i < 10; i++)
                             {
                                 float x;
                                 if (last.X < next.X)
@@ -402,7 +390,7 @@ namespace Carcassonne
                                 {
                                     x = last.X - 0.1f * canvas.Width * (float)i;
                                 }
-                                float y = getCirclePoint(x, canvas);
+                                var y = GetCirclePoint(x, canvas);
                                 if (next.Y > canvas.Y)
                                 {
                                     y = (canvas.Bottom - y);
@@ -412,11 +400,11 @@ namespace Carcassonne
 //                            points.Add(next);
                         }
                     }
-                    else if (last.Y != next.Y)
+                    else if ((int)last.Y != (int)next.Y)
                     {
-                        if (last.X == next.X)
+                        if ((int)last.X == (int)next.X)
                         {
-                            for (int i = 1; i < 10; i++)
+                            for (var i = 1; i < 10; i++)
                             {
                                 float y;
                                 if (last.Y < next.Y)
@@ -427,7 +415,7 @@ namespace Carcassonne
                                 {
                                     y = last.Y - 0.1f * canvas.Height * (float)i;
                                 }
-                                float x = getCirclePoint(y, canvas);
+                                var x = GetCirclePoint(y, canvas);
                                 if (next.X > canvas.X)
                                 {
                                     x = (canvas.Right - x);
@@ -441,14 +429,13 @@ namespace Carcassonne
                 }
             }
 
-            private float getCirclePoint(float x, RectangleF canvas)
+            private static float GetCirclePoint(float x, RectangleF canvas)
             {
-                float h = canvas.Width / 2 + canvas.X;
-                float d = SINGLE_REGION_WIDTH * canvas.Height + canvas.Y;
-                float k = (float)(Math.Pow(d, 2) - Math.Pow(h, 2)) / (2 * d);
-                float r = d - k;
-                float y;
-                y = (float)Math.Sqrt(r * r - (float)Math.Pow(x - h,2)) + k;
+                var h = canvas.Width / 2 + canvas.X;
+                var d = SINGLE_REGION_WIDTH * canvas.Height + canvas.Y;
+                var k = (float)(Math.Pow(d, 2) - Math.Pow(h, 2)) / (2 * d);
+                var r = d - k;
+                var y = (float)Math.Sqrt(r * r - (float)Math.Pow(x - h,2)) + k;
                 return y;
             }
         }
@@ -461,7 +448,7 @@ namespace Carcassonne
                 RoadWidth = roadWidth;
             }
 
-            public float RoadWidth { get; set; }
+            public float RoadWidth { get; }
 
             public override void UpdateRegion(RectangleF canvas)
             {
@@ -477,7 +464,7 @@ namespace Carcassonne
                 RiverWidth = riverWidth;
             }
 
-            public float RiverWidth { get; set; }
+            public float RiverWidth { get; }
 
             public override void UpdateRegion(RectangleF canvas)
             {
@@ -511,12 +498,12 @@ namespace Carcassonne
             }
         }
 
-        private class MonestaryRegionRenderer : AbstractTileRenderer
+        private class MonasteryRegionRenderer : AbstractTileRenderer
         {
-            private const float MonestarySize = 0.4f;
+            private const float MonasterySize = 0.4f;
             private readonly Tile m_parent;
 
-            public MonestaryRegionRenderer(RectangleF canvas, Tile parent)
+            public MonasteryRegionRenderer(RectangleF canvas, Tile parent)
                 : base(canvas, null)
             {
                 m_parent = parent;
@@ -527,16 +514,16 @@ namespace Carcassonne
             {
                 if (m_parent != null)
                 {
-                    float x = (1 - MonestarySize) / 2;
-                    float y = x;
+                    var x = (1 - MonasterySize) / 2;
+                    var y = x;
 //                    AddRectangle(canvas, Color.Red, new RectangleF(x, y, MONESTARY_SIZE, MONESTARY_SIZE),
 //                            m_parent.Rotation);
-                    float crossX = x + MonestarySize / 2 - MonestarySize / 16;
-                    float crossY = y + MonestarySize / 4;
+                    var crossX = x + MonasterySize / 2 - MonasterySize / 16;
+                    var crossY = y + MonasterySize / 4;
 //                    AddRectangle(canvas, Color.Black, new RectangleF(crossX, crossY, MONESTARY_SIZE / 8, MONESTARY_SIZE / 2),
 //                            m_parent.Rotation);
-                    crossX = x + MonestarySize / 2 - MonestarySize / 6;
-                    crossY = y + MonestarySize / 4 + MonestarySize / 8;
+                    crossX = x + MonasterySize / 2 - MonasterySize / 6;
+                    crossY = y + MonasterySize / 4 + MonasterySize / 8;
 //                    AddRectangle(canvas, Color.Black, new RectangleF(crossX, crossY, MONESTARY_SIZE / 3, MONESTARY_SIZE / 8),
 //                            m_parent.Rotation);
                 }

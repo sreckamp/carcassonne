@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using GameBase.Model;
 
 namespace Carcassonne.Model
@@ -18,121 +19,103 @@ namespace Carcassonne.Model
     /// </summary>
     public class Game
     {
-        protected Tile _defaultStartTile = null;
-        private readonly ObservableList<IPointRegion> _pointRegions =
-                                    new ObservableList<IPointRegion>();
-        private readonly AbstractExpansionPack[] _expansions;
+        private Tile DefaultStartTile = Tile.None;
+        private readonly AbstractExpansionPack[] m_expansions;
         public static RuleSet RuleSet;
 
         public Game(params AbstractExpansionPack[] expansions)
         {
-            _expansions = expansions;
+            ActiveTileChanged += (sender, args) => { };
+            ActivePlayerChanged += (sender, args) => { };
+            m_expansions = expansions;
             RuleSet = new RuleSet(expansions);
             Board = new CarcassonneGameBoard(RuleSet);
             Players = new ObservableList<Player>();
             ResetGame();
         }
 
-        public CarcassonneGameBoard Board { get; private set; }
-        public ObservableList<IPointRegion> PointRegions => _pointRegions;
+        public CarcassonneGameBoard Board { get; }
+        public ObservableList<IPointRegion> PointRegions { get; } = new ObservableList<IPointRegion>();
 
         public readonly Deck Deck = new Deck();
 
-        private GameState _state;
-        public GameState State
-        {
-            get => _state;
-            private set => _state = value;
-        }
+        public GameState State { get; private set; }
 
         public event EventHandler<ChangedValueArgs<Tile>> ActiveTileChanged;
-        private Tile _activeTile;
-        public Tile ActiveTile
+        private Tile m_activeTile;
+
+        private Tile ActiveTile
         {
-            get => _activeTile;
-            private set
+            get => m_activeTile;
+            set
             {
-                var old = _activeTile;
-                _activeTile = value;
-                ActiveTileChanged?.Invoke(this, new ChangedValueArgs<Tile>(old, value));
+                var old = m_activeTile;
+                m_activeTile = value;
+                ActiveTileChanged.Invoke(this, new ChangedValueArgs<Tile>(old, value));
             }
         }
 
         public event EventHandler<ChangedValueArgs<Player>> ActivePlayerChanged;
-        private int _activePlayerIndex = int.MaxValue;
-        public Player ActivePlayer => _activePlayerIndex < Players.Count ? Players[_activePlayerIndex] : null;
+        private int m_activePlayerIndex = int.MaxValue;
+        public Player ActivePlayer => m_activePlayerIndex < Players.Count ? Players[m_activePlayerIndex] : Player.None;
 
-        public ObservableList<Player> Players { get; private set; }
+        public ObservableList<Player> Players { get; }
 
         private Player NextPlayer()
         {
             var old = ActivePlayer;
-            if (_activePlayerIndex >= Players.Count - 1)
+            if (m_activePlayerIndex >= Players.Count - 1)
             {
-                _activePlayerIndex = 0;
+                m_activePlayerIndex = 0;
             }
             else
             {
-                _activePlayerIndex++;
+                m_activePlayerIndex++;
             }
-            ActivePlayerChanged?.Invoke(this, new ChangedValueArgs<Player>(old, ActivePlayer));
+            ActivePlayerChanged.Invoke(this, new ChangedValueArgs<Player>(old, ActivePlayer));
             return ActivePlayer;
         }
 
         public IClaimable Claim(IClaimable region, MeepleType type)
         {
-            if (region != null)
-            {
-                var m = ActivePlayer.GetMeeple(type);
-                if (m != null)
-                {
-                    if (RuleSet.IsAvailable(region, m.Type))
-                    {
-                        region.Claim(m);
-                        return region;
-                    }
-                }
-            }
-            return null;
+            if (region == DefaultClaimable.Instance) return DefaultClaimable.Instance;
+            var m = ActivePlayer.GetMeeple(type);
+            if (m == Meeple.None) return DefaultClaimable.Instance;
+            if (!RuleSet.IsAvailable(region, m.Type)) return DefaultClaimable.Instance;
+            region.Claim(m);
+            return region;
         }
 
-        private void end()
+        private void End()
         {
-            foreach (var pr in _pointRegions)
+            foreach (var pr in PointRegions)
             {
                 var score = RuleSet.GetEndScore(pr);
-                if (score > 0)
+                if (score <= 0) continue;
+                foreach (var o in pr.Owners)
                 {
-                    foreach (var o in pr.Owners)
-                    {
-                        o.Score += score;
-                    }
-                    pr.ReturnMeeple();
+                    o.Score += score;
                 }
+                pr.ReturnMeeple();
             }
         }
 
-        private void Score(IList<IPointRegion> changed)
+        private void Score(IEnumerable<IPointRegion> changed)
         {
             State = GameState.Score;
-            if (changed != null)
+            foreach (var pr in changed)
             {
-                foreach (var pr in changed)
+                if (pr.IsForcedOpened)
                 {
-                    if (pr.IsForcedOpened)
-                    {
-                        pr.IsForcedOpened = false;
-                    }
-                    int score = RuleSet.GetScore(pr);
-                    if (score > 0)
-                    {
-                        foreach (var o in pr.Owners)
-                        {
-                            o.Score += score;
-                        }
-                        pr.ReturnMeeple();
-                    }
+                    pr.IsForcedOpened = false;
                 }
+                var score = RuleSet.GetScore(pr);
+                if (score <= 0) continue;
+                foreach (var o in pr.Owners)
+                {
+                    o.Score += score;
+                }
+                pr.ReturnMeeple();
             }
         }
 
@@ -145,7 +128,7 @@ namespace Carcassonne.Model
             }
             else
             {
-                ActiveTile = null;
+                ActiveTile = Tile.None;
             }
             return ActiveTile;
         }
@@ -254,7 +237,7 @@ namespace Carcassonne.Model
                 .AddCityRegion(EdgeDirection.North)
                 .AddRoadRegion(EdgeDirection.East, EdgeDirection.West)
                 );
-            _defaultStartTile = builder.Tile.TileClone();
+            DefaultStartTile = builder.Tile.TileClone();
             AddTile(4, builder.NewTile()
                 .AddCityRegion(EdgeDirection.North)
                 );
@@ -288,90 +271,75 @@ namespace Carcassonne.Model
                 .AddFlowers()
                 );
             AddTile(4, builder.NewTile()
-                .AddMonestary()
+                .AddMonastery()
                 );
             AddTile(2, builder.NewTile()
                 .AddRoadRegion(EdgeDirection.South)
-                .AddMonestary()
+                .AddMonastery()
                 );
         }
 
         public void Play()
         {
-            if (State == GameState.NotStarted)
+            if (State != GameState.NotStarted) return;
+            Shuffle();
+            var useDefaultStart = m_expansions.All(exp => !exp.IgnoreDefaultStart);
+            if (useDefaultStart)
             {
-                Shuffle();
-                var useDefaultStart = true;
-                foreach (var exp in _expansions)
-                {
-                    if (exp.IgnoreDefaultStart)
-                    {
-                        useDefaultStart = false;
-                        break;
-                    }
-                }
-                if (useDefaultStart)
-                {
-                    place(_defaultStartTile, new CarcassonneMove(0, 0, Rotation.None));
-                }
+                Place(DefaultStartTile, new CarcassonneMove(0, 0, Rotation.None));
+            }
+            do
+            {
+                var player = NextPlayer();
+                if (player == Player.None) continue;
+                if (Draw() == Tile.None) break;
+
+                State = GameState.Place;
+                var changed = new List<IPointRegion>();
                 do
                 {
-                    var player = NextPlayer();
-                    if (player != null)
+                    var mv = player.GetMove(this);
+                    if (!mv.IsEmpty)
                     {
-                        if (Draw() == null)
-                        {
-                            break;
-                        }
-                        State = GameState.Place;
-                        List<IPointRegion> changed = null;
-                        do
-                        {
-                            var mv = player.GetMove(this);
-                            if (mv != null)
-                            {
-                                changed = place(mv);
-                            }
-                            else
-                            {
-                                State = GameState.Discard;
-                                break;
-                            }
-                        } while (changed == null);
-                        if (State == GameState.Place)
-                        {
-                            State = GameState.Claim;
-                            IClaimable claimed = null;
-                            do
-                            {
-                                var region = player.GetClaim(this, out MeepleType type);
-                                if (region != null)
-                                {
-                                    claimed = Claim(region, type);
-                                }
-                                else
-                                {
-                                    //Skip the claim state.
-                                    break;
-                                }
-                            } while (claimed == null);
-                            Score(changed);
-                        }
+                        changed = Place(mv);
                     }
-                } while (ActiveTile != null);
-                end();
-                State = GameState.End;
-            }
+                    else
+                    {
+                        State = GameState.Discard;
+                        break;
+                    }
+                } while (changed.Count == 0);
+
+                if (State != GameState.Place) continue;
+                State = GameState.Claim;
+                IClaimable claimed;
+                do
+                {
+                    var (region, type) = player.GetClaim(this);
+                    if (region != DefaultClaimable.Instance)
+                    {
+                        claimed = Claim(region, type);
+                    }
+                    else
+                    {
+                        //Skip the claim state.
+                        break;
+                    }
+                } while (claimed == DefaultClaimable.Instance);
+                Score(changed);
+            } while (ActiveTile != null);
+            End();
+            State = GameState.End;
         }
 
         public void Shuffle()
         {
-            foreach (var e in _expansions)
+            foreach (var e in m_expansions)
             {
                 e.BeforeDeckShuffle(Deck);
             }
             Deck.Shuffle();
-            foreach (var e in _expansions)
+            foreach (var e in m_expansions)
             {
                 e.AfterDeckShuffle(Deck);
             }
@@ -379,43 +347,43 @@ namespace Carcassonne.Model
 
         protected void AddTile(int count, Tile tile)
         {
-            for (int i = 1; i < count; i++)
+            for (var i = 1; i < count; i++)
             {
                 Deck.Push(tile.TileClone());
             }
             Deck.Push(tile);
         }
 
-        private List<IPointRegion> place(CarcassonneMove move)
+        private List<IPointRegion> Place(CarcassonneMove move)
         {
-            List<IPointRegion> changed = null;
-            if (tryFit(ActiveTile, move))
+            var changed = new List<IPointRegion>();
+            if (TryFit(ActiveTile, move))
             {
-                changed = place(ActiveTile, move);
+                changed = Place(ActiveTile, move);
             }
             return changed;
         }
 
-        private List<IPointRegion> place(Tile tile, CarcassonneMove move)
+        private List<IPointRegion> Place(Tile tile, CarcassonneMove move)
         {
             var available = new List<EdgeDirection>((EdgeDirection[])Enum.GetValues(typeof(EdgeDirection)));
             var changedPointRegions = new List<IPointRegion>();
 
             Board.Add(new Placement<Tile, CarcassonneMove>(tile, move));
-            if (tile.TileRegion != null)
+            if (tile.TileRegion.Type != TileRegionType.None)
             {
-                _pointRegions.Add(tile.TileRegion);
+                PointRegions.Add(tile.TileRegion);
                 changedPointRegions.Add(tile.TileRegion);
             }
             var allNeighbors = Board.GetAllNeighbors(move.Location);
             foreach (var n in allNeighbors)
             {
-                if (n.TileRegion != null)
+                if (n.TileRegion != TileRegion.None)
                 {
                     n.TileRegion.Add(tile);
                     changedPointRegions.Add(n.TileRegion);
                 }
-                if (tile.TileRegion != null)
+                if (tile.TileRegion != TileRegion.None)
                 {
                     tile.TileRegion.Add(n);
                 }
@@ -424,19 +392,16 @@ namespace Carcassonne.Model
             while (available.Count > 0)
             {
                 var r = tile.GetRegion(available[0]);
-                if (r != null)
+                if (r.Type != RegionType.None)
                 {
                     var regions = new List<PointRegion>();
                     foreach (var d in r.Edges)
                     {
                         var n=Board.GetNeighbor(move.Location, d);
-                        if (n != null)
+                        if (n != Tile.None)
                         {
                             var nr = n.GetRegion(d.Opposite());
-                            if (nr?.Container is PointRegion pr)
-                            {
-                                regions.Add(pr);
-                            }
+                            regions.Add(nr.Container);
                         }
                         available.Remove(d);
                     }
@@ -447,15 +412,15 @@ namespace Carcassonne.Model
                             var dup = regions[1];
                             regions[0].Merge(dup);
                             regions.Remove(dup);
-                            if (_pointRegions.Contains(dup))
+                            if (PointRegions.Contains(dup))
                             {
-                                _pointRegions.Remove(dup);
+                                PointRegions.Remove(dup);
                             }
                         }
                         regions[0].Add(r);
-                        if (!_pointRegions.Contains(regions[0]))
+                        if (!PointRegions.Contains(regions[0]))
                         {
-                            _pointRegions.Add(regions[0]);
+                            PointRegions.Add(regions[0]);
                         }
                         if (!changedPointRegions.Contains(regions[0]))
                         {
@@ -469,7 +434,7 @@ namespace Carcassonne.Model
                             case RegionType.City:
                                 var cpr = new CityPointRegion();
                                 cpr.Add(r);
-                                _pointRegions.Add(cpr);
+                                PointRegions.Add(cpr);
                                 if (!changedPointRegions.Contains(cpr))
                                 {
                                     changedPointRegions.Add(cpr);
@@ -482,7 +447,7 @@ namespace Carcassonne.Model
                             case RegionType.Road:
                                 var rpr = new PointRegion(r.Type);
                                 rpr.Add(r);
-                                _pointRegions.Add(rpr);
+                                PointRegions.Add(rpr);
                                 if (!changedPointRegions.Contains(rpr))
                                 {
                                     changedPointRegions.Add(rpr);
@@ -506,23 +471,21 @@ namespace Carcassonne.Model
         /// <summary>
         /// See if the tile fits at the current location.
         /// </summary>
+        /// <param name="tile"></param>
         /// <param name="move">Proposed location and rotation of ActiveTile</param>
         /// <returns>true if the ActiveTile would fit at the current location.</returns>
-        private bool tryFit(Tile tile, CarcassonneMove move)
+        private bool TryFit(Tile tile, CarcassonneMove move)
         {
             return RuleSet.Fits(Board, tile, move);
         }
 
         public Player AddPlayer(string name)
         {
-            if (State == GameState.NotStarted)
-            {
-                var p = new Player(name);
-                Players.Add(p);
-                RuleSet.UpdatePlayer(p);
-                return p;
-            }
-            return null;
+            if (State != GameState.NotStarted) return Player.None;
+            var p = new Player(name);
+            Players.Add(p);
+            RuleSet.UpdatePlayer(p);
+            return p;
         }
     }
 }

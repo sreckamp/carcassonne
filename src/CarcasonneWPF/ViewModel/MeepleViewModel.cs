@@ -15,6 +15,7 @@ namespace Carcassonne.WPF.ViewModel
         public MeepleViewModel(Meeple meeple)
         {
             Dispatcher = Application.Current.Dispatcher;
+            PropertyChanged += (sender, args) => { };
             Meeple = meeple;
         }
 

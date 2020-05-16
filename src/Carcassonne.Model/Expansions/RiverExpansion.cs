@@ -11,7 +11,7 @@ namespace Carcassonne.Model.Expansions
 
         public RiverExpansion()
         {
-            _PlaceRules.Add(new RiverFitRule());
+            WritablePlaceRules.Add(new RiverFitRule());
         }
 
         public override bool IgnoreDefaultStart => true;
@@ -46,7 +46,7 @@ namespace Carcassonne.Model.Expansions
             m_riverDeck.Push(builder.NewTile()
                 .AddRoadRegion(EdgeDirection.South)
                 .AddRiverRegion(EdgeDirection.East, EdgeDirection.West)
-                .AddMonestary()
+                .AddMonastery()
                 );
             m_riverDeck.Push(builder.NewTile()
                 .AddRiverRegion(EdgeDirection.North, EdgeDirection.East)

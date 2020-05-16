@@ -42,7 +42,6 @@ namespace Carcassonne.WPF.ViewModel
         public MappingCollection<MeepleViewModel, Meeple> MeepleViewModels
         {
             get;
-            private set;
         }
 
         public Brush Color => ColorsForName[m_player.Name];
@@ -82,12 +81,11 @@ namespace Carcassonne.WPF.ViewModel
                 Monitor.PulseAll(m_lock);
             }
         }
-        public IClaimable GetClaim(Game game, out MeepleType type)
+        public (IClaimable, MeepleType) GetClaim(Game game)
         {
             //m_view.ActiveTileView.MouseLeftButtonUp += m_claimLeftButtonUpHandler;
             //m_view.ActiveTileView.MouseRightButtonUp += m_claimRightButtonUpHandler;
             //m_view.ActiveTileView.MouseRightButtonDown += m_rightButtonDownHandler;
-            type = MeepleType.Meeple;
             //m_view.ActiveTileView.ActiveMeeple = PeekMeeple(type);
             //if (m_view.ActiveTileView.ActiveMeeple != null)
             //{
@@ -102,7 +100,7 @@ namespace Carcassonne.WPF.ViewModel
             //m_view.ActiveTileView.MouseLeftButtonUp -= m_claimLeftButtonUpHandler;
             //m_view.ActiveTileView.MouseRightButtonDown -= m_rightButtonDownHandler;
             //m_rightPressed = false;
-            return m_activeClaim;
+            return (m_activeClaim, MeepleType.Meeple);
         }
 
         //private void GameField_LeftMouseButtonUp(object sender, MouseButtonEventArgs e)

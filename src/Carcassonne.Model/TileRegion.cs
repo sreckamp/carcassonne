@@ -5,7 +5,10 @@ namespace Carcassonne.Model
 {
     public class TileRegion : IClaimable, IPointRegion //, INotifyPropertyChanged
     {
+        public static readonly TileRegion None = new TileRegion();
+
         private readonly List<Tile> m_tiles = new List<Tile>();
+
         //#region INotifyPropertyChanged Members
 
         //public event PropertyChangedEventHandler PropertyChanged;
@@ -20,42 +23,35 @@ namespace Carcassonne.Model
 
         //#endregion
 
-        public TileRegion(Tile parent, TileRegionType type)
+        public TileRegion(TileRegionType type = TileRegionType.None)
         {
-            m_tiles.Add(parent);
+            // PropertyChanged += (sender, args) => { };
             Type = type;
         }
 
-        private TileRegionType m_type;
-        public TileRegionType Type
-        {
-            get => m_type;
-            private set => m_type = value;
-        }
+ 
+        public TileRegionType Type { get; }
 
-        private Meeple m_claimer;
+        private Meeple m_claimer = Meeple.None;
         public Meeple Claimer
         {
             get => m_claimer;
             private set
             {
                 m_claimer = value;
-                //notifyPropertyChanged("Claimer");
-                m_owners.Clear();
-                if (m_claimer != null)
+                Owners.Clear();
+                if (m_claimer != Meeple.None)
                 {
-                    m_owners.Add(m_claimer.Player);
+                    Owners.Add(m_claimer.Player);
                 }
-                //notifyPropertyChanged("Owner");
             }
         }
 
-        private readonly List<Player> m_owners = new List<Player>();
-        public List<Player> Owners => m_owners;
+        public List<Player> Owners { get; } = new List<Player>();
 
         public void Claim(Meeple meeple)
         {
-            if (Claimer != null)
+            if (Claimer != Meeple.None)
             {
                 throw new InvalidOperationException("Cannot Claim a region already claimed.");
             }
@@ -64,34 +60,28 @@ namespace Carcassonne.Model
 
         public void ResetClaim()
         {
-            Claimer = null;
+            Claimer = Meeple.None;
         }
 
         public void Add(Tile t)
         {
-            if (!m_tiles.Contains(t))
+            if (m_tiles.Contains(t)) return;
+            m_tiles.Add(t);
+            //notifyPropertyChanged("Score");
+            if (Score == 9)
             {
-                m_tiles.Add(t);
-                //notifyPropertyChanged("Score");
-                if (Score == 9)
-                {
-                    //notifyPropertyChanged("IsClosed");
-                }
+                //notifyPropertyChanged("IsClosed");
             }
         }
 
-        private bool m_isForcedOpened = false;
-        public bool IsForcedOpened {
-            get => m_isForcedOpened;
-            set => m_isForcedOpened = value;
-        }
+        public bool IsForcedOpened { get; set; } = false;
 
         public bool IsClosed => !IsForcedOpened && (Score == 9);
         public int Score => m_tiles.Count;
 
         public void ReturnMeeple()
         {
-            Claimer?.Player.ReturnMeeple(Claimer);
+            Claimer.Player.ReturnMeeple(Claimer);
         }
 
         public override string ToString()

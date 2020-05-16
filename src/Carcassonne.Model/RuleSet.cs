@@ -15,7 +15,7 @@ namespace Carcassonne.Model
         public RuleSet(params AbstractExpansionPack[] expansions)
         {
             m_placeRules.Add(new EmptyBoardPlaceRule());
-            m_placeRules.Add(new NullPlaceRule());
+            m_placeRules.Add(new NoneTilePlaceRule());
             m_placeRules.Add(new OccupiedPlaceRule());
             m_claimRules.Add(new CityRoadRegionClaimRule());
             m_claimRules.Add(new MonestaryClaimRule());
@@ -27,7 +27,7 @@ namespace Carcassonne.Model
                 m_playerRules.AddRange(exp.PlayerCreationRules);
                 m_scoreRules.AddRange(exp.ScoreRules);
             }
-            m_scoreRules.Add(new TileRegionScoreRule(TileRegionType.Monestary));
+            m_scoreRules.Add(new TileRegionScoreRule(TileRegionType.Monastery));
             m_scoreRules.Add(new CityRegionScoreRule());
             m_scoreRules.Add(new RoadRegionScoreRule());
             m_placeRules.Add(new DefaultPlaceRule());

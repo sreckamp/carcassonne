@@ -13,7 +13,7 @@ namespace Carcassonne.WPF.ViewModel
 {
     public class PlacementViewModel : AbstractPlacementViewModel<Tile, CarcassonneMove>
     {
-        private static readonly ClaimableViewModel SDefaultIClaimableModel = new ClaimableViewModel(null, null);
+        private static readonly ClaimableViewModel SDefaultIClaimableModel = new ClaimableViewModel(new EdgeRegion(), TileRegion.None);
 
         public PlacementViewModel(Tile tile, GameBoardViewModel boardModel) :
             this(new Placement<Tile, CarcassonneMove>(tile, null), boardModel)
@@ -28,10 +28,11 @@ namespace Carcassonne.WPF.ViewModel
         }
 
         private GameBoardViewModel BoardViewModel => GridManager as GameBoardViewModel;
-        protected override CarcassonneMove GetMove(int locationX, int locationY)
-        {
-            return new CarcassonneMove(locationX, locationY, TileRotation);
-        }
+
+        protected override CarcassonneMove GetMove(int locationX, int locationY) =>
+            new CarcassonneMove(locationX, locationY, TileRotation);
+
+        protected override CarcassonneMove GetEmptyMove() => CarcassonneMove.None;
 
         public override void SetCell(DPoint cell)
         {
@@ -39,22 +40,9 @@ namespace Carcassonne.WPF.ViewModel
             NotifyPropertyChanged(nameof(Opacity));
         }
 
-        public double Opacity
-        {
-            get
-            {
-                if (BoardViewModel?.Fits(this) ?? true)
-                {
-                    return 1;
-                }
-                return 0.5;
-            }
-        }
+        public double Opacity => !(GridManager is GameBoardViewModel b) || b.Fits(this) ? 1 : 0.5;
 
-        public void ChangedDepth()
-        {
-            NotifyPropertyChanged(nameof(Depth));
-        }
+        public void ChangedDepth() => NotifyPropertyChanged(nameof(Depth));
 
         public int Depth
         {
@@ -80,7 +68,7 @@ namespace Carcassonne.WPF.ViewModel
         private Rotation m_tileRotation = Rotation.None;
         public Rotation TileRotation
         {
-            get => Placement?.Move?.Rotation ?? m_tileRotation;
+            get => Placement.Move?.Rotation ?? m_tileRotation;
             set
             {
                 m_tileRotation = value;
@@ -131,17 +119,11 @@ namespace Carcassonne.WPF.ViewModel
         //    NotifyPropertyChanged("Opacity");
         //}
 
-        //public override DPoint Location
-        //{
-        //    get
-        //    {
-        //        return Tile?.Placement?.Location ?? base.Location;
-        //    }
-        //}
+        public string Location => $"({Move.Location.X},{Move.Location.Y})";
 
-        public Tile Tile => Placement?.Piece;
+        public Tile Tile => Placement.Piece;
 
-        ClaimableViewModel m_allDataContext = SDefaultIClaimableModel;
+        private ClaimableViewModel m_allDataContext = SDefaultIClaimableModel;
         public object AllDataContext => m_allDataContext;
 
         //IClaimableViewModel m_allShieldDataContext = s_defaultIClaimableModel;
@@ -280,113 +262,32 @@ namespace Carcassonne.WPF.ViewModel
                 m_tile = tile;
             }
 
-            public Visibility FullVisibility
-            {
-                get
-                {
-                    if (m_edge != null || m_tile != null)
-                    {
-                        return Visibility.Visible;
-                    }
-                    return Visibility.Hidden;
-                }
-            }
+            public Visibility FullVisibility =>
+                (m_edge != null || m_tile != null) ? Visibility.Visible : Visibility.Hidden;
 
-            public Visibility CityVisibility
-            {
-                get
-                {
-                    if (m_edge?.Type == RegionType.City)
-                    {
-                        return Visibility.Visible;
-                    }
-                    return Visibility.Hidden;
-                }
-            }
+            public Visibility CityVisibility =>
+                (m_edge.Type == RegionType.City) ? Visibility.Visible : Visibility.Hidden;
 
-            public Visibility PathVisibility
-            {
-                get
-                {
-                    if (m_edge?.Type.IsPath() ?? false)
-                    {
-                        return Visibility.Visible;
-                    }
-                    return Visibility.Hidden;
-                }
-            }
+            public Visibility PathVisibility =>
+                (m_edge.Type.IsPath()) ? Visibility.Visible : Visibility.Hidden;
 
-            public Visibility RoadVisibility
-            {
-                get
-                {
-                    if ((m_edge?.Type ?? RegionType.Grass) == RegionType.Road)
-                    {
-                        return Visibility.Visible;
-                    }
-                    return Visibility.Hidden;
-                }
-            }
+            public Visibility RoadVisibility =>
+                (m_edge.Type == RegionType.Road) ? Visibility.Visible : Visibility.Hidden;
 
-            public Visibility RoadEndVisibility
-            {
-                get
-                {
-                    if (m_edge?.Type == RegionType.Road)
-                    {
-                        return Visibility.Visible;
-                    }
-                    return Visibility.Hidden;
-                }
-            }
+            public Visibility RoadEndVisibility =>
+                (m_edge.Type == RegionType.Road) ? Visibility.Visible : Visibility.Hidden;
 
-            public Visibility RiverEndVisibility
-            {
-                get
-                {
-                    if (m_edge?.Type == RegionType.River)
-                    {
-                        return Visibility.Visible;
-                    }
-                    return Visibility.Hidden;
-                }
-            }
+            public Visibility RiverEndVisibility =>
+                (m_edge.Type == RegionType.River) ? Visibility.Visible : Visibility.Hidden;
 
-            public Visibility ShieldVisibility
-            {
-                get
-                {
-                    if (m_edge is CityEdgeRegion cer && cer.HasShield)
-                    {
-                        return Visibility.Visible;
-                    }
-                    return Visibility.Hidden;
-                }
-            }
+            public Visibility ShieldVisibility =>
+                m_edge is CityEdgeRegion cer && cer.HasShield ? Visibility.Visible : Visibility.Hidden;
 
-            public Visibility FlowerVisibility
-            {
-                get
-                {
-                    if (m_tile?.Type == TileRegionType.Flower)
-                    {
-                        return Visibility.Visible;
-                    }
-                    return Visibility.Hidden;
-                }
-            }
+            public Visibility FlowerVisibility =>
+                m_tile.Type == TileRegionType.Flower ? Visibility.Visible : Visibility.Hidden;
 
-            public Visibility MonestaryVisibility
-            {
-                get
-                {
-                    if (m_tile?.Type == TileRegionType.Monestary)
-                    {
-                        return Visibility.Visible;
-                    }
-                    return Visibility.Hidden;
-                }
-            }
+            public Visibility MonestaryVisibility =>
+                m_tile.Type == TileRegionType.Monastery ? Visibility.Visible : Visibility.Hidden;
 
             public MBrush Fill
             {

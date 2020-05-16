@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using GameBase.Model;
 
@@ -7,44 +8,52 @@ namespace Carcassonne.Model
 {
     public class Tile : Piece
     {
+        public static readonly Tile None = new Tile();
+
         private readonly List<EdgeRegion> m_grassRegions = new List<EdgeRegion>();
 
-        public Tile()
+        private Tile()
         {
-            Regions = new List<EdgeRegion>();
         }
 
-        private TileRegion m_tileRegion;
+        private TileRegion m_tileRegion = TileRegion.None;
+
         public TileRegion TileRegion
         {
             get => m_tileRegion;
-            internal set => m_tileRegion = value;
+            private set
+            {
+                m_tileRegion = value;
+                m_tileRegion.Add(this);
+            }
         }
 
-        public List<EdgeRegion> Regions { get; private set; }
+        private readonly IList<EdgeRegion> m_regions = new List<EdgeRegion>
+        {
+            new EdgeRegion(RegionType.None, EdgeDirection.North),
+            new EdgeRegion(RegionType.None, EdgeDirection.East),
+            new EdgeRegion(RegionType.None, EdgeDirection.South),
+            new EdgeRegion(RegionType.None, EdgeDirection.West),
+        };
 
-        public bool HasMonestary => TileRegion?.Type == TileRegionType.Monestary;
+        public IEnumerable<EdgeRegion> Regions => m_regions;
 
-        public bool HasFlower => TileRegion?.Type == TileRegionType.Flower;
+        public bool HasMonastery => TileRegion.Type == TileRegionType.Monastery;
 
-        public Meeple ClaimingMeeple => ClaimedRegion?.Claimer;
+        public bool HasFlower => TileRegion.Type == TileRegionType.Flower;
+
+        public Meeple ClaimingMeeple => ClaimedRegion.Claimer;
 
         public IClaimable ClaimedRegion
         {
             get
             {
-                if (TileRegion?.Claimer != null)
+                if (TileRegion.Claimer != Meeple.None)
                 {
                     return TileRegion;
                 }
-                foreach (var r in Regions)
-                {
-                    if (r.Claimer != null)
-                    {
-                        return r;
-                    }
-                }
-                return null;
+
+                return Regions.FirstOrDefault(r => r.Claimer != Meeple.None);
             }
         }
 
@@ -53,50 +62,47 @@ namespace Carcassonne.Model
             return GetRegion(direction)?.Type ?? RegionType.Grass;
         }
 
-        private void addRegion(EdgeRegion region)
+        private void AddRegion(EdgeRegion region)
         {
             foreach (var dir in region.Edges)
             {
-                if (GetRegion(dir) != null)
+                var r = GetRegion(dir);
+                if (r.Type == RegionType.None)
                 {
-                    throw new ArgumentException("Edge " + dir.ToString() + " is already in use.");
+                    m_regions.Remove(r);
+                }
+                else
+                {
+                    throw new ArgumentException($"Edge {dir} is already in use.");
                 }
             }
-            Regions.Add(region);
+
+            m_regions.Add(region);
             //region.PropertyChanged += new PropertyChangedEventHandler(region_PropertyChanged);
         }
 
         public EdgeRegion GetRegion(EdgeDirection direction)
         {
-            foreach (var er in Regions)
-            {
-                if (er.ContainsDirection(direction))
-                {
-                    return er;
-                }
-            }
-            return null;
+            return Regions.First(er => er.ContainsDirection(direction));
         }
 
         public Tile TileClone()
         {
-            return Clone() as Tile;
+            return Clone() as Tile ?? Tile.None;
         }
 
         public override Piece Clone()
         {
-            var tile = new Tile();
+            var tile = new Tile
+            {
+                TileRegion = new TileRegion(TileRegion.Type)
+            };
+
             foreach (var r in Regions)
             {
-                if (r != null)
-                {
-                    tile.addRegion(r.CopyTo(tile));
-                }
+                tile.AddRegion(r.CopyTo(tile));
             }
-            if (TileRegion != null)
-            {
-                tile.TileRegion = new TileRegion(tile, TileRegion.Type);
-            }
+
             return tile;
         }
 
@@ -104,74 +110,58 @@ namespace Carcassonne.Model
         {
             var done = new List<EdgeRegion>();
             var sb = new StringBuilder();
-            foreach (var r in Regions)
-            {
-                if (r != null && !done.Contains(r))
-                {
-                    if (sb.Length > 0)
-                    {
-                        sb.Append(',');
-                    }
-                    sb.Append(r.ToString());
-                    done.Add(r);
-                }
-            }
-            if (TileRegion != null)
+            foreach (var r in Regions.Where(r => r.Type != RegionType.None && !done.Contains(r)))
             {
                 if (sb.Length > 0)
                 {
                     sb.Append(',');
                 }
-                sb.Append(TileRegion.Type.ToString());
+
+                sb.Append(r);
+                done.Add(r);
             }
+
+            if (TileRegion == TileRegion.None) return sb.ToString();
+            if (sb.Length > 0)
+            {
+                sb.Append(',');
+            }
+
+            sb.Append(TileRegion.Type);
+
             return sb.ToString();
         }
 
         public List<IClaimable> GetAvailableRegions(RegionType type)
         {
-            var claimables = new List<IClaimable>();
-            foreach (var r in Regions)
-            {
-                if (r?.Type == type)
-                {
-                    claimables.Add(r);
-                }
-            }
-            return claimables;
+            return Regions.Where(r => r.Type == type).Cast<IClaimable>().ToList();
         }
 
         public List<IClaimable> GetAvailableRegions()
         {
             var claimables = new List<IClaimable>();
-            if (TileRegion?.Claimer == null)
+            if (TileRegion.Claimer == Meeple.None)
             {
                 claimables.Add(TileRegion);
             }
-            foreach (var r in Regions)
-            {
-                if (r?.Container?.Owners.Count == 0 && !claimables.Contains(r))
-                {
-                    claimables.Add(r);
-                }
-            }
+
+            claimables.AddRange(Regions.Where(r =>
+                r.Type != RegionType.None && r.Container.Owners.Count == 0 && !claimables.Contains(r)));
+
             return claimables;
         }
 
         public List<IPointRegion> GetClosedRegions()
         {
             var closed = new List<IPointRegion>();
-            if (TileRegion?.IsClosed ?? false)
+            if (TileRegion.IsClosed)
             {
                 closed.Add(TileRegion);
             }
-            foreach (var r in Regions)
-            {
-                if (r?.Container?.IsClosed ?? false
-                    && !closed.Contains(r.Container))
-                {
-                    closed.Add(r.Container);
-                }
-            }
+
+            closed.AddRange(Regions.Where(r => r.Container.IsClosed
+                                               && !closed.Contains(r.Container)).Select(r=>r.Container));
+
             return closed;
         }
 
@@ -186,39 +176,39 @@ namespace Carcassonne.Model
 
             public TileBuilder AddCityRegion(params EdgeDirection[] edges)
             {
-                Tile.addRegion(new CityEdgeRegion(Tile, edges));
+                Tile.AddRegion(new CityEdgeRegion(edges) {Parent = Tile});
                 return this;
             }
 
             public TileBuilder AddShield(EdgeDirection edge)
             {
                 var region = Tile.GetRegion(edge) as CityEdgeRegion ??
-                    throw new InvalidOperationException($"{edge} edge not part of a City region!");
+                             throw new InvalidOperationException($"{edge} edge not part of a City region!");
                 region.HasShield = true;
                 return this;
             }
 
             public TileBuilder AddFlowers()
             {
-                Tile.TileRegion = new TileRegion(Tile, TileRegionType.Flower);
+                Tile.TileRegion = new TileRegion(TileRegionType.Flower);
                 return this;
             }
 
-            public TileBuilder AddMonestary()
+            public TileBuilder AddMonastery()
             {
-                Tile.TileRegion = new TileRegion(Tile, TileRegionType.Monestary);
+                Tile.TileRegion = new TileRegion(TileRegionType.Monastery);
                 return this;
             }
 
             public TileBuilder AddRiverRegion(params EdgeDirection[] edges)
             {
-                Tile.addRegion(new EdgeRegion(Tile, RegionType.River, edges));
+                Tile.AddRegion(new EdgeRegion(RegionType.River, edges) {Parent = Tile});
                 return this;
             }
 
             public TileBuilder AddRoadRegion(params EdgeDirection[] edges)
             {
-                Tile.addRegion(new EdgeRegion(Tile, RegionType.Road, edges));
+                Tile.AddRegion(new EdgeRegion(RegionType.Road, edges) {Parent = Tile});
                 return this;
             }
 
@@ -230,7 +220,7 @@ namespace Carcassonne.Model
 
             public static implicit operator Tile(TileBuilder builder)
             {
-                return builder?.Tile;
+                return builder.Tile;
             }
         }
     }

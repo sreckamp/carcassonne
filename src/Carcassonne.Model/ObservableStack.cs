@@ -7,6 +7,11 @@ namespace Carcassonne.Model
     public interface IObservableStack<T> : IEnumerable<T>, ICollection, INotifyCollectionChanged { }
     public class ObservableStack<T> : Stack<T>, IObservableStack<T>
     {
+        public ObservableStack()
+        {
+            CollectionChanged += (sender, args) => { };
+        }
+
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         public new void Push(T t)

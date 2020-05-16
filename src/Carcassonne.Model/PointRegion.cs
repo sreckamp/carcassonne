@@ -1,41 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace Carcassonne.Model
 {
     public class PointRegion : IPointRegion
     {
+        public static readonly PointRegion None = new PointRegion(RegionType.None);
+
         private readonly List<EdgeRegion> m_regions = new List<EdgeRegion>();
         private readonly List<Tile> m_tiles = new List<Tile>();
-        private readonly RegionType m_type;
 
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void NotifyPropertyChanged(string name)
+        private void NotifyPropertyChanged(string name)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            PropertyChanged.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         #endregion
 
         public PointRegion(RegionType type)
         {
-            m_type = type;
+            Type = type;
+            PropertyChanged += (sender, args) => { };
+            IsClosedChanged += (sender, args) => { };
         }
 
         public event EventHandler IsClosedChanged;
-        public RegionType Type { get; private set; }
+        public RegionType Type { get; }
 
         private void OnIsClosedChange()
         {
-            NotifyPropertyChanged("IsClosed");
-            IsClosedChanged?.Invoke(this, new EventArgs());
+            NotifyPropertyChanged(nameof(IsClosed));
+            IsClosedChanged.Invoke(this, new EventArgs());
         }
 
-        private bool m_isForcedOpened = false;
+        private bool m_isForcedOpened;
         public bool IsForcedOpened
         {
             get => m_isForcedOpened;
@@ -46,14 +50,15 @@ namespace Carcassonne.Model
             }
         }
         public bool IsClosed => !IsForcedOpened && (OpenEdges == 0);
-        private int m_edges = 0;
+
+        private int m_edges;
         public int OpenEdges
         {
             get => m_edges;
             set
             {
                 m_edges = value;
-                NotifyPropertyChanged("OpenEdges");
+                NotifyPropertyChanged(nameof(OpenEdges));
                 OnIsClosedChange();
             }
         }
@@ -65,24 +70,21 @@ namespace Carcassonne.Model
             var markers = new List<Player>();
             foreach (var r in m_regions)
             {
-                if (r.Claimer != null)
+                if (r.Claimer == Meeple.None) continue;
+                var p = r.Claimer.Player;
+                p.ReturnMeeple(r.Claimer);
+                if (Owners.Contains(p) && !markers.Contains(p))
                 {
-                    var p = r.Claimer.Player;
-                    p.ReturnMeeple(r.Claimer);
-                    if (Owners.Contains(p) && !markers.Contains(p))
-                    {
-                        markers.Add(p);
-                    }
-                    else
-                    {
-                        r.ResetClaim();
-                    }
+                    markers.Add(p);
+                }
+                else
+                {
+                    r.ResetClaim();
                 }
             }
         }
 
-        private readonly List<Player> m_owners = new List<Player>();
-        public List<Player> Owners => m_owners;
+        public List<Player> Owners { get; } = new List<Player>();
 
         public void Add(EdgeRegion r)
         {
@@ -108,11 +110,10 @@ namespace Carcassonne.Model
                 r.Container = this;
                 UpdateOwners();
             }
-            if (!m_tiles.Contains(r.Parent))
-            {
-                m_tiles.Add(r.Parent);
-                updated = true;
-            }
+
+            if (m_tiles.Contains(r.Parent)) return updated;
+            m_tiles.Add(r.Parent);
+            updated = true;
             return updated;
         }
 
@@ -120,28 +121,23 @@ namespace Carcassonne.Model
         {
             var claims = new Dictionary<Player, int>();
             var high = 0;
-            foreach (var r in m_regions)
+            foreach (var r in m_regions.Where(r => r.Claimer != Meeple.None))
             {
-                if (r.Claimer != null)
+                if (!claims.ContainsKey(r.Claimer.Player))
                 {
-                    if (!claims.ContainsKey(r.Claimer.Player))
-                    {
-                        claims[r.Claimer.Player] = 0;
-                    }
-                    claims[r.Claimer.Player]++;
-                    if (claims[r.Claimer.Player] >= high)
-                    {
-                        if (claims[r.Claimer.Player] > high)
-                        {
-                            Owners.Clear();
-                        }
-                        if (!Owners.Contains(r.Claimer.Player))
-                        {
-                            Owners.Add(r.Claimer.Player);
-                        }
-                        high = claims[r.Claimer.Player];
-                    }
+                    claims[r.Claimer.Player] = 0;
                 }
+                claims[r.Claimer.Player]++;
+                if (claims[r.Claimer.Player] < high) continue;
+                if (claims[r.Claimer.Player] > high)
+                {
+                    Owners.Clear();
+                }
+                if (!Owners.Contains(r.Claimer.Player))
+                {
+                    Owners.Add(r.Claimer.Player);
+                }
+                high = claims[r.Claimer.Player];
             }
             NotifyPropertyChanged("Owners");
         }
@@ -156,15 +152,7 @@ namespace Carcassonne.Model
 
         public List<EdgeRegion> GetClaimedRegions()
         {
-            var claimed = new List<EdgeRegion>();
-            foreach (var r in m_regions)
-            {
-                if (r.Claimer != null)
-                {
-                    claimed.Add(r);
-                }
-            }
-            return claimed;
+            return m_regions.Where(r => r.Claimer != Meeple.None).ToList();
         }
 
         public override string ToString()
