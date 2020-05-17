@@ -28,7 +28,7 @@ namespace Carcassonne.WPF.ViewModel
             DeckViewModel = new DispatchedObservableList<PlacementViewModel>(/*m_dispatcher, */new ObservableList<PlacementViewModel>());
         }
 
-        private void boardViewModel_Placed(object sender, MoveEventArgs e)
+        private void boardViewModel_Placed(object sender, PlaceEventArgs e)
         {
             ActivePlayerViewModel.Place(e.Move);
         }

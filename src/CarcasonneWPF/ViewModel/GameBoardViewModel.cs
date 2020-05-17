@@ -186,10 +186,10 @@ namespace Carcassonne.WPF.ViewModel
         }
 
         public ICommand PlaceCommand => new RelayCommand<object>(Place, CanPlace);
-        public event EventHandler<MoveEventArgs> Placed;
+        public event EventHandler<PlaceEventArgs> Placed;
         private void Place(object obj)
         {
-            // Placed.Invoke(this, new MoveEventArgs(ActivePlacementViewModel.Location));
+            Placed.Invoke(this, new PlaceEventArgs(ActivePlacementViewModel.Piece, ActivePlacementViewModel.Location));
         }
 
         private bool CanPlace(object obj)
@@ -206,18 +206,18 @@ namespace Carcassonne.WPF.ViewModel
 
         private bool CanRotate(object obj)
         {
-            return ActivePlacementViewModel != null;
+            return ActivePlacementViewModel.Piece != Tile.None;
         }
 
         public ICommand MoveCommand => new RelayCommand<GridCellRoutedEventArgs>(Move, CanMove);
         private bool CanMove(GridCellRoutedEventArgs args)
         {
-            return ActivePlacementViewModel != null;
+            return ActivePlacementViewModel.Piece != Tile.None;
         }
 
         private void Move(GridCellRoutedEventArgs args)
         {
-            ActivePlacementViewModel?.SetCell(args.Cell);
+            ActivePlacementViewModel.SetCell(args.Cell);
         }
 
         #region INotifyPropertyChanged Members
@@ -255,11 +255,11 @@ namespace Carcassonne.WPF.ViewModel
             return m_active.Contains(pvm);
         }
     }
-    public class MoveEventArgs:EventArgs
+    public class PlaceEventArgs : EventArgs
     {
-        public MoveEventArgs(CarcassonneMove move)
+        public PlaceEventArgs(ITile tile, Point location)
         {
-            Move = move;
+            Move = new CarcassonneMove(location, (tile is RotatedTile rt) ? rt.Rotation : Rotation.None);
         }
 
         public CarcassonneMove Move { get; }

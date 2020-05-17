@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using GameBase.Model;
 
@@ -146,7 +147,7 @@ namespace Carcassonne.Model
             var useDefaultStart = m_expansions.All(exp => !exp.IgnoreDefaultStart);
             if (useDefaultStart)
             {
-                Place(m_defaultStartTile, new CarcassonneMove(0, 0, Rotation.None));
+                Place(m_defaultStartTile, new Point(0, 0));
             }
             State = GameState.NotStarted;
         }
@@ -360,26 +361,26 @@ namespace Carcassonne.Model
         private List<IPointRegion> Place(CarcassonneMove move)
         {
             var changed = new List<IPointRegion>();
-            if (TryFit(ActiveTile, move))
+            var tile = new RotatedTile(ActiveTile, move.Rotation);
+            if (TryFit(tile, move.Location))
             {
-                changed = Place(ActiveTile, move);
+                changed = Place(tile, move.Location);
             }
             return changed;
         }
 
-        private List<IPointRegion> Place(ITile tile, CarcassonneMove move)
+        private List<IPointRegion> Place(ITile tile, Point location)
         {
-            tile = new RotatedTile(tile, move.Rotation);
             var available = new List<EdgeDirection>((EdgeDirection[])Enum.GetValues(typeof(EdgeDirection)));
             var changedPointRegions = new List<IPointRegion>();
 
-            Board.Add(new Placement<ITile>(tile, move.Location));
+            Board.Add(new Placement<ITile>(tile, location));
             if (tile.TileRegion.Type != TileRegionType.None)
             {
                 PointRegions.Add(tile.TileRegion);
                 changedPointRegions.Add(tile.TileRegion);
             }
-            var allNeighbors = Board.GetAllNeighbors(move.Location);
+            var allNeighbors = Board.GetAllNeighbors(location);
             foreach (var n in allNeighbors)
             {
                 if (n.TileRegion != TileRegion.None)
@@ -401,7 +402,7 @@ namespace Carcassonne.Model
                     var regions = new List<PointRegion>();
                     foreach (var d in r.Edges)
                     {
-                        var n=Board.GetNeighbor(move.Location, d);
+                        var n=Board.GetNeighbor(location, d);
                         if (n != Tile.None)
                         {
                             var nr = n.GetRegion(d.Opposite());
@@ -476,11 +477,11 @@ namespace Carcassonne.Model
         /// See if the tile fits at the current location.
         /// </summary>
         /// <param name="tile"></param>
-        /// <param name="move">Proposed location and rotation of ActiveTile</param>
+        /// <param name="location">Proposed location</param>
         /// <returns>true if the ActiveTile would fit at the current location.</returns>
-        private bool TryFit(ITile tile, CarcassonneMove move)
+        private bool TryFit(ITile tile, Point location)
         {
-            return RuleSet.Fits(Board, tile, move.Location);
+            return RuleSet.Fits(Board, tile, location);
         }
 
         public Player AddPlayer(string name)
