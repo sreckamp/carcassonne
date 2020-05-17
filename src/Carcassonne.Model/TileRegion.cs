@@ -29,7 +29,7 @@ namespace Carcassonne.Model
             Type = type;
         }
 
- 
+
         public TileRegionType Type { get; }
 
         private Meeple m_claimer = Meeple.None;

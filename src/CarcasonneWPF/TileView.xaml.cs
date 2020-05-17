@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,7 +13,7 @@ namespace Carcassonne.WPF
     /// <summary>
     /// Interaction logic for GameTile.xaml
     /// </summary>
-    public partial class TileView : UserControl
+    public partial class TileView
     {
         //private static readonly Brush s_defaultBrush = new SolidColorBrush(Colors.DarkGray);
         //private static readonly Brush s_cityBrush = new SolidColorBrush(Colors.SaddleBrown);
@@ -74,11 +75,13 @@ namespace Carcassonne.WPF
             InitializeComponent();
         }
 
+        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private void SetActiveElement(object sender, MouseEventArgs e)
         {
 
         }
 
+        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private void ClearActiveElement(object sender, MouseEventArgs e)
         {
 

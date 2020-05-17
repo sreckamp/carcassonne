@@ -1,6 +1,6 @@
 ﻿namespace Carcassonne.Model.Rules
 {
-    public class MonestaryClaimRule : IClaimRule
+    public class MonasteryClaimRule : IClaimRule
     {
         #region IClaimRule Members
 

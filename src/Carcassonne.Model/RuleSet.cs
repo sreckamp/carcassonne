@@ -19,7 +19,7 @@ namespace Carcassonne.Model
             m_placeRules.Add(new NoneTilePlaceRule());
             m_placeRules.Add(new OccupiedPlaceRule());
             m_claimRules.Add(new CityRoadRegionClaimRule());
-            m_claimRules.Add(new MonestaryClaimRule());
+            m_claimRules.Add(new MonasteryClaimRule());
             m_playerRules.Add(new CreateMeeplePlayerCreationRule(7, MeepleType.Meeple));
             foreach (var exp in expansions)
             {

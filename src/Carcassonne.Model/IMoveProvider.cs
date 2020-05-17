@@ -2,6 +2,7 @@
 {
     public interface IMoveProvider
     {
+        // ReSharper disable once UnusedParameter.Global
         CarcassonneMove GetMove(Game game);
     }
 

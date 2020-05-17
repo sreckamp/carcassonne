@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 
 namespace Carcassonne.Model
 {
-    public interface IObservableStack<T> : IEnumerable<T>, ICollection, INotifyCollectionChanged { }
+    public interface IObservableStack<out T> : IEnumerable<T>, ICollection, INotifyCollectionChanged { }
     public class ObservableStack<T> : Stack<T>, IObservableStack<T>
     {
         public ObservableStack()

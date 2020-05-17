@@ -28,7 +28,7 @@ namespace Carcassonne.WPF.ViewModel
             Placed += (sender, args) => { };
             m_board = board;
             var placements = new MappingCollection<PlacementViewModel, Placement<Tile, CarcassonneMove>>(board.Placements, this);
-            Grid = new OverlayDispatchableObservableList<PlacementViewModel>(m_grid, placements, m_active);
+            Grid = new OverlayDispatchedObservableList<PlacementViewModel>(m_grid, placements, m_active);
             AvailablePositions = new DispatchedObservableList<Point>(board.AvailableLocations);
             board.MinXChanged += board_MinXChanged;
             board.MaxXChanged += board_MaxXChanged;
@@ -37,7 +37,7 @@ namespace Carcassonne.WPF.ViewModel
             InitializeGrid();
         }
 
-        public OverlayDispatchableObservableList<PlacementViewModel> Grid { get; }
+        public OverlayDispatchedObservableList<PlacementViewModel> Grid { get; }
         public DispatchedObservableList<Point> AvailablePositions { get; }
 
         public event EventHandler<ChangedValueArgs<int>> StartColumnChanged;

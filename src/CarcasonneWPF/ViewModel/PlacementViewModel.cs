@@ -142,7 +142,7 @@ namespace Carcassonne.WPF.ViewModel
         //IClaimableViewModel m_roadEndDataContext = s_defaultIClaimableModel;
         //public object RoadEndDataContext { get { return m_roadEndDataContext; } }
 
-        ClaimableViewModel m_tileDataContext = SDefaultIClaimableModel;
+        readonly ClaimableViewModel m_tileDataContext = SDefaultIClaimableModel;
         public object TileDataContext => m_tileDataContext;
 
         ClaimableViewModel m_northEastWestDataContext = SDefaultIClaimableModel;
@@ -169,7 +169,7 @@ namespace Carcassonne.WPF.ViewModel
         ClaimableViewModel m_northSouthDataContext = SDefaultIClaimableModel;
         public object NorthSouthDataContext => m_northSouthDataContext;
 
-        ClaimableViewModel m_northSouthFlowerDataContext = SDefaultIClaimableModel;
+        readonly ClaimableViewModel m_northSouthFlowerDataContext = SDefaultIClaimableModel;
         public object NorthSouthFlowerDataContext => m_northSouthFlowerDataContext;
 
         ClaimableViewModel m_northEastDataContext = SDefaultIClaimableModel;
@@ -287,7 +287,7 @@ namespace Carcassonne.WPF.ViewModel
             public Visibility FlowerVisibility =>
                 m_tile.Type == TileRegionType.Flower ? Visibility.Visible : Visibility.Hidden;
 
-            public Visibility MonestaryVisibility =>
+            public Visibility MonasteryVisibility =>
                 m_tile.Type == TileRegionType.Monastery ? Visibility.Visible : Visibility.Hidden;
 
             public MBrush Fill

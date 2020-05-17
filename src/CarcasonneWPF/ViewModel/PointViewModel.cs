@@ -1,4 +1,5 @@
 ﻿using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Windows.Media;
 using Carcassonne.Model;
@@ -20,6 +21,7 @@ namespace Carcassonne.WPF.ViewModel
             //board.AvailablePositions.CollectionChanged += new NotifyCollectionChangedEventHandler(AvailablePositions_CollectionChanged);
         }
 
+        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         void availablePositions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             //if ((e.NewItems != null && e.NewItems.Contains(Location))

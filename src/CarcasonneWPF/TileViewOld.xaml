@@ -11,13 +11,13 @@
             <EventSetter Event="MouseEnter" Handler="setActiveElement"/>
             <Setter Property="Visibility" Value="Hidden"/>
         </Style>
-        <Style x:Key ="MonestaryCanvas"  TargetType="{x:Type Canvas}">
+        <Style x:Key ="MonasteryCanvas"  TargetType="{x:Type Canvas}">
             <EventSetter Event="MouseEnter" Handler="setActiveElement"/>
             <Setter Property="DataContext">
                 <Setter.Value>
                     <Binding Path="TileRegion" Converter="{local:TileRegionFilter}">
                         <Binding.ConverterParameter>
-                            <model:TileRegionType>Monestary</model:TileRegionType>
+                            <model:TileRegionType>Monastery</model:TileRegionType>
                         </Binding.ConverterParameter>
                     </Binding>
                 </Setter.Value>
@@ -184,10 +184,10 @@
                 </MultiBinding>
             </Polygon.Visibility>
         </Polygon>
-        <Canvas Name="cMonestary" Canvas.Left="35" Canvas.Top="35"
+        <Canvas Name="cMonastery" Canvas.Left="35" Canvas.Top="35"
                  Background="DarkRed"
                  Height="80" Width="80"
-                 Style="{StaticResource MonestaryCanvas}">
+                 Style="{StaticResource MonasteryCanvas}">
             <Canvas.Visibility>
                 <Binding Converter="{local:ObjectVisibilityConverter}" FallbackValue="Hidden"/>
             </Canvas.Visibility>
@@ -244,7 +244,7 @@
                     <Binding ElementName="pgEastWest" Path="DataContext.IsClosed"/>
                     <Binding ElementName="rEastWestPath" Path="DataContext.IsClosed"/>
                     <Binding ElementName="pgNorthEastWest" Path="DataContext.IsClosed"/>
-                    <Binding ElementName="cMonestary" Path="DataContext.IsClosed"/>
+                    <Binding ElementName="cMonastery" Path="DataContext.IsClosed"/>
                     <Binding ElementName="rCenterFlower" Path="DataContext.IsClosed"/>
                     <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveMeeple"
                         Converter="{local:ObjectVisibilityConverter}"/>
@@ -278,10 +278,10 @@
                     <Binding ElementName="pgNorthEastWest" Path="DataContext.Claimer"/>
                     <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
                         Converter="{local:EqualityConverter}" ConverterParameter="pgNorthEastWest"/>
-                    <Binding ElementName="cMonestary" Path="Visibility"/>
-                    <Binding ElementName="cMonestary" Path="DataContext.Claimer"/>
+                    <Binding ElementName="cMonastery" Path="Visibility"/>
+                    <Binding ElementName="cMonastery" Path="DataContext.Claimer"/>
                     <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
-                        Converter="{local:EqualityConverter}" ConverterParameter="cMonestary"/>
+                        Converter="{local:EqualityConverter}" ConverterParameter="cMonastery"/>
                     <Binding ElementName="rCenterFlower" Path="Visibility"/>
                     <Binding ElementName="rCenterFlower" Path="DataContext.Claimer"/>
                     <Binding RelativeSource="{RelativeSource AncestorType={x:Type local:TileView}}" Path="ActiveElement.Name"
@@ -297,7 +297,7 @@
                     <Binding ElementName="pgEastWest" Path="DataContext.Claimer"/>
                     <Binding ElementName="rEastWestPath" Path="DataContext.Claimer"/>
                     <Binding ElementName="pgNorthEastWest" Path="DataContext.Claimer"/>
-                    <Binding ElementName="cMonestary" Path="DataContext.Claimer"/>
+                    <Binding ElementName="cMonastery" Path="DataContext.Claimer"/>
                     <Binding ElementName="rCenterFlower" Path="DataContext.Claimer"/>
                 </MultiBinding>
             </local:MeepleView.DataContext>

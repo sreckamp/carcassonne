@@ -13,23 +13,25 @@
 
         public bool Applies(IPointRegion region)
         {
-            return Applies(region, out var tr);
+            return AppliesAsTileRegion(region).applies;
         }
 
-        private bool Applies(IPointRegion region, out TileRegion tr)
+        private (bool applies, TileRegion tileRegion) AppliesAsTileRegion(IPointRegion region)
         {
-            tr = region as TileRegion;
-            return tr?.Type == m_type;
+            if(!(region is TileRegion tr)) return (false, TileRegion.None);
+            return (tr.Type == m_type, tr);
         }
 
         public int GetScore(IPointRegion region)
         {
-            return Applies(region, out var tr) && tr.IsClosed ? tr.Score:0;
+            var (applies, tr) = AppliesAsTileRegion(region);
+            return applies && tr.IsClosed ? tr.Score : 0;
         }
 
         public int GetEndScore(IPointRegion region)
         {
-            return Applies(region, out var tr) ? tr.Score : 0;
+            var (applies, tr) = AppliesAsTileRegion(region);
+            return applies  ? tr.Score : 0;
         }
 
         #endregion

@@ -38,9 +38,9 @@
         <Style x:Key ="RiverEndShape"  TargetType="{x:Type Shape}" BasedOn="{StaticResource CityShape}">
             <Setter Property="Visibility" Value="{Binding RiverEndVisibility, FallbackValue=Hidden}"/>
         </Style>
-        <Style x:Key ="MonestaryGrid"  TargetType="{x:Type Grid}" BasedOn="{StaticResource RegionGrid}">
+        <Style x:Key ="MonasteryGrid"  TargetType="{x:Type Grid}" BasedOn="{StaticResource RegionGrid}">
 <!--            <EventSetter Event="MouseEnter" Handler="setActiveElement"/>-->
-            <Setter Property="Visibility" Value="{Binding MonestaryVisibility, FallbackValue=Hidden}"/>
+            <Setter Property="Visibility" Value="{Binding MonasteryVisibility, FallbackValue=Hidden}"/>
             <Setter Property="Background" Value="DarkRed"/>
         </Style>
         <Style x:Key ="FlowerRectangle"  TargetType="{x:Type Rectangle}">
@@ -125,7 +125,7 @@
                 <Polygon Margin="25,25,0,0" Style="{StaticResource ShieldPolygon}"/>
                 <Rectangle Margin="62.5,125,62.5,0" Style="{StaticResource FlowerRectangle}"/>
             </Grid>
-            <Grid Style="{StaticResource MonestaryGrid}" DataContext="{Binding AllDataContext}" Margin="35">
+            <Grid Style="{StaticResource MonasteryGrid}" DataContext="{Binding AllDataContext}" Margin="35">
                 <Polygon Margin="20,10" Fill="Black"
                         Points="15,0 25,0 25,15 40,15 40,25, 25,25 25,60, 15,60 15,25 0,25 0,15 15,15"/>
             </Grid>
@@ -187,8 +187,8 @@
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding AllDataContext}">
                 <!-- City -->
                 <local:PlayerAvatarControl Margin="55" Visibility="{Binding CityVisibility, FallbackValue=Hidden}"/>
-                <!-- Monestary -->
-                <local:PlayerAvatarControl Margin="55" Visibility="{Binding MonestaryVisibility, FallbackValue=Hidden}"/>
+                <!-- Monastery -->
+                <local:PlayerAvatarControl Margin="55" Visibility="{Binding MonasteryVisibility, FallbackValue=Hidden}"/>
             </Grid>
         </Grid>
     </Viewbox>

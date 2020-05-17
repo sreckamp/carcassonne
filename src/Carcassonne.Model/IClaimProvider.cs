@@ -2,6 +2,7 @@
 {
     public interface IClaimProvider
     {
+        // ReSharper disable once UnusedParameter.Global
         (IClaimable, MeepleType) GetClaim(Game game);
     }
 

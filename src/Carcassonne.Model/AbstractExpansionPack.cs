@@ -21,6 +21,7 @@ namespace Carcassonne.Model
         }
 
         public virtual bool IgnoreDefaultStart => false;
+        // ReSharper disable once UnusedParameter.Global
         public virtual void BeforeDeckShuffle(Deck deck) { }
         public virtual void AfterDeckShuffle(Deck deck) { }
         public readonly ReadOnlyCollection<IPlaceRule<Tile, CarcassonneMove>> PlaceRules;

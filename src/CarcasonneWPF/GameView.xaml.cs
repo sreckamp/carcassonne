@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Media;
 using Carcassonne.Model;
@@ -91,6 +92,7 @@ namespace Carcassonne.WPF
             MessageBox.Show("Game Over!");
         }
 
+        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         void m_game_PropertyChanging(object sender, PropertyChangingEventArgs e)
         {
             //if (Dispatcher.CheckAccess())
@@ -150,6 +152,7 @@ namespace Carcassonne.WPF
         //    }
         //}
 
+        // ReSharper disable once UnusedParameter.Local
         private bool UpdateDimming(Point location)
         {
             if (ActiveTileView != null)

@@ -6,7 +6,7 @@ namespace Carcassonne.Model
 {
     public class CarcassonneMove : Move, IEquatable<CarcassonneMove>
     {
-        public new static readonly CarcassonneMove None = new CarcassonneMove(-1, -1, Rotation.None) {IsEmpty = true};
+        public static readonly CarcassonneMove None = new CarcassonneMove(-1, -1, Rotation.None) {IsEmpty = true};
 
         public CarcassonneMove(int x, int y, Rotation rotation)
             : this(new Point(x, y), rotation)
@@ -41,7 +41,7 @@ namespace Carcassonne.Model
         }
 
         #endregion
-        
+
         public override string ToString()
         {
             return base.ToString() + $"-{Rotation}";

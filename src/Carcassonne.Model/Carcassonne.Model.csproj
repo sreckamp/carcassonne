@@ -104,7 +104,7 @@
     <Compile Include="Rules\DefaultPlaceRule.cs" />
     <Compile Include="Rules\CityRoadRegionClaimRule.cs" />
     <Compile Include="Rules\IScoreRule.cs" />
-    <Compile Include="Rules\MonestaryClaimRule.cs" />
+    <Compile Include="Rules\MonasteryClaimRule.cs" />
     <Compile Include="Rules\OccupiedPlaceRule.cs" />
     <Compile Include="Rules\NullPlaceRule.cs" />
     <Compile Include="Rules\EmptyBoardPlaceRule.cs" />

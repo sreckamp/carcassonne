@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Windows.Forms;
 using Carcassonne.Model;
@@ -8,7 +9,7 @@ namespace Carcassonne
 {
     public partial class GameTile : UserControl
     {
-        private readonly List<AbstractTileRenderer> m_renderers = new List<AbstractTileRenderer>();
+        private readonly List<TileRenderer> m_renderers = new List<TileRenderer>();
 
         public GameTile()
         {
@@ -27,7 +28,7 @@ namespace Carcassonne
             if (Active)
             {
                 ControlPaint.DrawBorder(
-                    e.Graphics, ClientRectangle, 
+                    e.Graphics, ClientRectangle,
                     Color.DarkBlue, 5, ButtonBorderStyle.Solid,
                     Color.DarkBlue, 5, ButtonBorderStyle.Solid,
                     Color.DarkBlue, 5, ButtonBorderStyle.Solid,
@@ -122,12 +123,12 @@ namespace Carcassonne
             }
         }
 
-        private class BackgroundRenderer:AbstractTileRenderer
+        private sealed class BackgroundRenderer:TileRenderer
         {
             private readonly Color m_color;
 
             public BackgroundRenderer(RectangleF canvas, Color color)
-                : base(canvas, null)
+                : base(null)
             {
                 m_color = color;
                 UpdateRegion(canvas);
@@ -142,20 +143,19 @@ namespace Carcassonne
             }
         }
 
-        private abstract class AbstractTileRenderer
+        private abstract class TileRenderer
         {
             protected const float PathWidth = 0.25f;
             protected const float SinglePathWidth = 0.35f;
             protected const float SingleRegionWidth = (1f-SinglePathWidth)/4f;
 
-            protected EdgeRegion Region;
-            protected Dictionary<PointF[], Brush> Shapes = new Dictionary<PointF[],Brush>();
-            protected Dictionary<RectangleF, Brush> Ellipses = new Dictionary<RectangleF, Brush>();
+            protected readonly EdgeRegion Region;
+            protected readonly Dictionary<PointF[], Brush> Shapes = new Dictionary<PointF[],Brush>();
+            protected readonly Dictionary<RectangleF, Brush> Ellipses = new Dictionary<RectangleF, Brush>();
 
-            protected AbstractTileRenderer(RectangleF canvas, EdgeRegion region)
+            protected TileRenderer(EdgeRegion region)
             {
                 Region = region;
-                UpdateRegion(canvas);
             }
 
             public abstract void UpdateRegion(RectangleF canvas);
@@ -438,12 +438,13 @@ namespace Carcassonne
             }
         }
 
-        private class RoadRegionRenderer : AbstractTileRenderer
+        private sealed class RoadRegionRenderer : TileRenderer
         {
             public RoadRegionRenderer(Rectangle canvas, EdgeRegion region, float roadWidth)
-                : base(canvas, region)
+                : base(region)
             {
                 RoadWidth = roadWidth;
+                UpdateRegion(canvas);
             }
 
             public float RoadWidth { get; }
@@ -454,12 +455,13 @@ namespace Carcassonne
             }
         }
 
-        private class RiverRegionRenderer : AbstractTileRenderer
+        private sealed class RiverRegionRenderer : TileRenderer
         {
             public RiverRegionRenderer(Rectangle canvas, EdgeRegion region, float riverWidth)
-                : base(canvas, region)
+                : base(region)
             {
                 RiverWidth = riverWidth;
+                UpdateRegion(canvas);
             }
 
             public float RiverWidth { get; }
@@ -474,16 +476,18 @@ namespace Carcassonne
             }
         }
 
-        private class CityRegionRenderer : AbstractTileRenderer
+        private sealed class CityRegionRenderer : TileRenderer
         {
             private readonly PointF m_shieldPos = new PointF(0.125f, 0.125f);
             private readonly SizeF m_shieldSize = new SizeF(0.1f,0.175f);
             public CityRegionRenderer(RectangleF canvas, CityEdgeRegion region)
-                : base(canvas, region)
+                : base(region)
             {
+                TypedRegion = region;
+                UpdateRegion(canvas);
             }
 
-            private CityEdgeRegion TypedRegion => Region as CityEdgeRegion;
+            private CityEdgeRegion TypedRegion { get; }
 
             public override void UpdateRegion(RectangleF region)
             {
@@ -496,39 +500,39 @@ namespace Carcassonne
             }
         }
 
-        private class MonasteryRegionRenderer : AbstractTileRenderer
+        private sealed class MonasteryRegionRenderer : TileRenderer
         {
             private const float MonasterySize = 0.4f;
             private readonly Tile m_parent;
 
             public MonasteryRegionRenderer(RectangleF canvas, Tile parent)
-                : base(canvas, null)
+                : base(null)
             {
                 m_parent = parent;
                 UpdateRegion(canvas);
             }
 
+            [SuppressMessage("ReSharper", "NotAccessedVariable")]
             public override void UpdateRegion(RectangleF canvas)
             {
-                if (m_parent != null)
-                {
-                    var x = (1 - MonasterySize) / 2;
-                    var y = x;
-//                    AddRectangle(canvas, Color.Red, new RectangleF(x, y, MONESTARY_SIZE, MONESTARY_SIZE),
-//                            m_parent.Rotation);
-                    var crossX = x + MonasterySize / 2 - MonasterySize / 16;
-                    var crossY = y + MonasterySize / 4;
-//                    AddRectangle(canvas, Color.Black, new RectangleF(crossX, crossY, MONESTARY_SIZE / 8, MONESTARY_SIZE / 2),
-//                            m_parent.Rotation);
-                    crossX = x + MonasterySize / 2 - MonasterySize / 6;
-                    crossY = y + MonasterySize / 4 + MonasterySize / 8;
-//                    AddRectangle(canvas, Color.Black, new RectangleF(crossX, crossY, MONESTARY_SIZE / 3, MONESTARY_SIZE / 8),
-//                            m_parent.Rotation);
-                }
+                if (m_parent == null)
+                    return;
+                var x = (1 - MonasterySize) / 2;
+                var y = x;
+                //                    AddRectangle(canvas, Color.Red, new RectangleF(x, y, MONASTERY_SIZE, MONASTERY_SIZE),
+                //                            m_parent.Rotation);
+                var crossX = x + MonasterySize / 2 - MonasterySize / 16;
+                var crossY = y + MonasterySize / 4;
+                //                    AddRectangle(canvas, Color.Black, new RectangleF(crossX, crossY, MONASTERY_SIZE / 8, MONASTERY_SIZE / 2),
+                //                            m_parent.Rotation);
+                crossX = x + MonasterySize / 2 - MonasterySize / 6;
+                crossY = y + MonasterySize / 4 + MonasterySize / 8;
+                //                    AddRectangle(canvas, Color.Black, new RectangleF(crossX, crossY, MONASTERY_SIZE / 3, MONASTERY_SIZE / 8),
+                //                            m_parent.Rotation);
             }
         }
 
-        private class FlowerRegionRenderer : AbstractTileRenderer
+        private sealed class FlowerRegionRenderer : TileRenderer
         {
             private const float FlowerOffsetSingle = 0.05f;
             private const float FlowerOffsetDual = 0.175f;
@@ -536,7 +540,7 @@ namespace Carcassonne
             private readonly Tile m_parent;
 
             public FlowerRegionRenderer(RectangleF canvas, Tile parent)
-                : base(canvas, null)
+                : base(null)
             {
                 m_parent = parent;
                 UpdateRegion(canvas);
@@ -544,72 +548,72 @@ namespace Carcassonne
 
             public override void UpdateRegion(RectangleF canvas)
             {
-                if (m_parent != null)
+                if (m_parent == null)
+                    return;
+                var grass = new List<EdgeDirection>();
+                float x, y;
+                x = y = 0.4f;
+                foreach (EdgeDirection dir in Enum.GetValues(typeof(EdgeDirection)))
                 {
-                    var grass = new List<EdgeDirection>();
-                    float x, y;
-                    x = y = 0.4f;
-                    foreach (EdgeDirection dir in Enum.GetValues(typeof(EdgeDirection)))
+                    if (m_parent.GetEdge(dir) == RegionType.Grass)
                     {
-                        if (m_parent.GetEdge(dir) == RegionType.Grass)
-                        {
-                            grass.Add(dir);
-                        }
+                        grass.Add(dir);
                     }
-                    if (grass.Count == 1)
+                }
+                if (grass.Count == 1)
+                {
+                    switch (grass[0])
                     {
-                        switch (grass[0])
-                        {
-                            case EdgeDirection.North:
-                                y = FlowerOffsetSingle;
-                                break;
-                            case EdgeDirection.East:
-                                x = 1 - FlowerOffsetSingle - FlowerSize;
-                                break;
-                            case EdgeDirection.South:
-                                y = 1 - FlowerOffsetSingle - FlowerSize;
-                                break;
-                            case EdgeDirection.West:
-                                x = FlowerOffsetSingle;
-                                break;
-                        }
+                        case EdgeDirection.North:
+                            y = FlowerOffsetSingle;
+                            break;
+                        case EdgeDirection.East:
+                            x = 1 - FlowerOffsetSingle - FlowerSize;
+                            break;
+                        case EdgeDirection.South:
+                            y = 1 - FlowerOffsetSingle - FlowerSize;
+                            break;
+                        case EdgeDirection.West:
+                            x = FlowerOffsetSingle;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
-                    else if (grass.Count == 2)
+                }
+                else if (grass.Count == 2)
+                {
+                    var min = (EdgeDirection)Math.Min((int)grass[0], (int)grass[1]);
+                    var max = (EdgeDirection)Math.Max((int)grass[0], (int)grass[1]);
+                    switch (min)
                     {
-                        var min = (EdgeDirection)Math.Min((int)grass[0], (int)grass[1]);
-                        var max = (EdgeDirection)Math.Max((int)grass[0], (int)grass[1]);
-                        if (min == EdgeDirection.North && max == EdgeDirection.East)
-                        {
+                        case EdgeDirection.North when max == EdgeDirection.East:
                             x = 1 - FlowerSize - FlowerOffsetDual;
                             y = FlowerOffsetDual;
-                        }
-                        else if (min == EdgeDirection.North && max == EdgeDirection.West)
-                        {
+                            break;
+                        case EdgeDirection.North when max == EdgeDirection.West:
                             x = y = FlowerOffsetDual;
-                        }
-                        else if (min == EdgeDirection.East && max == EdgeDirection.South)
-                        {
+                            break;
+                        case EdgeDirection.East when max == EdgeDirection.South:
                             x = y = 1 - FlowerSize - FlowerOffsetDual;
-                        }
-                        else if (min == EdgeDirection.South && max == EdgeDirection.West)
-                        {
+                            break;
+                        case EdgeDirection.South when max == EdgeDirection.West:
                             x = FlowerOffsetDual;
                             y = 1 - FlowerSize - FlowerOffsetDual;
-                        }
-                        else if (min == EdgeDirection.North && max == EdgeDirection.South
-                            && m_parent.GetRegion(EdgeDirection.West).Edges.Length == 2)
-                        {
+                            break;
+                        case EdgeDirection.North when max == EdgeDirection.South && m_parent.GetRegion(EdgeDirection.West).Edges.Length == 2:
                             y = FlowerOffsetSingle;
-                        }
-                        else if (min == EdgeDirection.East && max == EdgeDirection.West
-                            && m_parent.GetRegion(EdgeDirection.North).Edges.Length == 2)
-                        {
+                            break;
+                        case EdgeDirection.East when max == EdgeDirection.West && m_parent.GetRegion(EdgeDirection.North).Edges.Length == 2:
                             x = FlowerOffsetSingle;
-                        }
+                            break;
+                        case EdgeDirection.West:
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
-                    AddRectangle(canvas, Color.Yellow, new RectangleF(x, y, FlowerSize, FlowerSize),
-                            Rotation.None);
                 }
+                AddRectangle(canvas, Color.Yellow, new RectangleF(x, y, FlowerSize, FlowerSize),
+                    Rotation.None);
             }
         }
 

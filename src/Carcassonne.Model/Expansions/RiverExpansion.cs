@@ -6,8 +6,8 @@ namespace Carcassonne.Model.Expansions
 {
     public class RiverExpansion : AbstractExpansionPack
     {
-        private Tile m_source;
-        private Tile m_sink;
+        private readonly Tile m_source;
+        private readonly Tile m_sink;
         private readonly Deck m_riverDeck = new Deck();
 
         public RiverExpansion()

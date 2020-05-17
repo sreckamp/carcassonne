@@ -20,7 +20,7 @@ namespace Carcassonne.WPF.ViewModel
         //private PlacementViewModel m_activeTile;
         private CarcassonneMove m_move;
         //private Point? m_overPoint = null;
-        private IClaimable m_activeClaim = null;
+        private readonly IClaimable m_activeClaim = null;
         //private bool m_rightPressed = false;
         private readonly Player m_player;
 
@@ -50,7 +50,7 @@ namespace Carcassonne.WPF.ViewModel
 
         public CarcassonneMove GetMove(Game game)
         {
-            //m_activeTile.ClickAction += 
+            //m_activeTile.ClickAction +=
             //m_view.GameField.MouseRightButtonUp += m_placeRightButtonUpHandler;
             //m_view.GameField.MouseLeftButtonUp += m_placeLeftButtonUpHandler;
             //m_view.GameField.MouseRightButtonDown += m_rightButtonDownHandler;

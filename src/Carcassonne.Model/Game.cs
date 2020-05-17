@@ -31,7 +31,6 @@ namespace Carcassonne.Model
             RuleSet = new RuleSet(expansions);
             Board = new CarcassonneGameBoard(RuleSet);
             Players = new ObservableList<Player>();
-            ResetGame();
         }
 
         public CarcassonneGameBoard Board { get; }
@@ -327,7 +326,7 @@ namespace Carcassonne.Model
                     }
                 } while (claimed == DefaultClaimable.Instance);
                 Score(changed);
-            } while (ActiveTile != null);
+            } while (ActiveTile != Tile.None);
             End();
             State = GameState.End;
         }

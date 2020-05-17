@@ -59,7 +59,7 @@ namespace Carcassonne.Model
 
         public RegionType GetEdge(EdgeDirection direction)
         {
-            return GetRegion(direction)?.Type ?? RegionType.Grass;
+            return GetRegion(direction).Type;
         }
 
         private void AddRegion(EdgeRegion region)
@@ -139,16 +139,16 @@ namespace Carcassonne.Model
 
         public List<IClaimable> GetAvailableRegions()
         {
-            var claimables = new List<IClaimable>();
+            var claimableRegions = new List<IClaimable>();
             if (TileRegion.Claimer == Meeple.None)
             {
-                claimables.Add(TileRegion);
+                claimableRegions.Add(TileRegion);
             }
 
-            claimables.AddRange(Regions.Where(r =>
-                r.Type != RegionType.None && r.Container.Owners.Count == 0 && !claimables.Contains(r)));
+            claimableRegions.AddRange(Regions.Where(r =>
+                r.Type != RegionType.None && r.Container.Owners.Count == 0 && !claimableRegions.Contains(r)));
 
-            return claimables;
+            return claimableRegions;
         }
 
         public List<IPointRegion> GetClosedRegions()

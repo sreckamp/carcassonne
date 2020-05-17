@@ -1,12 +1,13 @@
 ﻿using System.Windows.Controls;
 using DPoint = System.Drawing.Point;
+// ReSharper disable CommentTypo
 
 namespace Carcassonne.WPF
 {
     /// <summary>
     /// Interaction logic for BoardView.xaml
     /// </summary>
-    public partial class GameBoardView : ItemsControl
+    public partial class GameBoardView
     {
         public GameBoardView()
         {
@@ -15,8 +16,8 @@ namespace Carcassonne.WPF
 
         //private void mouseEnter(object sender, MouseEventArgs e)
         //{
-        //    if (sender is FrameworkElement fe 
-        //        //&& fe.DataContext is AbstractGameSquareViewModel gs 
+        //    if (sender is FrameworkElement fe
+        //        //&& fe.DataContext is AbstractGameSquareViewModel gs
         //        && DataContext is GameBoardViewModel gbvm)
         //    {
         //        //gbvm.MoveActiveTile(gs.Location);
