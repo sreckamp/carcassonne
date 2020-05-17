@@ -1,10 +1,11 @@
-﻿using System.Linq;
+﻿using System.Drawing;
+using System.Linq;
 using Carcassonne.Model.Rules;
 using GameBase.Model;
 
 namespace Carcassonne.Model.Expansions
 {
-    public class RiverExpansion : AbstractExpansionPack
+    public class RiverExpansion : ExpansionPack
     {
         private readonly Tile m_source;
         private readonly Tile m_sink;
@@ -77,10 +78,9 @@ namespace Carcassonne.Model.Expansions
 
         private class RiverFitRule : DefaultPlaceRule
         {
-            public override bool Applies(IGameBoard<Tile> board, Tile tile, CarcassonneMove move)
+            public override bool Applies(IGameBoard board, ITile tile, Point location)
             {
-                var riverRegions = tile.GetAvailableRegions(RegionType.River);
-                return riverRegions.Count > 0;
+                return tile.Contains(RegionType.River);
             }
 
             protected override bool RegionsMatch(EdgeRegion myRegion, EdgeRegion theirRegion)

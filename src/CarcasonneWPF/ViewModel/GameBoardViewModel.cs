@@ -7,6 +7,7 @@ using System.Windows.Input;
 using Carcassonne.Model;
 using GalaSoft.MvvmLight.CommandWpf;
 using GameBase.Model;
+using GameBase.Model.Rules;
 using GameBase.WPF;
 using GameBase.WPF.ViewModel;
 
@@ -14,11 +15,12 @@ namespace Carcassonne.WPF.ViewModel
 {
     public class GameBoardViewModel : IGridManager, INotifyPropertyChanged
     {
-        private readonly CarcassonneGameBoard m_board;
+        private readonly GameBoard m_board;
         private readonly ObservableList<PlacementViewModel> m_grid = new ObservableList<PlacementViewModel>();
         private readonly ObservableList<PlacementViewModel> m_active = new ObservableList<PlacementViewModel>();
+        private readonly IPlaceRule<IGameBoard, ITile> m_placeRule;
 
-        public GameBoardViewModel(CarcassonneGameBoard board)
+        public GameBoardViewModel(GameBoard board, IPlaceRule<IGameBoard, ITile> placeRule)
         {
             StartColumnChanged += (sender, args) => { };
             StartRowChanged += (sender, args) => { };
@@ -27,18 +29,19 @@ namespace Carcassonne.WPF.ViewModel
             PropertyChanged += (sender, args) => { };
             Placed += (sender, args) => { };
             m_board = board;
-            var placements = new MappingCollection<PlacementViewModel, Placement<Tile, CarcassonneMove>>(board.Placements, this);
+            var placements = new MappingCollection<PlacementViewModel, Placement<ITile>>(board.Placements, this);
             Grid = new OverlayDispatchedObservableList<PlacementViewModel>(m_grid, placements, m_active);
-            AvailablePositions = new DispatchedObservableList<Point>(board.AvailableLocations);
+            // AvailablePositions = new DispatchedObservableList<Point>(board.AvailableLocations);
             board.MinXChanged += board_MinXChanged;
             board.MaxXChanged += board_MaxXChanged;
             board.MinYChanged += board_MinYChanged;
             board.MaxYChanged += board_MaxYChanged;
+            m_placeRule = placeRule;
             InitializeGrid();
         }
 
         public OverlayDispatchedObservableList<PlacementViewModel> Grid { get; }
-        public DispatchedObservableList<Point> AvailablePositions { get; }
+        // public DispatchedObservableList<Point> AvailablePositions { get; }
 
         public event EventHandler<ChangedValueArgs<int>> StartColumnChanged;
         private int m_startColumn;
@@ -174,7 +177,7 @@ namespace Carcassonne.WPF.ViewModel
             {
                 m_active.Add(new PlacementViewModel(t, this));
                 ActivePlacementViewModel?.ChangedDepth();
-                m_availableMoves = m_board.GetAvailableMoves(t);
+                // m_availableMoves = m_board.GetAvailableMoves(t);
             }
             else
             {
@@ -183,16 +186,27 @@ namespace Carcassonne.WPF.ViewModel
         }
 
         public ICommand PlaceCommand => new RelayCommand<object>(Place, CanPlace);
+        public event EventHandler<MoveEventArgs> Placed;
+        private void Place(object obj)
+        {
+            // Placed.Invoke(this, new MoveEventArgs(ActivePlacementViewModel.Location));
+        }
+
         private bool CanPlace(object obj)
         {
             return Fits(ActivePlacementViewModel);
 
         }
 
-        public event EventHandler<MoveEventArgs> Placed;
-        private void Place(object obj)
+        public ICommand RotateCommand => new RelayCommand<object>(Rotate, CanRotate);
+        private void Rotate(object obj)
         {
-            Placed?.Invoke(this, new MoveEventArgs(ActivePlacementViewModel?.Move));
+            ActivePlacementViewModel.TileRotation = ActivePlacementViewModel.TileRotation.RotateCw();
+        }
+
+        private bool CanRotate(object obj)
+        {
+            return ActivePlacementViewModel != null;
         }
 
         public ICommand MoveCommand => new RelayCommand<GridCellRoutedEventArgs>(Move, CanMove);
@@ -228,8 +242,10 @@ namespace Carcassonne.WPF.ViewModel
 
         internal bool Fits(PlacementViewModel pvm)
         {
-            return !m_active.Contains(pvm) || m_availableMoves.Contains(pvm.Move);
+            return !m_active.Contains(pvm) || (m_placeRule.Applies(m_board, pvm.Piece, pvm.Location)
+                && m_placeRule.Fits(m_board, pvm.Piece, pvm.Location));
         }
+
         internal bool IsBackground(PlacementViewModel pvm)
         {
             return m_grid.Contains(pvm);

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
@@ -11,28 +12,25 @@ using DPoint = System.Drawing.Point;
 
 namespace Carcassonne.WPF.ViewModel
 {
-    public class PlacementViewModel : AbstractPlacementViewModel<Tile, CarcassonneMove>
+    public class PlacementViewModel : PlacementViewModel<ITile>
     {
-        private static readonly ClaimableViewModel SDefaultIClaimableModel = new ClaimableViewModel(new EdgeRegion(), TileRegion.None);
+        private static readonly ClaimableViewModel SDefaultIClaimableModel = new ClaimableViewModel(new EdgeRegion(RegionType.Any), TileRegion.None);
 
-        public PlacementViewModel(Tile tile, GameBoardViewModel boardModel) :
-            this(new Placement<Tile, CarcassonneMove>(tile, null), boardModel)
+        public PlacementViewModel(ITile tile, GameBoardViewModel boardModel) :
+            this(new Placement<ITile>(tile, new DPoint()), boardModel)
         { }
-        public PlacementViewModel(Placement<Tile, CarcassonneMove> placement, IGridManager gridManager)
+        public PlacementViewModel(Placement<ITile> placement, IGridManager gridManager)
             : base(placement, gridManager)
         {
-            if (Tile != null)
-            {
-                ParseTile();
-            }
+            ParseTile();
         }
 
         private GameBoardViewModel BoardViewModel => GridManager as GameBoardViewModel;
 
-        protected override CarcassonneMove GetMove(int locationX, int locationY) =>
-            new CarcassonneMove(locationX, locationY, TileRotation);
-
-        protected override CarcassonneMove GetEmptyMove() => CarcassonneMove.None;
+        // protected override CarcassonneMove GetMove(int locationX, int locationY) =>
+        //     new CarcassonneMove(locationX, locationY, TileRotation);
+        //
+        // protected override CarcassonneMove GetEmptyMove() => CarcassonneMove.None;
 
         public override void SetCell(DPoint cell)
         {
@@ -66,23 +64,27 @@ namespace Carcassonne.WPF.ViewModel
             }
         }
 
-        private Rotation m_tileRotation = Rotation.None;
         public Rotation TileRotation
         {
-            get => Placement.Move?.Rotation ?? m_tileRotation;
+            get => Placement.Piece is RotatedTile rt ? rt.Rotation : Rotation.None;
             set
             {
-                m_tileRotation = value;
+                if (!(Placement.Piece is RotatedTile rt))
+                {
+                    rt = new RotatedTile(Placement.Piece, Rotation.None);
+                    Placement.Piece = rt;
+                }
+                rt.Rotation = value;
                 NotifyPropertyChanged(nameof(RotationAngle));
                 NotifyPropertyChanged(nameof(NegRotationAngle));
                 NotifyPropertyChanged(nameof(Opacity));
             }
         }
 
-        public float RotationAngle => Placement?.Move?.Rotation.ToDegrees() ?? 0;
+        public float RotationAngle => TileRotation.ToDegrees();
         public float NegRotationAngle => -RotationAngle;
 
-        public string Name => Tile?.ToString() ?? "<<null>>";
+        public string Name => Placement.Piece.ToString();
         //private readonly MBrush m_color = new SolidColorBrush(Colors.Orange);
         //public MBrush Color { get { return m_color; } }
 
@@ -119,10 +121,6 @@ namespace Carcassonne.WPF.ViewModel
         //    base.Location = value;
         //    NotifyPropertyChanged("Opacity");
         //}
-
-        public string Location => $"({Move.Location.X},{Move.Location.Y})";
-
-        public Tile Tile => Placement.Piece;
 
         private ClaimableViewModel m_allDataContext = SDefaultIClaimableModel;
         public object AllDataContext => m_allDataContext;
@@ -180,9 +178,9 @@ namespace Carcassonne.WPF.ViewModel
 
         private void ParseTile()
         {
-            foreach (var r in Tile.Regions)
+            foreach (var r in Placement.Piece.Regions)
             {
-                var cvm = new ClaimableViewModel(r, Tile.TileRegion);
+                var cvm = new ClaimableViewModel(r, Placement.Piece.TileRegion);
                 if (r.RawEdges.Length == 1)
                 {
                     switch (r.RawEdges[0])
@@ -241,7 +239,7 @@ namespace Carcassonne.WPF.ViewModel
             }
             if (m_allDataContext == SDefaultIClaimableModel)
             {
-                m_allDataContext = new ClaimableViewModel(null, Tile.TileRegion);
+                m_allDataContext = new ClaimableViewModel(null, Placement.Piece.TileRegion);
             }
         }
         public override string ToString()

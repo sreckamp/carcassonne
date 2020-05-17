@@ -17,31 +17,31 @@ namespace Carcassonne.Model
 
     /// <summary>
     /// </summary>
-    public class Game
+    public sealed class Game
     {
         private Tile m_defaultStartTile = Tile.None;
-        private readonly AbstractExpansionPack[] m_expansions;
-        public static RuleSet RuleSet;
+        private readonly ExpansionPack[] m_expansions;
+        public RuleSet RuleSet { get; }
 
-        public Game(params AbstractExpansionPack[] expansions)
+        public Game(params ExpansionPack[] expansions)
         {
             ActiveTileChanged += (sender, args) => { };
             ActivePlayerChanged += (sender, args) => { };
             m_expansions = expansions;
             RuleSet = new RuleSet(expansions);
-            Board = new CarcassonneGameBoard(RuleSet);
+            Board = new GameBoard();
             Players = new ObservableList<Player>();
         }
 
-        public CarcassonneGameBoard Board { get; }
+        public GameBoard Board { get; }
         public ObservableList<IPointRegion> PointRegions { get; } = new ObservableList<IPointRegion>();
 
-        public readonly Deck Deck = new Deck();
+        private readonly Deck m_deck = new Deck();
 
-        public GameState State { get; private set; }
+        public GameState State { get; private set; } = GameState.NotStarted;
 
         public event EventHandler<ChangedValueArgs<Tile>> ActiveTileChanged;
-        private Tile m_activeTile;
+        private Tile m_activeTile = Tile.None;
 
         private Tile ActiveTile
         {
@@ -120,9 +120,9 @@ namespace Carcassonne.Model
 
         private Tile Draw()
         {
-            if (Deck.Count > 0)
+            if (m_deck.Count > 0)
             {
-                var t = Deck.Pop();
+                var t = m_deck.Pop();
                 ActiveTile = t;
             }
             else
@@ -132,12 +132,22 @@ namespace Carcassonne.Model
             return ActiveTile;
         }
 
-        protected virtual void ResetGame()
+        private void Reset()
         {
-            Players.Clear();
-            Deck.Clear();
+            foreach (var player in Players)
+            {
+                player.Reset();
+                RuleSet.UpdatePlayer(player);
+            }
+            m_deck.Clear();
             PopulateDeck();
+            Shuffle();
             Board.Clear();
+            var useDefaultStart = m_expansions.All(exp => !exp.IgnoreDefaultStart);
+            if (useDefaultStart)
+            {
+                Place(m_defaultStartTile, new CarcassonneMove(0, 0, Rotation.None));
+            }
             State = GameState.NotStarted;
         }
 
@@ -280,13 +290,7 @@ namespace Carcassonne.Model
 
         public void Play()
         {
-            if (State != GameState.NotStarted) return;
-            Shuffle();
-            var useDefaultStart = m_expansions.All(exp => !exp.IgnoreDefaultStart);
-            if (useDefaultStart)
-            {
-                Place(m_defaultStartTile, new CarcassonneMove(0, 0, Rotation.None));
-            }
+            Reset();
             do
             {
                 var player = NextPlayer();
@@ -335,22 +339,22 @@ namespace Carcassonne.Model
         {
             foreach (var e in m_expansions)
             {
-                e.BeforeDeckShuffle(Deck);
+                e.BeforeDeckShuffle(m_deck);
             }
-            Deck.Shuffle();
+            // m_deck.Shuffle();
             foreach (var e in m_expansions)
             {
-                e.AfterDeckShuffle(Deck);
+                e.AfterDeckShuffle(m_deck);
             }
         }
 
-        protected void AddTile(int count, Tile tile)
+        private void AddTile(int count, Tile tile)
         {
             for (var i = 1; i < count; i++)
             {
-                Deck.Push(tile.TileClone());
+                m_deck.Push(tile.TileClone());
             }
-            Deck.Push(tile);
+            m_deck.Push(tile);
         }
 
         private List<IPointRegion> Place(CarcassonneMove move)
@@ -363,12 +367,13 @@ namespace Carcassonne.Model
             return changed;
         }
 
-        private List<IPointRegion> Place(Tile tile, CarcassonneMove move)
+        private List<IPointRegion> Place(ITile tile, CarcassonneMove move)
         {
+            tile = new RotatedTile(tile, move.Rotation);
             var available = new List<EdgeDirection>((EdgeDirection[])Enum.GetValues(typeof(EdgeDirection)));
             var changedPointRegions = new List<IPointRegion>();
 
-            Board.Add(new Placement<Tile, CarcassonneMove>(tile, move));
+            Board.Add(new Placement<ITile>(tile, move.Location));
             if (tile.TileRegion.Type != TileRegionType.None)
             {
                 PointRegions.Add(tile.TileRegion);
@@ -391,7 +396,7 @@ namespace Carcassonne.Model
             while (available.Count > 0)
             {
                 var r = tile.GetRegion(available[0]);
-                if (r.Type != RegionType.None)
+                if (r.Type != RegionType.Any)
                 {
                     var regions = new List<PointRegion>();
                     foreach (var d in r.Edges)
@@ -473,9 +478,9 @@ namespace Carcassonne.Model
         /// <param name="tile"></param>
         /// <param name="move">Proposed location and rotation of ActiveTile</param>
         /// <returns>true if the ActiveTile would fit at the current location.</returns>
-        private bool TryFit(Tile tile, CarcassonneMove move)
+        private bool TryFit(ITile tile, CarcassonneMove move)
         {
-            return RuleSet.Fits(Board, tile, move);
+            return RuleSet.Fits(Board, tile, move.Location);
         }
 
         public Player AddPlayer(string name)
@@ -483,7 +488,6 @@ namespace Carcassonne.Model
             if (State != GameState.NotStarted) return Player.None;
             var p = new Player(name);
             Players.Add(p);
-            RuleSet.UpdatePlayer(p);
             return p;
         }
     }

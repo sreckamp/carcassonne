@@ -2,7 +2,7 @@
 
 namespace Carcassonne.Model.Expansions
 {
-    public class AbbotExpansion:AbstractExpansionPack
+    public class AbbotExpansion:ExpansionPack
     {
         public AbbotExpansion()
         {

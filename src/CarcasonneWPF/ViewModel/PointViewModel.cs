@@ -15,7 +15,7 @@ namespace Carcassonne.WPF.ViewModel
         private static readonly MBrush SUnavailableColor = new SolidColorBrush(Colors.Transparent);
 
         public PointViewModel(Point p, IGridManager gridManager)
-            : base(new Placement<Tile, CarcassonneMove>(null, new CarcassonneMove(p, Rotation.None)), gridManager)
+            : base(new Placement<ITile>(Tile.None, p), gridManager)
         {
             //Location = p;
             //board.AvailablePositions.CollectionChanged += new NotifyCollectionChangedEventHandler(AvailablePositions_CollectionChanged);

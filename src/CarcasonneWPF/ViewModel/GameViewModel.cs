@@ -15,22 +15,17 @@ namespace Carcassonne.WPF.ViewModel
         //private readonly Game m_game;
         private readonly Dispatcher m_dispatcher;
 
-        public GameViewModel(params AbstractExpansionPack[] expansions)
+        public GameViewModel(params ExpansionPack[] expansions)
         {
             m_dispatcher = Application.Current.Dispatcher;
             PropertyChanged += (sender, args) => { };
             Game = new Game(expansions);
-            BoardViewModel = new GameBoardViewModel(Game.Board);
+            BoardViewModel = new GameBoardViewModel(Game.Board, Game.RuleSet);
             BoardViewModel.Placed += boardViewModel_Placed;
             Game.ActivePlayerChanged += game_ActivePlayerChanged;
             Game.ActiveTileChanged += game_ActiveTileChanged;
             PlayerViewModels = new MappingCollection<PlayerViewModel, Player>(Game.Players);
             DeckViewModel = new DispatchedObservableList<PlacementViewModel>(/*m_dispatcher, */new ObservableList<PlacementViewModel>());
-            Game.Shuffle();
-            foreach(var t in Game.Deck)
-            {
-                DeckViewModel.Add(new PlacementViewModel(t, null));
-            }
         }
 
         private void boardViewModel_Placed(object sender, MoveEventArgs e)

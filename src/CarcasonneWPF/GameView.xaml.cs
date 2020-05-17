@@ -41,10 +41,10 @@ namespace Carcassonne.WPF
                     packs.Add(typeof(FarmerExpansion));
                 }
             }
-            var exp = new AbstractExpansionPack[packs.Count];
+            var exp = new ExpansionPack[packs.Count];
             for (var i = 0; i < exp.Length; i++)
             {
-                exp[i] = (AbstractExpansionPack)packs[i].GetConstructor(new Type[0]).Invoke(new object[0]);
+                exp[i] = (ExpansionPack)packs[i].GetConstructor(new Type[0]).Invoke(new object[0]);
             }
             m_gameVm = new GameViewModel(exp);
             m_propChanged = activeTile_PropertyChanged;

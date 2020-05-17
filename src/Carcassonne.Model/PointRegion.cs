@@ -7,7 +7,7 @@ namespace Carcassonne.Model
 {
     public class PointRegion : IPointRegion
     {
-        public static readonly PointRegion None = new PointRegion(RegionType.None);
+        public static readonly PointRegion None = new PointRegion(RegionType.Any);
 
         private readonly List<EdgeRegion> m_regions = new List<EdgeRegion>();
         private readonly List<Tile> m_tiles = new List<Tile>();

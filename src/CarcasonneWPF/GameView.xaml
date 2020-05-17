@@ -97,6 +97,9 @@
                                 <i:EventTrigger EventName="MouseLeftButtonUp">
                                     <cmd:EventToCommand Command="{Binding PlaceCommand}"/>
                                 </i:EventTrigger>
+                                <i:EventTrigger EventName="MouseRightButtonUp">
+                                    <cmd:EventToCommand Command="{Binding RotateCommand}"/>
+                                </i:EventTrigger>
                             </i:Interaction.Triggers>
                         </base:DynamicGrid>
                     </ItemsPanelTemplate>

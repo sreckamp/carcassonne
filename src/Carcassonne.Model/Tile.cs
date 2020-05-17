@@ -6,13 +6,11 @@ using GameBase.Model;
 
 namespace Carcassonne.Model
 {
-    public class Tile : IPiece
+    public class Tile : ITile
     {
         public static readonly Tile None = new Tile();
 
-        private readonly List<EdgeRegion> m_grassRegions = new List<EdgeRegion>();
-
-        private Tile()
+        protected Tile()
         {
         }
 
@@ -30,10 +28,10 @@ namespace Carcassonne.Model
 
         private readonly IList<EdgeRegion> m_regions = new List<EdgeRegion>
         {
-            new EdgeRegion(RegionType.None, EdgeDirection.North),
-            new EdgeRegion(RegionType.None, EdgeDirection.East),
-            new EdgeRegion(RegionType.None, EdgeDirection.South),
-            new EdgeRegion(RegionType.None, EdgeDirection.West),
+            new EdgeRegion(RegionType.Any, EdgeDirection.North),
+            new EdgeRegion(RegionType.Any, EdgeDirection.East),
+            new EdgeRegion(RegionType.Any, EdgeDirection.South),
+            new EdgeRegion(RegionType.Any, EdgeDirection.West),
         };
 
         public IEnumerable<EdgeRegion> Regions => m_regions;
@@ -67,7 +65,7 @@ namespace Carcassonne.Model
             foreach (var dir in region.Edges)
             {
                 var r = GetRegion(dir);
-                if (r.Type == RegionType.None)
+                if (r.Type == RegionType.Any)
                 {
                     m_regions.Remove(r);
                 }
@@ -88,11 +86,6 @@ namespace Carcassonne.Model
 
         public Tile TileClone()
         {
-            return Clone() as Tile ?? None;
-        }
-
-        public IPiece Clone()
-        {
             var tile = new Tile
             {
                 TileRegion = new TileRegion(TileRegion.Type)
@@ -110,7 +103,7 @@ namespace Carcassonne.Model
         {
             var done = new List<EdgeRegion>();
             var sb = new StringBuilder();
-            foreach (var r in Regions.Where(r => r.Type != RegionType.None && !done.Contains(r)))
+            foreach (var r in Regions.Where(r => r.Type != RegionType.Any && !done.Contains(r)))
             {
                 if (sb.Length > 0)
                 {
@@ -132,9 +125,9 @@ namespace Carcassonne.Model
             return sb.ToString();
         }
 
-        public List<IClaimable> GetAvailableRegions(RegionType type)
+        public bool Contains(RegionType type)
         {
-            return Regions.Where(r => r.Type == type).Cast<IClaimable>().ToList();
+            return Regions.Where(r => r.Type == type).Cast<IClaimable>().Any();
         }
 
         public List<IClaimable> GetAvailableRegions()
@@ -146,7 +139,7 @@ namespace Carcassonne.Model
             }
 
             claimableRegions.AddRange(Regions.Where(r =>
-                r.Type != RegionType.None && r.Container.Owners.Count == 0 && !claimableRegions.Contains(r)));
+                r.Type != RegionType.Any && r.Container.Owners.Count == 0 && !claimableRegions.Contains(r)));
 
             return claimableRegions;
         }
@@ -220,6 +213,13 @@ namespace Carcassonne.Model
 
             public static implicit operator Tile(TileBuilder builder)
             {
+                foreach (EdgeDirection dir in Enum.GetValues(typeof(EdgeDirection)))
+                {
+                    if (builder.Tile.GetEdge(dir) == RegionType.Any)
+                    {
+                        builder.Tile.AddRegion(new EdgeRegion(RegionType.Grass, dir));
+                    }
+                }
                 return builder.Tile;
             }
         }

@@ -7,7 +7,7 @@ namespace Carcassonne.Model
     {
         public static readonly TileRegion None = new TileRegion();
 
-        private readonly List<Tile> m_tiles = new List<Tile>();
+        private readonly List<ITile> m_tiles = new List<ITile>();
 
         //#region INotifyPropertyChanged Members
 
@@ -63,7 +63,7 @@ namespace Carcassonne.Model
             Claimer = Meeple.None;
         }
 
-        public void Add(Tile t)
+        public void Add(ITile t)
         {
             if (m_tiles.Contains(t)) return;
             m_tiles.Add(t);

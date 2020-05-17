@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using Carcassonne.Model.Rules;
 using GameBase.Model;
@@ -6,14 +7,14 @@ using GameBase.Model.Rules;
 
 namespace Carcassonne.Model
 {
-    public class RuleSet : IPlaceRule<Tile, CarcassonneMove>, IClaimRule,IPlayerCreationRule,IScoreRule
+    public class RuleSet : IPlaceRule<IGameBoard, ITile>, IClaimRule,IPlayerCreationRule,IScoreRule
     {
-        private readonly List<IPlaceRule<Tile, CarcassonneMove>> m_placeRules = new List<IPlaceRule<Tile, CarcassonneMove>>();
+        private readonly List<IPlaceRule<IGameBoard, ITile>> m_placeRules = new List<IPlaceRule<IGameBoard, ITile>>();
         private readonly List<IClaimRule> m_claimRules = new List<IClaimRule>();
         private readonly List<IPlayerCreationRule> m_playerRules = new List<IPlayerCreationRule>();
         private readonly List<IScoreRule> m_scoreRules = new List<IScoreRule>();
 
-        public RuleSet(params AbstractExpansionPack[] expansions)
+        public RuleSet(params ExpansionPack[] expansions)
         {
             m_placeRules.Add(new EmptyBoardPlaceRule());
             m_placeRules.Add(new NoneTilePlaceRule());
@@ -36,14 +37,14 @@ namespace Carcassonne.Model
 
         #region IPlaceRule Members
 
-        public bool Applies(IGameBoard<Tile> board, Tile tile, CarcassonneMove move)
+        public bool Applies(IGameBoard board, ITile tile, Point location)
         {
             return true;
         }
 
-        public bool Fits(IGameBoard<Tile> board, Tile tile, CarcassonneMove move)
+        public bool Fits(IGameBoard board, ITile tile, Point location)
         {
-            return (m_placeRules.Where(r => r.Applies(board, tile, move)).Select(r => r.Fits(board, tile, move))).FirstOrDefault();
+            return (m_placeRules.Where(r => r.Applies(board, tile, location)).Select(r => r.Fits(board, tile, location))).FirstOrDefault();
         }
 
         #endregion

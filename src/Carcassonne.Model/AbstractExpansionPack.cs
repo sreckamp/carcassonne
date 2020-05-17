@@ -5,16 +5,16 @@ using GameBase.Model.Rules;
 
 namespace Carcassonne.Model
 {
-    public abstract class AbstractExpansionPack
+    public abstract class ExpansionPack
     {
-        protected readonly List<IPlaceRule<Tile, CarcassonneMove>> WritablePlaceRules = new List<IPlaceRule<Tile, CarcassonneMove>>();
+        protected readonly List<IPlaceRule<IGameBoard, ITile>> WritablePlaceRules = new List<IPlaceRule<IGameBoard, ITile>>();
         protected readonly List<IClaimRule> WritableClaimRules = new List<IClaimRule>();
         protected readonly List<IPlayerCreationRule> WritablePlayerRules = new List<IPlayerCreationRule>();
         protected readonly List<IScoreRule> WritableScoreRules = new List<IScoreRule>();
 
-        protected AbstractExpansionPack()
+        protected ExpansionPack()
         {
-            PlaceRules = new ReadOnlyCollection<IPlaceRule<Tile, CarcassonneMove>>(WritablePlaceRules);
+            PlaceRules = new ReadOnlyCollection<IPlaceRule<IGameBoard, ITile>>(WritablePlaceRules);
             ClaimRules = new ReadOnlyCollection<IClaimRule>(WritableClaimRules);
             PlayerCreationRules = new ReadOnlyCollection<IPlayerCreationRule>(WritablePlayerRules);
             ScoreRules = new ReadOnlyCollection<IScoreRule>(WritableScoreRules);
@@ -24,9 +24,9 @@ namespace Carcassonne.Model
         // ReSharper disable once UnusedParameter.Global
         public virtual void BeforeDeckShuffle(Deck deck) { }
         public virtual void AfterDeckShuffle(Deck deck) { }
-        public readonly ReadOnlyCollection<IPlaceRule<Tile, CarcassonneMove>> PlaceRules;
-        public readonly ReadOnlyCollection<IClaimRule> ClaimRules;
-        public readonly ReadOnlyCollection<IPlayerCreationRule> PlayerCreationRules;
-        public readonly ReadOnlyCollection<IScoreRule> ScoreRules;
+        public ReadOnlyCollection<IPlaceRule<IGameBoard, ITile>> PlaceRules { get; }
+        public ReadOnlyCollection<IClaimRule> ClaimRules { get; }
+        public ReadOnlyCollection<IPlayerCreationRule> PlayerCreationRules { get; }
+        public ReadOnlyCollection<IScoreRule> ScoreRules { get; }
     }
 }

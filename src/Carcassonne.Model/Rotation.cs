@@ -17,16 +17,13 @@
 
         public static float ToDegrees(this Rotation rot)
         {
-            switch (rot)
+            return rot switch
             {
-                case Rotation.Clockwise:
-                    return 90f;
-                case Rotation.UpsideDown:
-                    return 180f;
-                case Rotation.CounterClockwise:
-                    return 270f;
-            }
-            return 0f;
+                Rotation.Clockwise => 90f,
+                Rotation.UpsideDown => 180f,
+                Rotation.CounterClockwise => 270f,
+                _ => 0f
+            };
         }
 
         public static Rotation RotateCw(this Rotation rot)

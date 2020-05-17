@@ -20,6 +20,12 @@ namespace Carcassonne.Model
         public IClaimProvider ClaimChooser { get; set; } = EmptyClaimProvider.Instance;
         public MeepleCollection Meeple { get; }
 
+        public void Reset()
+        {
+            Meeple.Clear();
+            Score = 0;
+        }
+
         public event EventHandler<ChangedValueArgs<int>> ScoreChanged;
         private int m_score;
         public int Score {

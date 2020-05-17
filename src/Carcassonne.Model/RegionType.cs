@@ -2,7 +2,7 @@
 {
     public enum RegionType
     {
-        None,
+        Any,
         Grass,
         Road,
         City,
@@ -12,11 +12,6 @@
     public static class RegionTypeExtensions
     {
         public static bool IsPath(this RegionType type)
-        {
-            return type == RegionType.Road || type == RegionType.River;
-        }
-
-        public static bool IsPath(this RegionType? type)
         {
             return type == RegionType.Road || type == RegionType.River;
         }

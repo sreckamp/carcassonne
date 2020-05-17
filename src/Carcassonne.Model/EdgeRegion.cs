@@ -25,7 +25,7 @@ namespace Carcassonne.Model
 
         #endregion
 
-        public EdgeRegion(RegionType type = RegionType.None, params EdgeDirection[] edges)
+        public EdgeRegion(RegionType type, params EdgeDirection[] edges)
         {
             Type = type;
             PropertyChanged += (sender, args) => { };

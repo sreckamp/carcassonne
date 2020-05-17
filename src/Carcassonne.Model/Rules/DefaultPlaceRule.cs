@@ -1,32 +1,33 @@
 ﻿using System;
+using System.Drawing;
+using System.Linq;
 using GameBase.Model;
 using GameBase.Model.Rules;
 
 namespace Carcassonne.Model.Rules
 {
-    public class DefaultPlaceRule : IPlaceRule<Tile, CarcassonneMove>
+    public class DefaultPlaceRule : IPlaceRule<IGameBoard, ITile>
     {
         #region IPlaceRule Members
 
-        public virtual bool Applies(IGameBoard<Tile> board, Tile tile, CarcassonneMove move)
+        public virtual bool Applies(IGameBoard board, ITile tile, Point location)
         {
             return true;
         }
 
-        public virtual bool Fits(IGameBoard<Tile> board, Tile tile, CarcassonneMove move)
+        public virtual bool Fits(IGameBoard board, ITile tile, Point location)
         {
+            if(!(board is GameBoard b)) return false;
             var hasNeighbor = false;
-            if(!(board is CarcassonneGameBoard b)) return false;
-            foreach (EdgeDirection d in Enum.GetValues(typeof(EdgeDirection)))
+            foreach (EdgeDirection dir in Enum.GetValues(typeof(EdgeDirection)))
             {
-                var n = b.GetNeighbor(move.Location, d);
-                if (n == Tile.None) continue;
-                hasNeighbor = true;
-                if (!RegionsMatch(tile.GetRegion(d), n.GetRegion(d.Opposite())))
-                {
-                    return false;
-                }
+                var n = b.GetNeighbor(location, dir);
+                var mine = tile.GetRegion(dir);
+                var theirs = n.GetRegion(dir.Opposite());
+                hasNeighbor = hasNeighbor || theirs.Type != RegionType.Any;
+                if (!RegionsMatch(mine, theirs)) return false;
             }
+
             return hasNeighbor;
         }
 
@@ -34,7 +35,7 @@ namespace Carcassonne.Model.Rules
 
         protected virtual bool RegionsMatch(EdgeRegion myRegion, EdgeRegion theirRegion)
         {
-            return myRegion.Type == theirRegion.Type;
+            return theirRegion.Type == RegionType.Any || myRegion.Type == theirRegion.Type;
         }
     }
 }
