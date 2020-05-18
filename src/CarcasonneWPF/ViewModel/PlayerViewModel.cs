@@ -23,9 +23,9 @@ namespace Carcassonne.WPF.ViewModel
         //private Point? m_overPoint = null;
         private readonly IClaimable m_activeClaim = null;
         //private bool m_rightPressed = false;
-        private readonly Player m_player;
+        private readonly IPlayer m_player;
 
-        public PlayerViewModel(Player player)
+        public PlayerViewModel(IPlayer player)
         {
             //m_dispatcher = Application.Current.Dispatcher;
             m_player = player;
@@ -37,10 +37,10 @@ namespace Carcassonne.WPF.ViewModel
             //m_claimRightButtonUpHandler = new MouseButtonEventHandler(Tile_RightMouseButtonUp);
             //m_rightButtonDownHandler = new MouseButtonEventHandler(RightMouseButtonDown);
             //m_tileEnterHandler = new TileEnterHandler(GameField_TileEnter);
-            MeepleViewModels = new MappingCollection<MeepleViewModel, Meeple>(player.Meeple);
+            MeepleViewModels = new MappingCollection<MeepleViewModel, IMeeple>(player.Meeple);
         }
 
-        public MappingCollection<MeepleViewModel, Meeple> MeepleViewModels
+        public MappingCollection<MeepleViewModel, IMeeple> MeepleViewModels
         {
             get;
         }

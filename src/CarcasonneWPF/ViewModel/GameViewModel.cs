@@ -20,11 +20,11 @@ namespace Carcassonne.WPF.ViewModel
             m_dispatcher = Application.Current.Dispatcher;
             PropertyChanged += (sender, args) => { };
             Game = new Game(expansions);
-            BoardViewModel = new GameBoardViewModel(Game.Board, Game.RuleSet);
+            BoardViewModel = new BoardViewModel(Game.Board, Game.RuleSet);
             BoardViewModel.Placed += boardViewModel_Placed;
             Game.ActivePlayerChanged += game_ActivePlayerChanged;
             Game.ActiveTileChanged += game_ActiveTileChanged;
-            PlayerViewModels = new MappingCollection<PlayerViewModel, Player>(Game.Players);
+            PlayerViewModels = new MappingCollection<PlayerViewModel, IPlayer>(Game.Players);
             DeckViewModel = new DispatchedObservableList<PlacementViewModel>(/*m_dispatcher, */new ObservableList<PlacementViewModel>());
         }
 
@@ -43,16 +43,16 @@ namespace Carcassonne.WPF.ViewModel
             //}
         }
 
-        public MappingCollection<PlayerViewModel, Player> PlayerViewModels { get; }
+        public MappingCollection<PlayerViewModel, IPlayer> PlayerViewModels { get; }
 
-        void game_ActivePlayerChanged(object sender, ChangedValueArgs<Player> e)
+        void game_ActivePlayerChanged(object sender, ChangedValueArgs<IPlayer> e)
         {
-            NotifyPropertyChanged("ActivePlayer");
+            NotifyPropertyChanged(nameof(ActivePlayerViewModel));
         }
 
         public DispatchedObservableList<PlacementViewModel> DeckViewModel { get; }
         public Game Game { get; }
-        public GameBoardViewModel BoardViewModel { get; }
+        public BoardViewModel BoardViewModel { get; }
 
         #region INotifyPropertyChanged Members
 
@@ -78,7 +78,7 @@ namespace Carcassonne.WPF.ViewModel
 
         internal void AddPlayer(string name, Color color)
         {
-            if (Game.AddPlayer(name) != Player.None)
+            if (Game.AddPlayer(name) != NopPlayer.Instance)
             {
                 PlayerViewModel.ColorsForName[name] = new SolidColorBrush(color);
             }

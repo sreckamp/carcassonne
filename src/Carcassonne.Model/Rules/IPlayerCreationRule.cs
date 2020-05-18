@@ -2,6 +2,6 @@
 {
     public interface IPlayerCreationRule
     {
-        void UpdatePlayer(Player player);
+        void UpdatePlayer(IPlayer player);
     }
 }

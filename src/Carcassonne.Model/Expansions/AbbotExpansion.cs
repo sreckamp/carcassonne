@@ -1,4 +1,5 @@
-﻿using Carcassonne.Model.Rules;
+﻿using System.Linq;
+using Carcassonne.Model.Rules;
 
 namespace Carcassonne.Model.Expansions
 {
@@ -23,7 +24,7 @@ namespace Carcassonne.Model.Expansions
 
             public bool IsAvailable(IClaimable region, MeepleType type)
             {
-                return Applies(region, type) && ((IPointContainer)region).Owners.Count == 0;
+                return Applies(region, type) && !((IPointContainer)region).Owners.Any();
             }
 
             #endregion

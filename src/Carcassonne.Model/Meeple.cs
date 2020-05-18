@@ -1,21 +1,14 @@
 ﻿namespace Carcassonne.Model
 {
-    public class Meeple
+    public class Meeple_ :IMeeple
     {
-        public static readonly Meeple None = new Meeple(MeepleType.None, Player.None);
-
-        public Meeple(MeepleType type, Player player)
+        public Meeple_(MeepleType type, IPlayer player)
         {
             Type = type;
             Player = player;
         }
 
-        public Player Player { get; }
+        public IPlayer Player { get; }
         public MeepleType Type { get; }
-
-        public void Return()
-        {
-            Player.ReturnMeeple(this);
-        }
     }
 }

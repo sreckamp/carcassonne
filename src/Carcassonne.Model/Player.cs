@@ -4,11 +4,9 @@ using GameBase.Model;
 
 namespace Carcassonne.Model
 {
-    public class Player
+    public class Player_ : IPlayer
     {
-        public static readonly Player None = new Player(string.Empty);
-
-        public Player(string name)
+        public Player_(string name)
         {
             Name = name;
             ScoreChanged += (sender, args) => { };
@@ -30,7 +28,7 @@ namespace Carcassonne.Model
         private int m_score;
         public int Score {
             get => m_score;
-            internal set
+            set
             {
                 var old = m_score;
                 m_score = value;
@@ -40,26 +38,19 @@ namespace Carcassonne.Model
 
         public List<MeepleType> AvailableMeepleTypes => Meeple.AvailableTypes;
 
-        public void CreateMeeple(int count, MeepleType type)
-        {
-            for (var i = 0; i < count; i++)
-            {
-                Meeple.Push(new Meeple(type, this));
-            }
-        }
-
-        public Meeple PeekMeeple(MeepleType type)
+        public IMeeple PeekMeeple(MeepleType type)
         {
             return Meeple.Peek(type);
         }
 
-        public Meeple GetMeeple(MeepleType type)
+        public IMeeple GetMeeple(MeepleType type)
         {
             return Meeple.Pop(type);
         }
 
-        public void ReturnMeeple(Meeple meeple)
+        public void ReturnMeeple(IMeeple meeple)
         {
+            if(meeple.Player != this) throw new InvalidOperationException("Meeple must be owned by this player.");
             Meeple.Push(meeple);
         }
 

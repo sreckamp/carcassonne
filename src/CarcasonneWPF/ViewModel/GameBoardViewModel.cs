@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Input;
@@ -14,20 +15,20 @@ using Move = Carcassonne.Model.Move;
 
 namespace Carcassonne.WPF.ViewModel
 {
-    public class GameBoardViewModel : IGridManager, INotifyPropertyChanged
+    public class BoardViewModel : IGridManager, INotifyPropertyChanged
     {
-        private readonly GameBoard m_board;
+        private readonly Board m_board;
         private readonly ObservableList<PlacementViewModel> m_grid = new ObservableList<PlacementViewModel>();
         private readonly ObservableList<PlacementViewModel> m_active = new ObservableList<PlacementViewModel>();
         private readonly IPlaceRule<IGameBoard, ITile> m_placeRule;
 
-        public GameBoardViewModel(GameBoard board, IPlaceRule<IGameBoard, ITile> placeRule)
+        public BoardViewModel(Board board, IPlaceRule<IGameBoard, ITile> placeRule)
         {
-            StartColumnChanged += (sender, args) => { };
-            StartRowChanged += (sender, args) => { };
-            ColumnsChanged += (sender, args) => { };
-            RowsChanged += (sender, args) => { };
-            PropertyChanged += (sender, args) => { };
+            StartColumnChanged += (sender, args) => Debug.WriteLine($"~StartColumn {args.OldVal}=>{args.NewVal}");
+            StartRowChanged += (sender, args) => Debug.WriteLine($"~StartRow {args.OldVal}=>{args.NewVal}");
+            ColumnsChanged += (sender, args) => Debug.WriteLine($"~Columns {args.OldVal}=>{args.NewVal}");
+            RowsChanged += (sender, args) => Debug.WriteLine($"~Rows {args.OldVal}=>{args.NewVal}");
+            PropertyChanged += (sender, args) => Debug.WriteLine($"~Property {args.PropertyName}");
             Placed += (sender, args) => { };
             m_board = board;
             var placements = new MappingCollection<PlacementViewModel, Placement<ITile>>(board.Placements, this);
@@ -42,7 +43,7 @@ namespace Carcassonne.WPF.ViewModel
         }
 
         public OverlayDispatchedObservableList<PlacementViewModel> Grid { get; }
-        // public DispatchedObservableList<Point> AvailablePositions { get; }
+        public DispatchedObservableList<Point> AvailablePositions { get; }
 
         public event EventHandler<ChangedValueArgs<int>> StartColumnChanged;
         private int m_startColumn;
@@ -112,6 +113,7 @@ namespace Carcassonne.WPF.ViewModel
 
         private void board_MinXChanged(object sender, ChangedValueArgs<int> e)
         {
+            Debug.WriteLine($"MinXChanged {e.OldVal}=>{e.NewVal}");
             Columns = m_board.MaxX - m_board.MinX + 3;
             StartColumn = m_board.MinX - 1;
             if (e.NewVal < e.OldVal)
@@ -122,6 +124,7 @@ namespace Carcassonne.WPF.ViewModel
 
         private void board_MaxXChanged(object sender, ChangedValueArgs<int> e)
         {
+            Debug.WriteLine($"MaxXChanged {e.OldVal}=>{e.NewVal}");
             Columns = m_board.MaxX - m_board.MinX + 3;
             if (e.NewVal > e.OldVal)
             {
@@ -131,6 +134,7 @@ namespace Carcassonne.WPF.ViewModel
 
         private void board_MinYChanged(object sender, ChangedValueArgs<int> e)
         {
+            Debug.WriteLine($"MinYChanged {e.OldVal}=>{e.NewVal}");
             Rows = m_board.MaxY - m_board.MinY + 3;
             StartRow = m_board.MinY - 1;
             if (e.NewVal < e.OldVal)
@@ -141,6 +145,7 @@ namespace Carcassonne.WPF.ViewModel
 
         private void board_MaxYChanged(object sender, ChangedValueArgs<int> e)
         {
+            Debug.WriteLine($"MaxYChanged {e.OldVal}=>{e.NewVal}");
             Rows = m_board.MaxY - m_board.MinY + 3;
             if (e.NewVal > e.OldVal)
             {
@@ -177,8 +182,7 @@ namespace Carcassonne.WPF.ViewModel
             if (t != null)
             {
                 m_active.Add(new PlacementViewModel(t, this));
-                ActivePlacementViewModel?.ChangedDepth();
-                // m_availableMoves = m_board.GetAvailableMoves(t);
+                ActivePlacementViewModel.ChangedDepth();
             }
             else
             {

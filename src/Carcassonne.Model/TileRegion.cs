@@ -26,31 +26,30 @@ namespace Carcassonne.Model
 
         public int TileCount => m_tiles.Count;
 
-        private Meeple m_claimer = Meeple.None;
-        public Meeple Claimer
+        private IMeeple m_claimer = NopMeeple.Instance;
+
+        public IMeeple Claimer
         {
             get => m_claimer;
             private set
             {
                 m_claimer = value;
-                Owners.Clear();
-                if (m_claimer != Meeple.None)
-                {
-                    Owners.Add(m_claimer.Player);
-                }
+                m_owners.Clear();
+                m_owners.Add(m_claimer.Player);
             }
         }
 
-        public List<Player> Owners { get; } = new List<Player>();
+        private readonly HashSet<IPlayer> m_owners = new HashSet<IPlayer>();
+        public IEnumerable<IPlayer> Owners => m_owners;
 
         /// <inheritdoc />
         public void UpdateOwners()
         {
         }
 
-        public void Claim(Meeple meeple)
+        public void Claim(IMeeple meeple)
         {
-            if (Claimer != Meeple.None)
+            if (Claimer.Type != MeepleType.None)
             {
                 throw new InvalidOperationException("Cannot Claim a region already claimed.");
             }
@@ -59,10 +58,12 @@ namespace Carcassonne.Model
 
         public void ResetClaim()
         {
-            Claimer = Meeple.None;
+            Claimer = NopMeeple.Instance;
         }
 
         public bool IsForcedOpened { get; set; } = false;
+
+        public bool IsAvailable => !IsClosed;
 
         public bool IsClosed => !IsForcedOpened && TileCount == 9;
 

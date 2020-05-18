@@ -16,7 +16,7 @@
 
         public (IClaimable, MeepleType) GetClaim(Game game)
         {
-            return (DefaultClaimable.Instance, MeepleType.None);
+            return (NopClaimable.Instance, MeepleType.None);
         }
     }
 }

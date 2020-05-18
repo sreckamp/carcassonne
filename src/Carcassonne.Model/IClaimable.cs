@@ -2,18 +2,37 @@
 {
     public interface IClaimable
     {
-        void Claim(Meeple meeple);
+        /// <summary>
+        /// Claim this with the given meeple.
+        /// </summary>
+        /// <param name="meeple"></param>
+        void Claim(IMeeple meeple);
+
+        /// <summary>
+        /// Remove the claim on this.
+        /// </summary>
         void ResetClaim();
-        Meeple Claimer { get; }
-        bool IsClosed { get; }
+
+        /// <summary>
+        /// The meeple that is claiming this.
+        /// </summary>
+        IMeeple Claimer { get; }
+
+        /// <summary>
+        /// True when this is ready to receive a claim.
+        /// </summary>
+        bool IsAvailable { get; }
     }
 
-    public class DefaultClaimable : IClaimable
+    public class NopClaimable : IClaimable
     {
-        public static readonly IClaimable Instance = new DefaultClaimable();
+        public static readonly IClaimable Instance = new NopClaimable();
 
-        private DefaultClaimable(){ }
-        public void Claim(Meeple meeple)
+        private NopClaimable()
+        {
+        }
+
+        public void Claim(IMeeple meeple)
         {
         }
 
@@ -21,7 +40,9 @@
         {
         }
 
-        public Meeple Claimer { get; } = Meeple.None;
-        public bool IsClosed { get; } = false;
+        public IMeeple Claimer { get; } = NopMeeple.Instance;
+
+        /// <inheritdoc />
+        public bool IsAvailable { get; } = false;
     }
 }

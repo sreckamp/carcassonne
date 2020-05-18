@@ -8,7 +8,7 @@ namespace Carcassonne.Model
         public RotatedEdgeRegion(IEdgeRegion region, Rotation rot)
         {
             m_region = region;
-            m_claimable = region is IClaimable c ? c : DefaultClaimable.Instance;
+            m_claimable = region is IClaimable c ? c : NopClaimable.Instance;
             Rotation = rot;
         }
 
@@ -16,12 +16,12 @@ namespace Carcassonne.Model
         private readonly IClaimable m_claimable;
         public Rotation Rotation { get; }
 
-        public void Claim(Meeple meeple) => m_claimable.Claim(meeple);
+        public void Claim(IMeeple meeple) => m_claimable.Claim(meeple);
 
         public void ResetClaim() => m_claimable.ResetClaim();
 
-        public Meeple Claimer => m_claimable.Claimer;
-        public bool IsClosed => m_claimable.IsClosed;
+        public IMeeple Claimer => m_claimable.Claimer;
+        public bool IsAvailable => m_claimable.IsAvailable;
 
         public IPointContainer Container
         {

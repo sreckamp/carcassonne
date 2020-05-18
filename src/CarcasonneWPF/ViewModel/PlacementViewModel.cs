@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows;
@@ -14,10 +15,13 @@ namespace Carcassonne.WPF.ViewModel
 {
     public class PlacementViewModel : PlacementViewModel<ITile>
     {
+        private const int BACKGROUND_DEPTH = 99;
+        private const int FOREGROUND_DEPTH = 50;
+
         private static readonly ClaimableViewModel SDefaultIClaimableModel = new ClaimableViewModel(new EdgeRegion_(EdgeRegionType.Any), NopTileRegion.Instance);
 
-        public PlacementViewModel(ITile tile, GameBoardViewModel boardModel) :
-            this(new Placement<ITile>(tile, new DPoint()), boardModel)
+        public PlacementViewModel(ITile tile, IGridManager gridManager) :
+            this(new Placement<ITile>(tile, new DPoint()), gridManager)
         { }
         public PlacementViewModel(Placement<ITile> placement, IGridManager gridManager)
             : base(placement, gridManager)
@@ -25,7 +29,7 @@ namespace Carcassonne.WPF.ViewModel
             ParseTile();
         }
 
-        private GameBoardViewModel BoardViewModel => GridManager as GameBoardViewModel;
+        private BoardViewModel BoardViewModel => GridManager as BoardViewModel;
 
         // protected override CarcassonneMove GetMove(int locationX, int locationY) =>
         //     new CarcassonneMove(locationX, locationY, TileRotation);
@@ -38,31 +42,13 @@ namespace Carcassonne.WPF.ViewModel
             NotifyPropertyChanged(nameof(Opacity));
         }
 
-        public double Opacity => !(GridManager is GameBoardViewModel b) || b.Fits(this) ? 1 : 0.5;
+        public double Opacity => !(GridManager is BoardViewModel b) || b.Fits(this) ? 1 : 0.5;
 
         public void ChangedDepth() => NotifyPropertyChanged(nameof(Depth));
 
-        public int Depth
-        {
-            get
-            {
-                if (this is PointViewModel)
-                    Debug.WriteLine("PointViewModel");
-                if (BoardViewModel?.IsBackground(this) ?? true)
-                {
-                    Debug.WriteLine($"{Name} Depth:150");
-                    return 99;
-                }
-
-                if (BoardViewModel?.IsForeground(this) ?? true)
-                {
-                    Debug.WriteLine($"{Name} Depth:100");
-                    return 50;
-                }
-                Debug.WriteLine($"{Name} Depth:0");
-                return 0;
-            }
-        }
+        public int Depth => BoardViewModel.IsBackground(this)
+            ? BACKGROUND_DEPTH
+            : (BoardViewModel.IsForeground(this) ? 50 : 0);
 
         public Rotation TileRotation
         {
@@ -182,70 +168,73 @@ namespace Carcassonne.WPF.ViewModel
             foreach (var r in regions)
             {
                 var cvm = new ClaimableViewModel(r, Placement.Piece.TileRegion);
-                if (r.Edges.Count == 1)
+                switch (r.Edges.Count)
                 {
-                    switch (r.Edges[0])
-                    {
-                        case EdgeDirection.North:
-                            m_northDataContext = cvm;
-                            break;
-                        case EdgeDirection.South:
-                            m_southDataContext = cvm;
-                            break;
-                        case EdgeDirection.West:
-                            m_westDataContext = cvm;
-                            break;
-                        case EdgeDirection.East:
-                            m_eastDataContext = cvm;
-                            break;
-                    }
-                }
-                else if (r.Edges.Count == 2)
-                {
-                    if (r.Edges.Contains(EdgeDirection.South)
-                        && r.Edges.Contains(EdgeDirection.West))
-                    {
+                    case 1:
+                        switch (r.Edges[0])
+                        {
+                            case EdgeDirection.North:
+                                m_northDataContext = cvm;
+                                break;
+                            case EdgeDirection.South:
+                                m_southDataContext = cvm;
+                                break;
+                            case EdgeDirection.West:
+                                m_westDataContext = cvm;
+                                break;
+                            case EdgeDirection.East:
+                                m_eastDataContext = cvm;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+
+                        break;
+                    case 2 when r.Edges.Contains(EdgeDirection.South)
+                                && r.Edges.Contains(EdgeDirection.West):
                         m_southWestDataContext = cvm;
-                    }
-                    else if (r.Edges.Contains(EdgeDirection.East)
-                        && r.Edges.Contains(EdgeDirection.West))
-                    {
+                        break;
+                    case 2 when r.Edges.Contains(EdgeDirection.East)
+                                && r.Edges.Contains(EdgeDirection.West):
                         m_eastWestDataContext = cvm;
-                    }
-                    else if (r.Edges.Contains(EdgeDirection.North)
-                        && r.Edges.Contains(EdgeDirection.South))
-                    {
+                        break;
+                    case 2 when r.Edges.Contains(EdgeDirection.North)
+                                && r.Edges.Contains(EdgeDirection.South):
                         m_northSouthDataContext = cvm;
-                    }
-                    else if (r.Edges.Contains(EdgeDirection.North)
-                        && r.Edges.Contains(EdgeDirection.East))
-                    {
+                        break;
+                    case 2 when r.Edges.Contains(EdgeDirection.North)
+                                && r.Edges.Contains(EdgeDirection.East):
                         m_northEastDataContext = cvm;
-                    }
-                    else if (r.Edges.Contains(EdgeDirection.East)
-                                && r.Edges.Contains(EdgeDirection.South))
+                        break;
+                    case 2:
                     {
-                        m_eastSouthDataContext = cvm;
+                        if (r.Edges.Contains(EdgeDirection.East)
+                            && r.Edges.Contains(EdgeDirection.South))
+                        {
+                            m_eastSouthDataContext = cvm;
+                        }
+
+                        break;
                     }
-                }
-                else if (r.Edges.Count == 3)
-                {
-                    m_northEastWestDataContext = cvm;
-                }
-                else if (r.Edges.Count == 4)
-                {
-                    m_allDataContext = cvm;
-                    //m_northEastWestDataContext = cvm;
+                    case 3:
+                        m_northEastWestDataContext = cvm;
+                        break;
+                    case 4:
+                        m_allDataContext = cvm;
+                        //m_northEastWestDataContext = cvm;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
             if (m_allDataContext == SDefaultIClaimableModel)
             {
-                m_allDataContext = new ClaimableViewModel(null, Placement.Piece.TileRegion);
+                m_allDataContext = new ClaimableViewModel(NopEdgeRegion.Instance, Placement.Piece.TileRegion);
             }
         }
         public override string ToString()
         {
-            return Placement?.ToString() ?? "<<null>>";
+            return Placement.ToString();
         }
 
         private class ClaimableViewModel
@@ -260,10 +249,15 @@ namespace Carcassonne.WPF.ViewModel
             {
                 m_edge = edge;
                 m_tile = tile;
+                if (m_edge == null || m_tile == null)
+                {
+                }
             }
 
+            public MBrush Color { get; } = new SolidColorBrush(Colors.Fuchsia);
+
             public Visibility FullVisibility =>
-                m_edge != null || m_tile != null ? Visibility.Visible : Visibility.Hidden;
+                m_edge.Type != EdgeRegionType.Any || m_tile.Type != TileRegionType.None ? Visibility.Visible : Visibility.Hidden;
 
             public Visibility CityVisibility =>
                 m_edge.Type == EdgeRegionType.City ? Visibility.Visible : Visibility.Hidden;

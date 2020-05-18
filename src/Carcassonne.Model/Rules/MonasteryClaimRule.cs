@@ -1,4 +1,6 @@
-﻿namespace Carcassonne.Model.Rules
+﻿using System.Linq;
+
+namespace Carcassonne.Model.Rules
 {
     public class MonasteryClaimRule : IClaimRule
     {
@@ -11,7 +13,7 @@
 
         public bool IsAvailable(IClaimable region, MeepleType type)
         {
-            return Applies(region, type) && ((IPointContainer)region).Owners.Count == 0;
+            return Applies(region, type) && !((IPointContainer)region).Owners.Any();
         }
 
         #endregion

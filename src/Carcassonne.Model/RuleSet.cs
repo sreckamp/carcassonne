@@ -77,7 +77,7 @@ namespace Carcassonne.Model
 
         #region IPlayerCreationRule Members
 
-        public void UpdatePlayer(Player player)
+        public void UpdatePlayer(IPlayer player)
         {
             foreach (var pcr in m_playerRules)
             {

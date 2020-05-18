@@ -6,10 +6,10 @@ using GameBase.Model;
 
 namespace Carcassonne.Model
 {
-    public class MeepleCollection : IObservableList<Meeple>
+    public class MeepleCollection : IObservableList<IMeeple>
     {
-        private readonly Dictionary<MeepleType, Stack<Meeple>> m_meeple = new Dictionary<MeepleType, Stack<Meeple>>();
-        private readonly List<Meeple> m_allMeeple = new List<Meeple>();
+        private readonly Dictionary<MeepleType, Stack<IMeeple>> m_meeple = new Dictionary<MeepleType, Stack<IMeeple>>();
+        private readonly List<IMeeple> m_allMeeple = new List<IMeeple>();
 
         public MeepleCollection()
         {
@@ -18,11 +18,11 @@ namespace Carcassonne.Model
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        public void Push(Meeple m)
+        public void Push(IMeeple m)
         {
             if (!m_meeple.ContainsKey(m.Type))
             {
-                m_meeple[m.Type] = new Stack<Meeple>();
+                m_meeple[m.Type] = new Stack<IMeeple>();
             }
             if (!AvailableTypes.Contains(m.Type))
             {
@@ -34,9 +34,9 @@ namespace Carcassonne.Model
             CollectionChanged?.Invoke(this, args);
         }
 
-        public Meeple Pop(MeepleType t)
+        public IMeeple Pop(MeepleType t)
         {
-            if (!m_meeple.ContainsKey(t)) return Meeple.None;
+            if (!m_meeple.ContainsKey(t)) return NopMeeple.Instance;
             var m = m_meeple[t].Pop();
             if (m_meeple[t].Count == 0)
             {
@@ -49,9 +49,9 @@ namespace Carcassonne.Model
             return m;
         }
 
-        public Meeple Peek(MeepleType t)
+        public IMeeple Peek(MeepleType t)
         {
-            return m_meeple.ContainsKey(t) ? m_meeple[t].Peek() : Meeple.None;
+            return m_meeple.ContainsKey(t) ? m_meeple[t].Peek() : NopMeeple.Instance;
         }
 
         public void Clear()
@@ -73,9 +73,9 @@ namespace Carcassonne.Model
             }
         }
 
-        #region IEnumerable<Meeple> Members
+        #region IEnumerable<IMeeple> Members
 
-        public IEnumerator<Meeple> GetEnumerator()
+        public IEnumerator<IMeeple> GetEnumerator()
         {
             return m_allMeeple.GetEnumerator();
         }
@@ -91,14 +91,14 @@ namespace Carcassonne.Model
 
         #endregion
 
-        #region IList<Meeple> Members
+        #region IList<IMeeple> Members
 
-        public int IndexOf(Meeple item)
+        public int IndexOf(IMeeple item)
         {
             return m_allMeeple.IndexOf(item);
         }
 
-        public void Insert(int index, Meeple item)
+        public void Insert(int index, IMeeple item)
         {
             throw new NotImplementedException();
         }
@@ -108,7 +108,7 @@ namespace Carcassonne.Model
             throw new NotImplementedException();
         }
 
-        public Meeple this[int index]
+        public IMeeple this[int index]
         {
             get => m_allMeeple[index];
             set => throw new NotImplementedException();
@@ -118,17 +118,17 @@ namespace Carcassonne.Model
 
         #region ICollection<Meeple> Members
 
-        public void Add(Meeple item)
+        public void Add(IMeeple item)
         {
             throw new NotImplementedException();
         }
 
-        public bool Contains(Meeple item)
+        public bool Contains(IMeeple item)
         {
             return m_allMeeple.Contains(item);
         }
 
-        public void CopyTo(Meeple[] array, int arrayIndex)
+        public void CopyTo(IMeeple[] array, int arrayIndex)
         {
             m_allMeeple.CopyTo(array, arrayIndex);
         }
@@ -137,7 +137,7 @@ namespace Carcassonne.Model
 
         public bool IsReadOnly => true;
 
-        public bool Remove(Meeple item)
+        public bool Remove(IMeeple item)
         {
             throw new NotImplementedException();
         }

@@ -11,9 +11,12 @@
             m_type = type;
         }
 
-        public void UpdatePlayer(Player player)
+        public void UpdatePlayer(IPlayer player)
         {
-            player.CreateMeeple(m_count, m_type);
+            for (var i = 0; i < m_count; i++)
+            {
+                player.ReturnMeeple(new Meeple_(m_type, player));
+            }
         }
     }
 }

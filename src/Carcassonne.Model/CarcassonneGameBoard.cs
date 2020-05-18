@@ -7,9 +7,9 @@ using GameBase.Model.Rules;
 
 namespace Carcassonne.Model
 {
-    public class GameBoard : GameBoard<ITile>, IGameBoard
+    public class Board : Board<ITile>, IGameBoard
     {
-        public GameBoard() : base(Tile.None)
+        public Board() : base(Tile.None)
         { }
 
         public ITile GetNeighbor(Point point, EdgeDirection direction)

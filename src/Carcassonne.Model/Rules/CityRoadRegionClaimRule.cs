@@ -1,4 +1,6 @@
-﻿namespace Carcassonne.Model.Rules
+﻿using System.Linq;
+
+namespace Carcassonne.Model.Rules
 {
     public class CityRoadRegionClaimRule : IClaimRule
     {
@@ -12,7 +14,7 @@
 
         public bool IsAvailable(IClaimable region, MeepleType type)
         {
-            return Applies(region, type) && (((IEdgeRegion)region).Container?.Owners.Count ?? 0) == 0;
+            return Applies(region, type) && !((IEdgeRegion)region).Container.Owners.Any();
         }
 
         #endregion

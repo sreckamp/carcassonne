@@ -15,7 +15,7 @@ namespace Carcassonne.Model.Rules
 
         public virtual bool Fits(IGameBoard board, ITile tile, Point location)
         {
-            if(!(board is GameBoard b)) return false;
+            if(!(board is Board b)) return false;
             var hasNeighbor = false;
             foreach (EdgeDirection dir in Enum.GetValues(typeof(EdgeDirection)))
             {

@@ -75,6 +75,8 @@
     <Compile Include="CarcassonneGameBoard.cs" />
     <Compile Include="IEdgeRegion.cs" />
     <Compile Include="IGameBoard.cs" />
+    <Compile Include="IMeeple.cs" />
+    <Compile Include="IPlayer.cs" />
     <Compile Include="ITile.cs" />
     <Compile Include="ITileRegion.cs" />
     <Compile Include="MeepleCollection.cs" />

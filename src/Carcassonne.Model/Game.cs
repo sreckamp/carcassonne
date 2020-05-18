@@ -30,11 +30,11 @@ namespace Carcassonne.Model
             ActivePlayerChanged += (sender, args) => { };
             m_expansions = expansions;
             RuleSet = new RuleSet(expansions);
-            Board = new GameBoard();
-            Players = new ObservableList<Player>();
+            Board = new Board();
+            Players = new ObservableList<IPlayer>();
         }
 
-        public GameBoard Board { get; }
+        public Board Board { get; }
         public ObservableList<IPointContainer> PointRegions { get; } = new ObservableList<IPointContainer>();
 
         private readonly Deck m_deck = new Deck();
@@ -55,13 +55,13 @@ namespace Carcassonne.Model
             }
         }
 
-        public event EventHandler<ChangedValueArgs<Player>> ActivePlayerChanged;
+        public event EventHandler<ChangedValueArgs<IPlayer>> ActivePlayerChanged;
         private int m_activePlayerIndex = int.MaxValue;
-        public Player ActivePlayer => m_activePlayerIndex < Players.Count ? Players[m_activePlayerIndex] : Player.None;
+        public IPlayer ActivePlayer => m_activePlayerIndex < Players.Count ? Players[m_activePlayerIndex] : NopPlayer.Instance;
 
-        public ObservableList<Player> Players { get; }
+        public ObservableList<IPlayer> Players { get; }
 
-        private Player NextPlayer()
+        private IPlayer NextPlayer()
         {
             var old = ActivePlayer;
             if (m_activePlayerIndex >= Players.Count - 1)
@@ -72,18 +72,16 @@ namespace Carcassonne.Model
             {
                 m_activePlayerIndex++;
             }
-            ActivePlayerChanged.Invoke(this, new ChangedValueArgs<Player>(old, ActivePlayer));
+            ActivePlayerChanged.Invoke(this, new ChangedValueArgs<IPlayer>(old, ActivePlayer));
             return ActivePlayer;
         }
 
-        public IClaimable Claim(IClaimable region, MeepleType type)
+        public bool Claim(IClaimable claim, MeepleType type)
         {
-            if (region == DefaultClaimable.Instance) return DefaultClaimable.Instance;
             var m = ActivePlayer.GetMeeple(type);
-            if (m == Meeple.None) return DefaultClaimable.Instance;
-            if (!RuleSet.IsAvailable(region, m.Type)) return DefaultClaimable.Instance;
-            region.Claim(m);
-            return region;
+            if (!claim.IsAvailable && m.Type == MeepleType.None || !RuleSet.IsAvailable(claim, m.Type)) return false;
+            claim.Claim(m);
+            return true;
         }
 
         private void End()
@@ -296,7 +294,7 @@ namespace Carcassonne.Model
             do
             {
                 var player = NextPlayer();
-                if (player == Player.None) continue;
+                if (player == NopPlayer.Instance) continue;
                 if (Draw() == Tile.None) break;
 
                 State = GameState.Place;
@@ -317,21 +315,22 @@ namespace Carcassonne.Model
 
                 if (State != GameState.Place) continue;
                 State = GameState.Claim;
+                //TODO: Get available regions here (including closed ones on the most recently placed & possibly any open one, or removals, etc.
                 //TODO: Implement claiming
-                // IClaimable claimed;
-                // do
-                // {
-                //     var (region, type) = player.GetClaim(this);
-                //     if (region != DefaultClaimable.Instance)
-                //     {
-                //         claimed = Claim(region, type);
-                //     }
-                //     else
-                //     {
-                //         //Skip the claim state.
-                //         break;
-                //     }
-                // } while (claimed == DefaultClaimable.Instance);
+                bool claimed;
+                do
+                {
+                    var (claim, type) = player.GetClaim(this);
+                    if (claim.IsAvailable)
+                    {
+                        claimed = Claim(claim, type);
+                    }
+                    else
+                    {
+                        //Skip the claim state.
+                        break;
+                    }
+                } while (!claimed);
                 Score(changed);
             } while (ActiveTile != Tile.None);
             End();
@@ -486,10 +485,10 @@ namespace Carcassonne.Model
             return RuleSet.Fits(Board, tile, location);
         }
 
-        public Player AddPlayer(string name)
+        public IPlayer AddPlayer(string name)
         {
-            if (State != GameState.NotStarted) return Player.None;
-            var p = new Player(name);
+            if (State != GameState.NotStarted) return NopPlayer.Instance;
+            var p = new Player_(name);
             Players.Add(p);
             return p;
         }

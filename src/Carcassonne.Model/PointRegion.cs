@@ -50,10 +50,10 @@ namespace Carcassonne.Model
 
         public void ReturnMeeple()
         {
-            var markers = new List<Player>();
+            var markers = new List<IPlayer>();
             foreach (var r in m_regions)
             {
-                if (!(r is IClaimable c) || c.Claimer == Meeple.None) continue;
+                if (!(r is IClaimable c) || c.Claimer.Type == MeepleType.None) continue;
                 var p = c.Claimer.Player;
                 p.ReturnMeeple(c.Claimer);
                 if (Owners.Contains(p) && !markers.Contains(p))
@@ -67,7 +67,8 @@ namespace Carcassonne.Model
             }
         }
 
-        public List<Player> Owners { get; } = new List<Player>();
+        private readonly HashSet<IPlayer> m_owners = new HashSet<IPlayer>();
+        public IEnumerable<IPlayer> Owners => m_owners;
 
         public void Add(IEdgeRegion r)
         {
@@ -96,9 +97,9 @@ namespace Carcassonne.Model
 
         public void UpdateOwners()
         {
-            var claims = new Dictionary<Player, int>();
+            var claims = new Dictionary<IPlayer, int>();
             var high = 0;
-            foreach (var claim in m_regions.Where(r => r is IClaimable c && c.Claimer != Meeple.None)
+            foreach (var claim in m_regions.Where(r => r is IClaimable c && c.Claimer.Type != MeepleType.None)
                 .Cast<IClaimable>())
             {
                 if (!claims.ContainsKey(claim.Claimer.Player))
@@ -109,12 +110,10 @@ namespace Carcassonne.Model
                 if (claims[claim.Claimer.Player] < high) continue;
                 if (claims[claim.Claimer.Player] > high)
                 {
-                    Owners.Clear();
+                    m_owners.Clear();
                 }
-                if (!Owners.Contains(claim.Claimer.Player))
-                {
-                    Owners.Add(claim.Claimer.Player);
-                }
+                m_owners.Add(claim.Claimer.Player);
+
                 high = claims[claim.Claimer.Player];
             }
         }
@@ -127,7 +126,7 @@ namespace Carcassonne.Model
             }
         }
 
-        public List<IEdgeRegion> GetClaimedRegions() => m_regions.Where(r => r is IClaimable c && c.Claimer != Meeple.None).ToList();
+        public List<IEdgeRegion> GetClaimedRegions() => m_regions.Where(r => r is IClaimable c && c.Claimer.Type != MeepleType.None).ToList();
 
         public override string ToString() => $"{GetType().Name} {m_tiles.Count}";
     }

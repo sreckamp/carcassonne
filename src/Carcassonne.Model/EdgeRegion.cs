@@ -22,8 +22,8 @@ namespace Carcassonne.Model
 
         #region IClaimable Members
 
-        private Meeple m_claimer = Meeple.None;
-        public Meeple Claimer
+        private IMeeple m_claimer = NopMeeple.Instance;
+        public IMeeple Claimer
         {
             get => m_claimer;
             private set
@@ -35,19 +35,20 @@ namespace Carcassonne.Model
 
         public void ResetClaim()
         {
-            Claimer = Meeple.None;
+            Claimer = NopMeeple.Instance;
         }
 
-        public void Claim(Meeple meeple)
+        public void Claim(IMeeple meeple)
         {
-            if (Claimer != Meeple.None && meeple != Meeple.None)
+            if (Claimer.Type != MeepleType.None && meeple.Type != MeepleType.None)
             {
                 throw new InvalidOperationException("Cannot Claim a region already claimed.");
             }
             Claimer = meeple;
         }
 
-        public bool IsClosed => Container.IsClosed;
+        /// <inheritdoc />
+        public bool IsAvailable => !Container.IsClosed;
 
         #endregion
 

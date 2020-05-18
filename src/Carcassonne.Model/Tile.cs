@@ -43,8 +43,8 @@ namespace Carcassonne.Model
         {
             get
             {
-                var claimed = m_regions.Where(r => r is IClaimable c && c.Claimer != Meeple.None).Cast<IClaimable>().ToList();
-                if (TileRegion is IClaimable claim && claim.Claimer != Meeple.None)
+                var claimed = m_regions.Where(r => r is IClaimable c && c.Claimer.Type != MeepleType.None).Cast<IClaimable>().ToList();
+                if (TileRegion is IClaimable claim && claim.Claimer.Type != MeepleType.None)
                 {
                     claimed.Add(claim);
                 }
@@ -101,7 +101,7 @@ namespace Carcassonne.Model
         {
             var done = new List<IEdgeRegion>();
             var sb = new StringBuilder();
-            foreach (var r in Regions.Where(r => r.Type != EdgeRegionType.Any && !done.Contains(r)))
+            foreach (var r in Regions.Where(r => r.Type != EdgeRegionType.None && !done.Contains(r)))
             {
                 if (sb.Length > 0)
                 {
@@ -131,7 +131,7 @@ namespace Carcassonne.Model
         public List<IClaimable> GetAvailableRegions()
         {
             var claimableRegions = Regions.Where(r =>
-                r.Type != EdgeRegionType.Any && r.Container.Owners.Count == 0).Distinct().Cast<IClaimable>().ToList();
+                r.Type != EdgeRegionType.Any && !r.Container.Owners.Any()).Distinct().Cast<IClaimable>().ToList();
             if (TileRegion is IClaimable c && c.Claimer.Type != MeepleType.None)
             {
                 claimableRegions.Add(c);

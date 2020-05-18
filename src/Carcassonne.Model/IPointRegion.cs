@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Carcassonne.Model
 {
@@ -21,7 +22,7 @@ namespace Carcassonne.Model
         /// <summary>
         /// The player(s) who own the Container (have the most Meeple on it)
         /// </summary>
-        List<Player> Owners { get; }
+        IEnumerable<IPlayer> Owners { get; }
 
         /// <summary>
         /// Recalculate the owners
@@ -48,7 +49,7 @@ namespace Carcassonne.Model
         public bool IsForcedOpened { get; set; }
 
         /// <inheritdoc />
-        public List<Player> Owners { get; } = new List<Player>();
+        public IEnumerable<IPlayer> Owners { get; } = Enumerable.Empty<IPlayer>();
 
         /// <inheritdoc />
         public void UpdateOwners()

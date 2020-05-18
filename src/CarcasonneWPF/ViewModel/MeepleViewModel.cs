@@ -10,9 +10,9 @@ namespace Carcassonne.WPF.ViewModel
     public class MeepleViewModel: INotifyPropertyChanged
     {
         protected readonly Dispatcher Dispatcher;
-        protected readonly Meeple Meeple;
+        protected readonly IMeeple Meeple;
 
-        public MeepleViewModel(Meeple meeple)
+        public MeepleViewModel(IMeeple meeple)
         {
             Dispatcher = Application.Current.Dispatcher;
             PropertyChanged += (sender, args) => { };
