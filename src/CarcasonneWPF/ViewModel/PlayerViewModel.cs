@@ -3,6 +3,7 @@ using System.Threading;
 using System.Windows.Media;
 using Carcassonne.Model;
 using GameBase.Model;
+using Move = Carcassonne.Model.Move;
 
 namespace Carcassonne.WPF.ViewModel
 {
@@ -18,7 +19,7 @@ namespace Carcassonne.WPF.ViewModel
         //private readonly MouseButtonEventHandler m_claimRightButtonUpHandler;
         //private readonly TileEnterHandler m_tileEnterHandler;
         //private PlacementViewModel m_activeTile;
-        private CarcassonneMove m_move;
+        private Move m_move;
         //private Point? m_overPoint = null;
         private readonly IClaimable m_activeClaim = null;
         //private bool m_rightPressed = false;
@@ -48,14 +49,14 @@ namespace Carcassonne.WPF.ViewModel
         public string Name => m_player.Name;
         public int Score => m_player.Score;
 
-        public CarcassonneMove GetMove(Game game)
+        public Move GetMove(Game game)
         {
             //m_activeTile.ClickAction +=
             //m_view.GameField.MouseRightButtonUp += m_placeRightButtonUpHandler;
             //m_view.GameField.MouseLeftButtonUp += m_placeLeftButtonUpHandler;
             //m_view.GameField.MouseRightButtonDown += m_rightButtonDownHandler;
             //m_view.GameField.TileEnter += m_tileEnterHandler;
-            CarcassonneMove mv = null;
+            Move mv = null;
             lock (m_lock)
             {
                 Monitor.Wait(m_lock);
@@ -73,7 +74,7 @@ namespace Carcassonne.WPF.ViewModel
             return mv;
         }
 
-        internal void Place(CarcassonneMove move)
+        internal void Place(Move move)
         {
             m_move = move;
             lock (m_lock)

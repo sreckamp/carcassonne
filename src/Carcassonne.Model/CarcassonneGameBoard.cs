@@ -12,34 +12,6 @@ namespace Carcassonne.Model
         public GameBoard() : base(Tile.None)
         { }
 
-        public override void Clear()
-        {
-            base.Clear();
-            // AvailableLocations.Add(new Point(0, 0));
-        }
-
-        // protected override IEnumerable<CarcassonneMove> GetOptions(Point point)
-        // {
-        //     return Enum.GetValues(typeof(Rotation)).Cast<Rotation>().Select(rot => new CarcassonneMove(point, rot));
-        // }
-
-        // protected override void AddAvailableLocations(Placement<ITile> placement)
-        // {
-        //     for (var x = -1; x < 2; x++)
-        //     {
-        //         for (var y = -1; y < 2; y++)
-        //         {
-        //             if (Math.Abs(x) == Math.Abs(y)) continue;
-        //             var p = new Point(placement.Move.Location.X + x, placement.Move.Location.Y + y);
-        //             if (this[p] != Tile.None) continue;
-        //             if (!AvailableLocations.Contains(p))
-        //             {
-        //                 AvailableLocations.Add(p);
-        //             }
-        //         }
-        //     }
-        // }
-
         public ITile GetNeighbor(Point point, EdgeDirection direction)
         {
             var xOffset = 0;

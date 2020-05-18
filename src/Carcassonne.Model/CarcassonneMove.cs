@@ -4,25 +4,25 @@ using GameBase.Model;
 
 namespace Carcassonne.Model
 {
-    public class CarcassonneMove // : IEquatable<CarcassonneMove>
+    public class Move
     {
-        public static readonly CarcassonneMove None = new CarcassonneMove(int.MinValue, int.MinValue, Rotation.None, true);
+        public static readonly Move None = new Move(int.MinValue, int.MinValue, Rotation.None, true);
 
-        public CarcassonneMove(int x, int y, Rotation rotation)
+        public Move(int x, int y, Rotation rotation)
             : this(x, y, rotation, false)
         {
         }
 
-        public CarcassonneMove(Point location, Rotation rotation) : this(location,rotation,false)
+        public Move(Point location, Rotation rotation) : this(location,rotation,false)
         {
         }
 
-        private CarcassonneMove(int x, int y, Rotation rotation, bool isEmpty)
+        private Move(int x, int y, Rotation rotation, bool isEmpty)
             : this(new Point(x, y), rotation, isEmpty)
         {
         }
 
-        private CarcassonneMove(Point location, Rotation rotation, bool isEmpty)
+        private Move(Point location, Rotation rotation, bool isEmpty)
         {
             Location = location;
             Rotation = rotation;
@@ -47,7 +47,7 @@ namespace Carcassonne.Model
         
         #region IEquatable<Move> Members
         
-        public bool Equals(CarcassonneMove other)
+        public bool Equals(Move other)
         {
             return base.Equals(other);
             // && Rotation.Equals(other?.Rotation);

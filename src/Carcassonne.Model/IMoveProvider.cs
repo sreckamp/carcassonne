@@ -3,7 +3,7 @@
     public interface IMoveProvider
     {
         // ReSharper disable once UnusedParameter.Global
-        CarcassonneMove GetMove(Game game);
+        Move GetMove(Game game);
     }
 
     public class EmptyMoveProvider : IMoveProvider
@@ -13,9 +13,9 @@
         {
         }
 
-        public CarcassonneMove GetMove(Game game)
+        public Move GetMove(Game game)
         {
-            return CarcassonneMove.None;
+            return Move.None;
         }
     }
 }

@@ -316,20 +316,21 @@ namespace Carcassonne.Model
 
                 if (State != GameState.Place) continue;
                 State = GameState.Claim;
-                IClaimable claimed;
-                do
-                {
-                    var (region, type) = player.GetClaim(this);
-                    if (region != DefaultClaimable.Instance)
-                    {
-                        claimed = Claim(region, type);
-                    }
-                    else
-                    {
-                        //Skip the claim state.
-                        break;
-                    }
-                } while (claimed == DefaultClaimable.Instance);
+                //TODO: Implement claiming
+                // IClaimable claimed;
+                // do
+                // {
+                //     var (region, type) = player.GetClaim(this);
+                //     if (region != DefaultClaimable.Instance)
+                //     {
+                //         claimed = Claim(region, type);
+                //     }
+                //     else
+                //     {
+                //         //Skip the claim state.
+                //         break;
+                //     }
+                // } while (claimed == DefaultClaimable.Instance);
                 Score(changed);
             } while (ActiveTile != Tile.None);
             End();
@@ -358,7 +359,7 @@ namespace Carcassonne.Model
             m_deck.Push(tile);
         }
 
-        private List<IPointContainer> Place(CarcassonneMove move)
+        private List<IPointContainer> Place(Move move)
         {
             var changed = new List<IPointContainer>();
             var tile = new RotatedTile(ActiveTile, move.Rotation);

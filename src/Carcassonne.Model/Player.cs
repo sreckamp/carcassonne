@@ -63,7 +63,7 @@ namespace Carcassonne.Model
             Meeple.Push(meeple);
         }
 
-        public virtual CarcassonneMove GetMove(Game game) {
+        public virtual Move GetMove(Game game) {
             return MoveChooser.GetMove(game);
         }
         public virtual (IClaimable, MeepleType) GetClaim(Game game)

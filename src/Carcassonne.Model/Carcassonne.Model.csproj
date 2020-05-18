@@ -87,7 +87,7 @@
     <Compile Include="Expansions\RiverExpansion.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="IClaimable.cs" />
-    <Compile Include="AbstractExpansionPack.cs" />
+    <Compile Include="ExpansionPack.cs" />
     <Compile Include="IMoveProvider.cs" />
     <Compile Include="PointRegion.cs" />
     <Compile Include="RotatedEdgeRegion.cs" />

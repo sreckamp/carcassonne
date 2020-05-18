@@ -10,6 +10,7 @@ using GameBase.Model;
 using GameBase.Model.Rules;
 using GameBase.WPF;
 using GameBase.WPF.ViewModel;
+using Move = Carcassonne.Model.Move;
 
 namespace Carcassonne.WPF.ViewModel
 {
@@ -170,7 +171,7 @@ namespace Carcassonne.WPF.ViewModel
         }
 
         public PlacementViewModel ActivePlacementViewModel => m_active.Count > 0 ? m_active[0] : null;
-        private IEnumerable<CarcassonneMove> m_availableMoves = Enumerable.Empty<CarcassonneMove>();
+        private IEnumerable<Move> m_availableMoves = Enumerable.Empty<Move>();
         public void SetActiveTile(Tile t)
         {
             if (t != null)
@@ -259,9 +260,9 @@ namespace Carcassonne.WPF.ViewModel
     {
         public PlaceEventArgs(ITile tile, Point location)
         {
-            Move = new CarcassonneMove(location, (tile is RotatedTile rt) ? rt.Rotation : Rotation.None);
+            Move = new Move(location, (tile is RotatedTile rt) ? rt.Rotation : Rotation.None);
         }
 
-        public CarcassonneMove Move { get; }
+        public Move Move { get; }
     }
 }

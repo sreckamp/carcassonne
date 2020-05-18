@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Carcassonne.Model
 {
@@ -14,7 +15,9 @@ namespace Carcassonne.Model
         public Rotation Rotation { get; set; }
 
         public TileRegion TileRegion => m_tile.TileRegion;
-        public IEnumerable<IEdgeRegion> Regions => m_tile.Regions;
+
+        public IEnumerable<IEdgeRegion> Regions => m_tile.Regions.Select(r => new RotatedEdgeRegion(r, Rotation));
+
         public IEnumerable<IEdgeRegion> RegionsNotRotated => m_tile.Regions;
 
         public RegionType GetEdge(EdgeDirection direction)
