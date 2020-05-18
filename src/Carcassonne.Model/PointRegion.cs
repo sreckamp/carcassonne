@@ -1,32 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
 namespace Carcassonne.Model
 {
-    public class PointRegion : IPointRegion
+    public class PointRegion : IPointContainer
     {
         public static readonly PointRegion None = new PointRegion(RegionType.Any);
 
-        private readonly List<EdgeRegion> m_regions = new List<EdgeRegion>();
+        private readonly List<IEdgeRegion> m_regions = new List<IEdgeRegion>();
         private readonly List<Tile> m_tiles = new List<Tile>();
-
-        #region INotifyPropertyChanged Members
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void NotifyPropertyChanged(string name)
-        {
-            PropertyChanged.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-
-        #endregion
 
         public PointRegion(RegionType type)
         {
             Type = type;
-            PropertyChanged += (sender, args) => { };
             IsClosedChanged += (sender, args) => { };
         }
 
@@ -35,7 +22,6 @@ namespace Carcassonne.Model
 
         private void OnIsClosedChange()
         {
-            NotifyPropertyChanged(nameof(IsClosed));
             IsClosedChanged.Invoke(this, new EventArgs());
         }
 
@@ -58,7 +44,6 @@ namespace Carcassonne.Model
             set
             {
                 m_edges = value;
-                NotifyPropertyChanged(nameof(OpenEdges));
                 OnIsClosedChange();
             }
         }
@@ -86,21 +71,17 @@ namespace Carcassonne.Model
 
         public List<Player> Owners { get; } = new List<Player>();
 
-        public void Add(EdgeRegion r)
+        public void Add(IEdgeRegion r)
         {
-            var updated = UpdateEdges(r);
-            if (updated)
-            {
-                NotifyPropertyChanged("Score");
-            }
+            UpdateEdges(r);
         }
 
-        protected virtual bool UpdateEdges(EdgeRegion r)
+        protected virtual bool UpdateEdges(IEdgeRegion r)
         {
             var updated = false;
             if (!m_regions.Contains(r))
             {
-                var openEdges = OpenEdges + r.Edges.Length;
+                var openEdges = OpenEdges + r.Edges.Count();
                 if (m_regions.Count > 0)
                 {
                     openEdges -= 2;
@@ -139,7 +120,6 @@ namespace Carcassonne.Model
                 }
                 high = claims[r.Claimer.Player];
             }
-            NotifyPropertyChanged("Owners");
         }
 
         public void Merge(PointRegion other)
@@ -150,14 +130,8 @@ namespace Carcassonne.Model
             }
         }
 
-        public List<EdgeRegion> GetClaimedRegions()
-        {
-            return m_regions.Where(r => r.Claimer != Meeple.None).ToList();
-        }
+        public List<IEdgeRegion> GetClaimedRegions() => m_regions.Where(r => r.Claimer != Meeple.None).ToList();
 
-        public override string ToString()
-        {
-            return $"{GetType().Name} {m_tiles.Count}";
-        }
+        public override string ToString() => $"{GetType().Name} {m_tiles.Count}";
     }
 }

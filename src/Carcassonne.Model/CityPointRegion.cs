@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace Carcassonne.Model
 {
-    public class CityPointRegion : PointRegion, INotifyPropertyChanged
+    public class CityPointRegion : PointRegion
     {
         private readonly List<Tile> m_shieldTiles = new List<Tile>();
 
@@ -11,16 +10,12 @@ namespace Carcassonne.Model
 
         public int ShieldCount => m_shieldTiles.Count;
 
-        protected override bool UpdateEdges(EdgeRegion r)
+        protected override bool UpdateEdges(IEdgeRegion r)
         {
             var updated = base.UpdateEdges(r);
-            var cer = r as CityEdgeRegion;
-            if (cer.HasShield && !m_shieldTiles.Contains(cer.Parent))
-            {
-                m_shieldTiles.Add(cer.Parent);
-                updated = true;
-            }
-            return updated;
+            if (!(r is CityEdgeRegion cer) || !cer.HasShield || m_shieldTiles.Contains(cer.Parent)) return updated;
+            m_shieldTiles.Add(cer.Parent);
+            return true;
         }
     }
 }

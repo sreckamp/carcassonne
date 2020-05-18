@@ -14,7 +14,8 @@ namespace Carcassonne.Model
         public Rotation Rotation { get; set; }
 
         public TileRegion TileRegion => m_tile.TileRegion;
-        public IEnumerable<EdgeRegion> Regions => m_tile.Regions;
+        public IEnumerable<IEdgeRegion> Regions => m_tile.Regions;
+        public IEnumerable<IEdgeRegion> RegionsNotRotated => m_tile.Regions;
 
         public RegionType GetEdge(EdgeDirection direction)
         {
@@ -22,7 +23,7 @@ namespace Carcassonne.Model
             return m_tile.GetEdge(direction);
         }
 
-        public EdgeRegion GetRegion(EdgeDirection direction)
+        public IEdgeRegion GetRegion(EdgeDirection direction)
         {
             direction = direction.UnRotate(Rotation);
             return m_tile.GetRegion(direction);

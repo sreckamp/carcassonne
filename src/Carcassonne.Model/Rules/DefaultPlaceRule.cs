@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Linq;
-using GameBase.Model;
 using GameBase.Model.Rules;
 
 namespace Carcassonne.Model.Rules
@@ -33,7 +31,7 @@ namespace Carcassonne.Model.Rules
 
         #endregion
 
-        protected virtual bool RegionsMatch(EdgeRegion myRegion, EdgeRegion theirRegion)
+        protected virtual bool RegionsMatch(IEdgeRegion myRegion, IEdgeRegion theirRegion)
         {
             return theirRegion.Type == RegionType.Any || myRegion.Type == theirRegion.Type;
         }

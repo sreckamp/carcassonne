@@ -2,8 +2,8 @@
 {
     public interface IScoreRule
     {
-        bool Applies(IPointRegion region);
-        int GetScore(IPointRegion region);
-        int GetEndScore(IPointRegion region);
+        bool Applies(IPointContainer region);
+        int GetScore(IPointContainer region);
+        int GetEndScore(IPointContainer region);
     }
 }

@@ -6,9 +6,9 @@ namespace Carcassonne.Model
     public interface ITile : IPiece
     {
         TileRegion TileRegion { get; }
-        IEnumerable<EdgeRegion> Regions { get; }
+        IEnumerable<IEdgeRegion> Regions { get; }
         RegionType GetEdge(EdgeDirection direction);
-        EdgeRegion GetRegion(EdgeDirection direction);
+        IEdgeRegion GetRegion(EdgeDirection direction);
         bool Contains(RegionType type);
     }
 }

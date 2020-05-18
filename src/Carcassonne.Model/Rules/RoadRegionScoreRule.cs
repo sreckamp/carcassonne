@@ -4,12 +4,12 @@
     {
         #region IScoreRule Members
 
-        public bool Applies(IPointRegion region)
+        public bool Applies(IPointContainer region)
         {
             return region is PointRegion;
         }
 
-        public int GetScore(IPointRegion region)
+        public int GetScore(IPointContainer region)
         {
             if (region is PointRegion pr && pr.Type == RegionType.Road && pr.IsClosed)
             {
@@ -18,7 +18,7 @@
             return 0;
         }
 
-        public int GetEndScore(IPointRegion region)
+        public int GetEndScore(IPointContainer region)
         {
             if (region is PointRegion pr && pr.Type == RegionType.Road && !pr.IsClosed)
             {

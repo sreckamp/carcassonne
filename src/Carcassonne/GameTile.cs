@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using Carcassonne.Model;
 
@@ -149,11 +150,11 @@ namespace Carcassonne
             protected const float SinglePathWidth = 0.35f;
             protected const float SingleRegionWidth = (1f-SinglePathWidth)/4f;
 
-            protected readonly EdgeRegion Region;
+            protected readonly IEdgeRegion Region;
             protected readonly Dictionary<PointF[], Brush> Shapes = new Dictionary<PointF[],Brush>();
             protected readonly Dictionary<RectangleF, Brush> Ellipses = new Dictionary<RectangleF, Brush>();
 
-            protected TileRenderer(EdgeRegion region)
+            protected TileRenderer(IEdgeRegion region)
             {
                 Region = region;
             }
@@ -238,7 +239,7 @@ namespace Carcassonne
 
             protected void CreatePathRegion(RectangleF canvas, Color color)
             {
-                if (Region.Edges.Length == 1)
+                if (Region.Edges.Count == 1)
                 {
                     var rot = Rotation.None;
 
@@ -301,7 +302,7 @@ namespace Carcassonne
                 var tr = new PointF(canvas.Right, canvas.Top);
                 var bl = new PointF(canvas.Left, canvas.Bottom);
                 var br = new PointF(canvas.Right, canvas.Bottom);
-                if (Region.Edges.Length == 1)
+                if (Region.Edges.Count == 1)
                 {
                     switch (Region.Edges[0])
                     {
@@ -440,7 +441,7 @@ namespace Carcassonne
 
         private sealed class RoadRegionRenderer : TileRenderer
         {
-            public RoadRegionRenderer(Rectangle canvas, EdgeRegion region, float roadWidth)
+            public RoadRegionRenderer(Rectangle canvas, IEdgeRegion region, float roadWidth)
                 : base(region)
             {
                 RoadWidth = roadWidth;
@@ -457,7 +458,7 @@ namespace Carcassonne
 
         private sealed class RiverRegionRenderer : TileRenderer
         {
-            public RiverRegionRenderer(Rectangle canvas, EdgeRegion region, float riverWidth)
+            public RiverRegionRenderer(Rectangle canvas, IEdgeRegion region, float riverWidth)
                 : base(region)
             {
                 RiverWidth = riverWidth;
@@ -469,7 +470,7 @@ namespace Carcassonne
             public override void UpdateRegion(RectangleF canvas)
             {
                 CreatePathRegion(canvas, Color.Blue);
-                if (Region.Edges.Length == 1)
+                if (Region.Edges.Count == 1)
                 {
                     AddEllipse(canvas, Color.Blue, new RectangleF(0.25f, 0.25f, 0.5f, 0.5f), Rotation.None);
                 }
@@ -600,10 +601,10 @@ namespace Carcassonne
                             x = FlowerOffsetDual;
                             y = 1 - FlowerSize - FlowerOffsetDual;
                             break;
-                        case EdgeDirection.North when max == EdgeDirection.South && m_parent.GetRegion(EdgeDirection.West).Edges.Length == 2:
+                        case EdgeDirection.North when max == EdgeDirection.South && m_parent.GetRegion(EdgeDirection.West).Edges.Count == 2:
                             y = FlowerOffsetSingle;
                             break;
-                        case EdgeDirection.East when max == EdgeDirection.West && m_parent.GetRegion(EdgeDirection.North).Edges.Length == 2:
+                        case EdgeDirection.East when max == EdgeDirection.West && m_parent.GetRegion(EdgeDirection.North).Edges.Count == 2:
                             x = FlowerOffsetSingle;
                             break;
                         case EdgeDirection.West:

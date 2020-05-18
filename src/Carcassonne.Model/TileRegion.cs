@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Carcassonne.Model
 {
-    public class TileRegion : IClaimable, IPointRegion //, INotifyPropertyChanged
+    public class TileRegion : IClaimable, IPointContainer //, INotifyPropertyChanged
     {
         public static readonly TileRegion None = new TileRegion();
 

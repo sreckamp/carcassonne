@@ -1,7 +1,6 @@
 ﻿using System.Drawing;
 using System.Linq;
 using Carcassonne.Model.Rules;
-using GameBase.Model;
 
 namespace Carcassonne.Model.Expansions
 {
@@ -83,13 +82,13 @@ namespace Carcassonne.Model.Expansions
                 return tile.Contains(RegionType.River);
             }
 
-            protected override bool RegionsMatch(EdgeRegion myRegion, EdgeRegion theirRegion)
+            protected override bool RegionsMatch(IEdgeRegion myRegion, IEdgeRegion theirRegion)
             {
                 // Must map a River region
                 if (myRegion.Type != RegionType.River || theirRegion.Type != RegionType.River) return false;
                 // Cannot have 2 turns in the same direction
-                if (myRegion.Edges.Length != 2 || myRegion.Edges[0].Opposite() == myRegion.Edges[1] ||
-                    theirRegion.Edges.Length != 2 ||
+                if (myRegion.Edges.Count != 2 || myRegion.Edges[0].Opposite() == myRegion.Edges[1] ||
+                    theirRegion.Edges.Count != 2 ||
                     theirRegion.Edges[0].Opposite() == theirRegion.Edges[1]) return true;
                 return myRegion.Edges.All(t => theirRegion.Edges.All(t1 => t != t1));
             }

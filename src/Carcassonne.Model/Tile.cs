@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using GameBase.Model;
 
 namespace Carcassonne.Model
 {
@@ -26,15 +25,15 @@ namespace Carcassonne.Model
             }
         }
 
-        private readonly IList<EdgeRegion> m_regions = new List<EdgeRegion>
+        private readonly IList<IEdgeRegion> m_regions = new List<IEdgeRegion>
         {
-            new EdgeRegion(RegionType.Any, EdgeDirection.North),
-            new EdgeRegion(RegionType.Any, EdgeDirection.East),
-            new EdgeRegion(RegionType.Any, EdgeDirection.South),
-            new EdgeRegion(RegionType.Any, EdgeDirection.West),
+            new EdgeRegion_(RegionType.Any, EdgeDirection.North),
+            new EdgeRegion_(RegionType.Any, EdgeDirection.East),
+            new EdgeRegion_(RegionType.Any, EdgeDirection.South),
+            new EdgeRegion_(RegionType.Any, EdgeDirection.West),
         };
 
-        public IEnumerable<EdgeRegion> Regions => m_regions;
+        public IEnumerable<IEdgeRegion> Regions => m_regions;
 
         public bool HasMonastery => TileRegion.Type == TileRegionType.Monastery;
 
@@ -60,7 +59,7 @@ namespace Carcassonne.Model
             return GetRegion(direction).Type;
         }
 
-        private void AddRegion(EdgeRegion region)
+        private void AddRegion(IEdgeRegion region)
         {
             foreach (var dir in region.Edges)
             {
@@ -79,9 +78,9 @@ namespace Carcassonne.Model
             //region.PropertyChanged += new PropertyChangedEventHandler(region_PropertyChanged);
         }
 
-        public EdgeRegion GetRegion(EdgeDirection direction)
+        public IEdgeRegion GetRegion(EdgeDirection direction)
         {
-            return Regions.First(er => er.ContainsDirection(direction));
+            return Regions.First(er => er.Edges.Contains(direction));
         }
 
         public Tile TileClone()
@@ -93,7 +92,7 @@ namespace Carcassonne.Model
 
             foreach (var r in Regions)
             {
-                tile.AddRegion(r.CopyTo(tile));
+                tile.AddRegion(r.Duplicate(tile));
             }
 
             return tile;
@@ -101,7 +100,7 @@ namespace Carcassonne.Model
 
         public override string ToString()
         {
-            var done = new List<EdgeRegion>();
+            var done = new List<IEdgeRegion>();
             var sb = new StringBuilder();
             foreach (var r in Regions.Where(r => r.Type != RegionType.Any && !done.Contains(r)))
             {
@@ -144,9 +143,9 @@ namespace Carcassonne.Model
             return claimableRegions;
         }
 
-        public List<IPointRegion> GetClosedRegions()
+        public List<IPointContainer> GetClosedRegions()
         {
-            var closed = new List<IPointRegion>();
+            var closed = new List<IPointContainer>();
             if (TileRegion.IsClosed)
             {
                 closed.Add(TileRegion);
@@ -195,13 +194,13 @@ namespace Carcassonne.Model
 
             public TileBuilder AddRiverRegion(params EdgeDirection[] edges)
             {
-                Tile.AddRegion(new EdgeRegion(RegionType.River, edges) {Parent = Tile});
+                Tile.AddRegion(new EdgeRegion_(RegionType.River, edges) {Parent = Tile});
                 return this;
             }
 
             public TileBuilder AddRoadRegion(params EdgeDirection[] edges)
             {
-                Tile.AddRegion(new EdgeRegion(RegionType.Road, edges) {Parent = Tile});
+                Tile.AddRegion(new EdgeRegion_(RegionType.Road, edges) {Parent = Tile});
                 return this;
             }
 
@@ -217,7 +216,7 @@ namespace Carcassonne.Model
                 {
                     if (builder.Tile.GetEdge(dir) == RegionType.Any)
                     {
-                        builder.Tile.AddRegion(new EdgeRegion(RegionType.Grass, dir));
+                        builder.Tile.AddRegion(new EdgeRegion_(RegionType.Grass, dir));
                     }
                 }
                 return builder.Tile;

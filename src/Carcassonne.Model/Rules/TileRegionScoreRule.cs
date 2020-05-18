@@ -11,24 +11,24 @@
 
         #region IScoreRule Members
 
-        public bool Applies(IPointRegion region)
+        public bool Applies(IPointContainer region)
         {
             return AppliesAsTileRegion(region).applies;
         }
 
-        private (bool applies, TileRegion tileRegion) AppliesAsTileRegion(IPointRegion region)
+        private (bool applies, TileRegion tileRegion) AppliesAsTileRegion(IPointContainer region)
         {
             if(!(region is TileRegion tr)) return (false, TileRegion.None);
             return (tr.Type == m_type, tr);
         }
 
-        public int GetScore(IPointRegion region)
+        public int GetScore(IPointContainer region)
         {
             var (applies, tr) = AppliesAsTileRegion(region);
             return applies && tr.IsClosed ? tr.Score : 0;
         }
 
-        public int GetEndScore(IPointRegion region)
+        public int GetEndScore(IPointContainer region)
         {
             var (applies, tr) = AppliesAsTileRegion(region);
             return applies  ? tr.Score : 0;

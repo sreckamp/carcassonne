@@ -14,7 +14,7 @@ namespace Carcassonne.WPF.ViewModel
 {
     public class PlacementViewModel : PlacementViewModel<ITile>
     {
-        private static readonly ClaimableViewModel SDefaultIClaimableModel = new ClaimableViewModel(new EdgeRegion(RegionType.Any), TileRegion.None);
+        private static readonly ClaimableViewModel SDefaultIClaimableModel = new ClaimableViewModel(new EdgeRegion_(RegionType.Any), TileRegion.None);
 
         public PlacementViewModel(ITile tile, GameBoardViewModel boardModel) :
             this(new Placement<ITile>(tile, new DPoint()), boardModel)
@@ -178,12 +178,13 @@ namespace Carcassonne.WPF.ViewModel
 
         private void ParseTile()
         {
-            foreach (var r in Placement.Piece.Regions)
+            var regions = (Placement.Piece is RotatedTile rt) ? rt.RegionsNotRotated : Placement.Piece.Regions;
+            foreach (var r in regions)
             {
                 var cvm = new ClaimableViewModel(r, Placement.Piece.TileRegion);
-                if (r.RawEdges.Length == 1)
+                if (r.Edges.Count == 1)
                 {
-                    switch (r.RawEdges[0])
+                    switch (r.Edges[0])
                     {
                         case EdgeDirection.North:
                             m_northDataContext = cvm;
@@ -199,7 +200,7 @@ namespace Carcassonne.WPF.ViewModel
                             break;
                     }
                 }
-                else if (r.Edges.Length == 2)
+                else if (r.Edges.Count == 2)
                 {
                     if (r.Edges.Contains(EdgeDirection.South)
                         && r.Edges.Contains(EdgeDirection.West))
@@ -227,11 +228,11 @@ namespace Carcassonne.WPF.ViewModel
                         m_eastSouthDataContext = cvm;
                     }
                 }
-                else if (r.Edges.Length == 3)
+                else if (r.Edges.Count == 3)
                 {
                     m_northEastWestDataContext = cvm;
                 }
-                else if (r.Edges.Length == 4)
+                else if (r.Edges.Count == 4)
                 {
                     m_allDataContext = cvm;
                     //m_northEastWestDataContext = cvm;
@@ -253,9 +254,9 @@ namespace Carcassonne.WPF.ViewModel
             private static readonly MBrush SRoadBrush = new SolidColorBrush(Colors.Khaki);
             private static readonly MBrush SCityBrush = new SolidColorBrush(Colors.SaddleBrown);
 
-            private readonly EdgeRegion m_edge;
+            private readonly IEdgeRegion m_edge;
             private readonly TileRegion m_tile;
-            public ClaimableViewModel(EdgeRegion edge, TileRegion tile)
+            public ClaimableViewModel(IEdgeRegion edge, TileRegion tile)
             {
                 m_edge = edge;
                 m_tile = tile;

@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="CityPointRegion.cs" />
     <Compile Include="CarcassonneGameBoard.cs" />
+    <Compile Include="IEdgeRegion.cs" />
     <Compile Include="IGameBoard.cs" />
     <Compile Include="ITile.cs" />
     <Compile Include="MeepleCollection.cs" />
@@ -89,6 +90,7 @@
     <Compile Include="AbstractExpansionPack.cs" />
     <Compile Include="IMoveProvider.cs" />
     <Compile Include="PointRegion.cs" />
+    <Compile Include="RotatedEdgeRegion.cs" />
     <Compile Include="RotatedTile.cs" />
     <Compile Include="Rules\CityRegionScoreRule.cs" />
     <Compile Include="Rules\RoadRegionScoreRule.cs" />

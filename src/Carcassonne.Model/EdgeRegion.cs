@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Text;
 
 namespace Carcassonne.Model
@@ -8,42 +7,20 @@ namespace Carcassonne.Model
     /// <summary>
     /// Area on a tile of a specific type
     /// </summary>
-    public class EdgeRegion : IClaimable //, INotifyPropertyChanged
+    public class EdgeRegion_ : IEdgeRegion
     {
-        protected readonly Dictionary<Rotation, List<EdgeDirection>>
-            RotatedEdges = new Dictionary<Rotation, List<EdgeDirection>>();
-        private readonly EventHandler m_containerIsClosedChangedHandler;
-
-        #region INotifyPropertyChanged Members
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void NotifyPropertyChanged(string name)
+        public EdgeRegion_(RegionType type, params EdgeDirection[] edges)
+            :this(type, (IEnumerable<EdgeDirection>)edges)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        #endregion
-
-        public EdgeRegion(RegionType type, params EdgeDirection[] edges)
+        protected EdgeRegion_(RegionType type, IEnumerable<EdgeDirection> edges)
         {
             Type = type;
-            PropertyChanged += (sender, args) => { };
-            RotatedEdges[Rotation.None] = new List<EdgeDirection>();
-            RotatedEdges[Rotation.CounterClockwise] = new List<EdgeDirection>();
-            RotatedEdges[Rotation.UpsideDown] = new List<EdgeDirection>();
-            RotatedEdges[Rotation.Clockwise] = new List<EdgeDirection>();
-            foreach (var e in edges)
-            {
-                AddEdge(e);
-            }
-            m_containerIsClosedChangedHandler = container_IsClosedChangedHandler;
+            Edges = new List<EdgeDirection>(edges).AsReadOnly();
         }
 
-        private void container_IsClosedChangedHandler(object sender, EventArgs e)
-        {
-            NotifyPropertyChanged(nameof(IsClosed));
-        }
+        #region IClaimable Members
 
         private Meeple m_claimer = Meeple.None;
         public Meeple Claimer
@@ -53,7 +30,6 @@ namespace Carcassonne.Model
             {
                 m_claimer = value;
                 Container.UpdateOwners();
-                NotifyPropertyChanged(nameof(Claimer));
             }
         }
 
@@ -71,7 +47,9 @@ namespace Carcassonne.Model
             Claimer = meeple;
         }
 
-        public bool IsClosed => Container?.IsClosed ?? false;
+        public bool IsClosed => Container.IsClosed;
+
+        #endregion
 
         private PointRegion m_container = PointRegion.None;
         public PointRegion Container
@@ -79,69 +57,51 @@ namespace Carcassonne.Model
             get => m_container;
             set
             {
-                m_container.IsClosedChanged -= m_containerIsClosedChangedHandler;
                 m_container = value;
-                m_container.IsClosedChanged += m_containerIsClosedChangedHandler;
-                NotifyPropertyChanged(nameof(Container));
-                container_IsClosedChangedHandler(value, new EventArgs());
             }
         }
 
         //This never changes.
-        public Tile Parent { get; internal set; } = Tile.None;
+        public Tile Parent { get; set; } = Tile.None;
 
         //This never changes.
         public RegionType Type { get; }
 
-        private List<EdgeDirection> EdgesList => RotatedEdges[Rotation.None];
-
-        public EdgeDirection[] Edges => EdgesList.ToArray();
-
-        public EdgeDirection[] RawEdges => RotatedEdges[Rotation.None].ToArray();
-
-        private void AddEdge(EdgeDirection edge)
-        {
-            RotatedEdges[Rotation.None].Add(edge);
-            RotatedEdges[Rotation.Clockwise].Add(edge.Rotate(Rotation.Clockwise));
-            RotatedEdges[Rotation.UpsideDown].Add(edge.Rotate(Rotation.UpsideDown));
-            RotatedEdges[Rotation.CounterClockwise].Add(edge.Rotate(Rotation.CounterClockwise));
-        }
+        public IList<EdgeDirection> Edges { get; }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
-            foreach (var e in RotatedEdges[Rotation.None])
+            foreach (var e in Edges)
             {
                 sb.Append(e.ToString().Substring(0, 1));
             }
             return $"{Type} {sb}";
         }
 
-        public bool ContainsDirection(EdgeDirection dir)
+        public virtual IEdgeRegion Duplicate(Tile parent)
         {
-            return EdgesList.Contains(dir);
-        }
-
-        internal virtual EdgeRegion CopyTo(Tile tile)
-        {
-            return new EdgeRegion(Type, RotatedEdges[Rotation.None].ToArray())
+            return new EdgeRegion_(Type, Edges)
             {
-                Parent = tile
+                Parent = parent
             };
         }
     }
 
-    public class CityEdgeRegion:EdgeRegion
+    public class CityEdgeRegion:EdgeRegion_
     {
         public CityEdgeRegion(params EdgeDirection[] edges)
             : base(RegionType.City, edges) { }
+        private CityEdgeRegion(IEnumerable<EdgeDirection> edges)
+            : base(RegionType.City, edges) { }
+
         public bool HasShield { get; set; }
 
-        internal override EdgeRegion CopyTo(Tile tile)
+        public override IEdgeRegion Duplicate(Tile parent)
         {
-            var cer = new CityEdgeRegion(RotatedEdges[Rotation.None].ToArray())
+            var cer = new CityEdgeRegion(Edges)
             {
-                Parent = tile,
+                Parent = parent,
                 HasShield = HasShield
             };
             return cer;

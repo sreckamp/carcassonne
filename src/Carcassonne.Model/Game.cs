@@ -35,7 +35,7 @@ namespace Carcassonne.Model
         }
 
         public GameBoard Board { get; }
-        public ObservableList<IPointRegion> PointRegions { get; } = new ObservableList<IPointRegion>();
+        public ObservableList<IPointContainer> PointRegions { get; } = new ObservableList<IPointContainer>();
 
         private readonly Deck m_deck = new Deck();
 
@@ -100,7 +100,7 @@ namespace Carcassonne.Model
             }
         }
 
-        private void Score(IEnumerable<IPointRegion> changed)
+        private void Score(IEnumerable<IPointContainer> changed)
         {
             State = GameState.Score;
             foreach (var pr in changed)
@@ -299,7 +299,7 @@ namespace Carcassonne.Model
                 if (Draw() == Tile.None) break;
 
                 State = GameState.Place;
-                var changed = new List<IPointRegion>();
+                var changed = new List<IPointContainer>();
                 do
                 {
                     var mv = player.GetMove(this);
@@ -358,9 +358,9 @@ namespace Carcassonne.Model
             m_deck.Push(tile);
         }
 
-        private List<IPointRegion> Place(CarcassonneMove move)
+        private List<IPointContainer> Place(CarcassonneMove move)
         {
-            var changed = new List<IPointRegion>();
+            var changed = new List<IPointContainer>();
             var tile = new RotatedTile(ActiveTile, move.Rotation);
             if (TryFit(tile, move.Location))
             {
@@ -369,10 +369,10 @@ namespace Carcassonne.Model
             return changed;
         }
 
-        private List<IPointRegion> Place(ITile tile, Point location)
+        private List<IPointContainer> Place(ITile tile, Point location)
         {
             var available = new List<EdgeDirection>((EdgeDirection[])Enum.GetValues(typeof(EdgeDirection)));
-            var changedPointRegions = new List<IPointRegion>();
+            var changedPointRegions = new List<IPointContainer>();
 
             Board.Add(new Placement<ITile>(tile, location));
             if (tile.TileRegion.Type != TileRegionType.None)

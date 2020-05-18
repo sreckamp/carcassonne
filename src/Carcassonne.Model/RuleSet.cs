@@ -89,12 +89,12 @@ namespace Carcassonne.Model
 
         #region IScoreRule Members
 
-        public bool Applies(IPointRegion region)
+        public bool Applies(IPointContainer region)
         {
             return true;
         }
 
-        public int GetScore(IPointRegion region)
+        public int GetScore(IPointContainer region)
         {
             foreach (var sr in m_scoreRules)
             {
@@ -106,7 +106,7 @@ namespace Carcassonne.Model
             return 0;
         }
 
-        public int GetEndScore(IPointRegion region)
+        public int GetEndScore(IPointContainer region)
         {
             foreach (var sr in m_scoreRules)
             {
