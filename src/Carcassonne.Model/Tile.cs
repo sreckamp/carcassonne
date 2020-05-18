@@ -13,9 +13,9 @@ namespace Carcassonne.Model
         {
         }
 
-        private TileRegion m_tileRegion = TileRegion.None;
+        private ITileRegion m_tileRegion = NopTileRegion.Instance;
 
-        public TileRegion TileRegion
+        public ITileRegion TileRegion
         {
             get => m_tileRegion;
             private set
@@ -27,10 +27,10 @@ namespace Carcassonne.Model
 
         private readonly IList<IEdgeRegion> m_regions = new List<IEdgeRegion>
         {
-            new EdgeRegion_(RegionType.Any, EdgeDirection.North),
-            new EdgeRegion_(RegionType.Any, EdgeDirection.East),
-            new EdgeRegion_(RegionType.Any, EdgeDirection.South),
-            new EdgeRegion_(RegionType.Any, EdgeDirection.West),
+            new EdgeRegion_(EdgeRegionType.Any, EdgeDirection.North),
+            new EdgeRegion_(EdgeRegionType.Any, EdgeDirection.East),
+            new EdgeRegion_(EdgeRegionType.Any, EdgeDirection.South),
+            new EdgeRegion_(EdgeRegionType.Any, EdgeDirection.West),
         };
 
         public IEnumerable<IEdgeRegion> Regions => m_regions;
@@ -39,22 +39,21 @@ namespace Carcassonne.Model
 
         public bool HasFlower => TileRegion.Type == TileRegionType.Flower;
 
-        public Meeple ClaimingMeeple => ClaimedRegion.Claimer;
-
-        public IClaimable ClaimedRegion
+        public IEnumerable<IClaimable> ClaimedRegions
         {
             get
             {
-                if (TileRegion.Claimer != Meeple.None)
+                var claimed = m_regions.Where(r => r is IClaimable c && c.Claimer != Meeple.None).Cast<IClaimable>().ToList();
+                if (TileRegion is IClaimable claim && claim.Claimer != Meeple.None)
                 {
-                    return TileRegion;
+                    claimed.Add(claim);
                 }
 
-                return Regions.FirstOrDefault(r => r.Claimer != Meeple.None);
+                return claimed;
             }
         }
 
-        public RegionType GetEdge(EdgeDirection direction)
+        public EdgeRegionType GetEdge(EdgeDirection direction)
         {
             return GetRegion(direction).Type;
         }
@@ -64,7 +63,7 @@ namespace Carcassonne.Model
             foreach (var dir in region.Edges)
             {
                 var r = GetRegion(dir);
-                if (r.Type == RegionType.Any)
+                if (r.Type == EdgeRegionType.Any)
                 {
                     m_regions.Remove(r);
                 }
@@ -87,7 +86,7 @@ namespace Carcassonne.Model
         {
             var tile = new Tile
             {
-                TileRegion = new TileRegion(TileRegion.Type)
+                TileRegion = TileRegion.Duplicate()
             };
 
             foreach (var r in Regions)
@@ -102,7 +101,7 @@ namespace Carcassonne.Model
         {
             var done = new List<IEdgeRegion>();
             var sb = new StringBuilder();
-            foreach (var r in Regions.Where(r => r.Type != RegionType.Any && !done.Contains(r)))
+            foreach (var r in Regions.Where(r => r.Type != EdgeRegionType.Any && !done.Contains(r)))
             {
                 if (sb.Length > 0)
                 {
@@ -113,7 +112,7 @@ namespace Carcassonne.Model
                 done.Add(r);
             }
 
-            if (TileRegion == TileRegion.None) return sb.ToString();
+            if (TileRegion.Type == TileRegionType.None) return sb.ToString();
             if (sb.Length > 0)
             {
                 sb.Append(',');
@@ -124,38 +123,36 @@ namespace Carcassonne.Model
             return sb.ToString();
         }
 
-        public bool Contains(RegionType type)
+        public bool Contains(EdgeRegionType type)
         {
             return Regions.Where(r => r.Type == type).Cast<IClaimable>().Any();
         }
 
         public List<IClaimable> GetAvailableRegions()
         {
-            var claimableRegions = new List<IClaimable>();
-            if (TileRegion.Claimer == Meeple.None)
+            var claimableRegions = Regions.Where(r =>
+                r.Type != EdgeRegionType.Any && r.Container.Owners.Count == 0).Distinct().Cast<IClaimable>().ToList();
+            if (TileRegion is IClaimable c && c.Claimer.Type != MeepleType.None)
             {
-                claimableRegions.Add(TileRegion);
+                claimableRegions.Add(c);
             }
-
-            claimableRegions.AddRange(Regions.Where(r =>
-                r.Type != RegionType.Any && r.Container.Owners.Count == 0 && !claimableRegions.Contains(r)));
 
             return claimableRegions;
         }
 
-        public List<IPointContainer> GetClosedRegions()
-        {
-            var closed = new List<IPointContainer>();
-            if (TileRegion.IsClosed)
-            {
-                closed.Add(TileRegion);
-            }
-
-            closed.AddRange(Regions.Where(r => r.Container.IsClosed
-                                               && !closed.Contains(r.Container)).Select(r=>r.Container));
-
-            return closed;
-        }
+        // public List<IPointContainer> GetClosedRegions()
+        // {
+        //     var closed = new List<IPointContainer>();
+        //     if (TileRegion.IsClosed)
+        //     {
+        //         closed.Add(TileRegion);
+        //     }
+        //
+        //     closed.AddRange(Regions.Where(r => r.Container.IsClosed
+        //                                        && !closed.Contains(r.Container)).Select(r=>r.Container));
+        //
+        //     return closed;
+        // }
 
         public class TileBuilder
         {
@@ -194,13 +191,13 @@ namespace Carcassonne.Model
 
             public TileBuilder AddRiverRegion(params EdgeDirection[] edges)
             {
-                Tile.AddRegion(new EdgeRegion_(RegionType.River, edges) {Parent = Tile});
+                Tile.AddRegion(new EdgeRegion_(EdgeRegionType.River, edges) {Parent = Tile});
                 return this;
             }
 
             public TileBuilder AddRoadRegion(params EdgeDirection[] edges)
             {
-                Tile.AddRegion(new EdgeRegion_(RegionType.Road, edges) {Parent = Tile});
+                Tile.AddRegion(new EdgeRegion_(EdgeRegionType.Road, edges) {Parent = Tile});
                 return this;
             }
 
@@ -214,9 +211,9 @@ namespace Carcassonne.Model
             {
                 foreach (EdgeDirection dir in Enum.GetValues(typeof(EdgeDirection)))
                 {
-                    if (builder.Tile.GetEdge(dir) == RegionType.Any)
+                    if (builder.Tile.GetEdge(dir) == EdgeRegionType.Any)
                     {
-                        builder.Tile.AddRegion(new EdgeRegion_(RegionType.Grass, dir));
+                        builder.Tile.AddRegion(new EdgeRegion_(EdgeRegionType.None, dir));
                     }
                 }
                 return builder.Tile;

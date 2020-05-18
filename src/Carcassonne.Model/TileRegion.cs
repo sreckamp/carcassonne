@@ -3,34 +3,28 @@ using System.Collections.Generic;
 
 namespace Carcassonne.Model
 {
-    public class TileRegion : IClaimable, IPointContainer //, INotifyPropertyChanged
+    public class TileRegion : ITileRegion, IClaimable, IPointContainer
     {
-        public static readonly TileRegion None = new TileRegion();
-
         private readonly List<ITile> m_tiles = new List<ITile>();
-
-        //#region INotifyPropertyChanged Members
-
-        //public event PropertyChangedEventHandler PropertyChanged;
-
-        //private void notifyPropertyChanged(string name)
-        //{
-        //    if (PropertyChanged != null)
-        //    {
-        //        PropertyChanged(this, new PropertyChangedEventArgs(name));
-        //    }
-        //}
-
-        //#endregion
 
         public TileRegion(TileRegionType type = TileRegionType.None)
         {
-            // PropertyChanged += (sender, args) => { };
             Type = type;
         }
 
+        public void Add(ITile t)
+        {
+            if (m_tiles.Contains(t)) return;
+            m_tiles.Add(t);
+            if (TileCount == 9)
+            {
+                //TODO: Score Changed
+            }
+        }
 
         public TileRegionType Type { get; }
+
+        public int TileCount => m_tiles.Count;
 
         private Meeple m_claimer = Meeple.None;
         public Meeple Claimer
@@ -49,6 +43,11 @@ namespace Carcassonne.Model
 
         public List<Player> Owners { get; } = new List<Player>();
 
+        /// <inheritdoc />
+        public void UpdateOwners()
+        {
+        }
+
         public void Claim(Meeple meeple)
         {
             if (Claimer != Meeple.None)
@@ -63,26 +62,16 @@ namespace Carcassonne.Model
             Claimer = Meeple.None;
         }
 
-        public void Add(ITile t)
-        {
-            if (m_tiles.Contains(t)) return;
-            m_tiles.Add(t);
-            //notifyPropertyChanged("Score");
-            if (Score == 9)
-            {
-                //notifyPropertyChanged("IsClosed");
-            }
-        }
-
         public bool IsForcedOpened { get; set; } = false;
 
-        public bool IsClosed => !IsForcedOpened && Score == 9;
-        public int Score => m_tiles.Count;
+        public bool IsClosed => !IsForcedOpened && TileCount == 9;
 
         public void ReturnMeeple()
         {
             Claimer.Player.ReturnMeeple(Claimer);
         }
+        /// <inheritdoc />
+        public ITileRegion Duplicate() => new TileRegion(Type);
 
         public override string ToString()
         {

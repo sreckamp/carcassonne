@@ -22,7 +22,7 @@ namespace Carcassonne.Model.Rules
                 var n = b.GetNeighbor(location, dir);
                 var mine = tile.GetRegion(dir);
                 var theirs = n.GetRegion(dir.Opposite());
-                hasNeighbor = hasNeighbor || theirs.Type != RegionType.Any;
+                hasNeighbor = hasNeighbor || theirs.Type != EdgeRegionType.Any;
                 if (!RegionsMatch(mine, theirs)) return false;
             }
 
@@ -33,7 +33,7 @@ namespace Carcassonne.Model.Rules
 
         protected virtual bool RegionsMatch(IEdgeRegion myRegion, IEdgeRegion theirRegion)
         {
-            return theirRegion.Type == RegionType.Any || myRegion.Type == theirRegion.Type;
+            return theirRegion.Type == EdgeRegionType.Any || myRegion.Type == theirRegion.Type;
         }
     }
 }

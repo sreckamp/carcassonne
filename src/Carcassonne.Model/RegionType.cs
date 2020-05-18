@@ -1,19 +1,19 @@
 ﻿namespace Carcassonne.Model
 {
-    public enum RegionType
+    public enum EdgeRegionType
     {
         Any,
-        Grass,
+        None,
         Road,
         City,
         River,
     }
 
-    public static class RegionTypeExtensions
+    public static class EdgeRegionTypeExtensions
     {
-        public static bool IsPath(this RegionType type)
+        public static bool IsPath(this EdgeRegionType type)
         {
-            return type == RegionType.Road || type == RegionType.River;
+            return type == EdgeRegionType.Road || type == EdgeRegionType.River;
         }
     }
 }

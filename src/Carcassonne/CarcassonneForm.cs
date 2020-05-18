@@ -11,7 +11,7 @@ namespace Carcassonne
         private readonly Game m_game = new Game();
         private readonly GameTile m_previewTile = new GameTile();
         private GameTile m_activeTile;
-        private readonly Dictionary<RegionType, Color> m_edgeColor = new Dictionary<RegionType, Color>();
+        private readonly Dictionary<EdgeRegionType, Color> m_edgeColor = new Dictionary<EdgeRegionType, Color>();
 
         public CarcassonneForm()
         {

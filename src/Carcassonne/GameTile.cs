@@ -75,7 +75,7 @@ namespace Carcassonne
                 {
                     if (done.Contains(dir)) continue;
                     var r = Tile.GetRegion(dir);
-                    if (r.Type != RegionType.River) continue;
+                    if (r.Type != EdgeRegionType.River) continue;
                     m_renderers.Add(new RiverRegionRenderer(canvas, r, 40));
                     done.AddRange(r.Edges);
                 }
@@ -83,7 +83,7 @@ namespace Carcassonne
                 {
                     if (done.Contains(dir)) continue;
                     var r = Tile.GetRegion(dir);
-                    if (r.Type != RegionType.Road) continue;
+                    if (r.Type != EdgeRegionType.Road) continue;
                     m_renderers.Add(new RoadRegionRenderer(canvas, r, 40));
                     done.AddRange(r.Edges);
                 }
@@ -91,7 +91,7 @@ namespace Carcassonne
                 {
                     if (done.Contains(dir)) continue;
                     var r = Tile.GetRegion(dir) as CityEdgeRegion;
-                    if (r.Type != RegionType.City) continue;
+                    if (r.Type != EdgeRegionType.City) continue;
                     m_renderers.Add(new CityRegionRenderer(canvas, r));
                     done.AddRange(r.Edges);
                 }
@@ -556,7 +556,7 @@ namespace Carcassonne
                 x = y = 0.4f;
                 foreach (EdgeDirection dir in Enum.GetValues(typeof(EdgeDirection)))
                 {
-                    if (m_parent.GetEdge(dir) == RegionType.Grass)
+                    if (m_parent.GetEdge(dir) == EdgeRegionType.None)
                     {
                         grass.Add(dir);
                     }

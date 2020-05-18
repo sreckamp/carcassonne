@@ -6,19 +6,17 @@ namespace Carcassonne.Model
 {
     public class PointRegion : IPointContainer
     {
-        public static readonly PointRegion None = new PointRegion(RegionType.Any);
-
         private readonly List<IEdgeRegion> m_regions = new List<IEdgeRegion>();
-        private readonly List<Tile> m_tiles = new List<Tile>();
+        private readonly List<ITile> m_tiles = new List<ITile>();
 
-        public PointRegion(RegionType type)
+        public PointRegion(EdgeRegionType type)
         {
             Type = type;
             IsClosedChanged += (sender, args) => { };
         }
 
         public event EventHandler IsClosedChanged;
-        public RegionType Type { get; }
+        public EdgeRegionType Type { get; }
 
         private void OnIsClosedChange()
         {
@@ -55,16 +53,16 @@ namespace Carcassonne.Model
             var markers = new List<Player>();
             foreach (var r in m_regions)
             {
-                if (r.Claimer == Meeple.None) continue;
-                var p = r.Claimer.Player;
-                p.ReturnMeeple(r.Claimer);
+                if (!(r is IClaimable c) || c.Claimer == Meeple.None) continue;
+                var p = c.Claimer.Player;
+                p.ReturnMeeple(c.Claimer);
                 if (Owners.Contains(p) && !markers.Contains(p))
                 {
                     markers.Add(p);
                 }
                 else
                 {
-                    r.ResetClaim();
+                    c.ResetClaim();
                 }
             }
         }
@@ -78,10 +76,9 @@ namespace Carcassonne.Model
 
         protected virtual bool UpdateEdges(IEdgeRegion r)
         {
-            var updated = false;
             if (!m_regions.Contains(r))
             {
-                var openEdges = OpenEdges + r.Edges.Count();
+                var openEdges = OpenEdges + r.Edges.Count;
                 if (m_regions.Count > 0)
                 {
                     openEdges -= 2;
@@ -92,33 +89,33 @@ namespace Carcassonne.Model
                 UpdateOwners();
             }
 
-            if (m_tiles.Contains(r.Parent)) return updated;
+            if (m_tiles.Contains(r.Parent)) return false;
             m_tiles.Add(r.Parent);
-            updated = true;
-            return updated;
+            return true;
         }
 
         public void UpdateOwners()
         {
             var claims = new Dictionary<Player, int>();
             var high = 0;
-            foreach (var r in m_regions.Where(r => r.Claimer != Meeple.None))
+            foreach (var claim in m_regions.Where(r => r is IClaimable c && c.Claimer != Meeple.None)
+                .Cast<IClaimable>())
             {
-                if (!claims.ContainsKey(r.Claimer.Player))
+                if (!claims.ContainsKey(claim.Claimer.Player))
                 {
-                    claims[r.Claimer.Player] = 0;
+                    claims[claim.Claimer.Player] = 0;
                 }
-                claims[r.Claimer.Player]++;
-                if (claims[r.Claimer.Player] < high) continue;
-                if (claims[r.Claimer.Player] > high)
+                claims[claim.Claimer.Player]++;
+                if (claims[claim.Claimer.Player] < high) continue;
+                if (claims[claim.Claimer.Player] > high)
                 {
                     Owners.Clear();
                 }
-                if (!Owners.Contains(r.Claimer.Player))
+                if (!Owners.Contains(claim.Claimer.Player))
                 {
-                    Owners.Add(r.Claimer.Player);
+                    Owners.Add(claim.Claimer.Player);
                 }
-                high = claims[r.Claimer.Player];
+                high = claims[claim.Claimer.Player];
             }
         }
 
@@ -130,7 +127,7 @@ namespace Carcassonne.Model
             }
         }
 
-        public List<IEdgeRegion> GetClaimedRegions() => m_regions.Where(r => r.Claimer != Meeple.None).ToList();
+        public List<IEdgeRegion> GetClaimedRegions() => m_regions.Where(r => r is IClaimable c && c.Claimer != Meeple.None).ToList();
 
         public override string ToString() => $"{GetType().Name} {m_tiles.Count}";
     }

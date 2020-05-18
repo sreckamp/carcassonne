@@ -22,10 +22,42 @@ namespace Carcassonne.Model
         /// The player(s) who own the Container (have the most Meeple on it)
         /// </summary>
         List<Player> Owners { get; }
-        
+
         /// <summary>
-        /// Give any placed Meeple back to the player
+        /// Recalculate the owners
+        /// TODO: Make this a rule?
         /// </summary>
+        void UpdateOwners();
+
+        // /// <summary>
+        // /// Give any placed Meeple back to the player
+        // /// </summary>
         void ReturnMeeple();
+    }
+
+    public class NopPointContainer : IPointContainer
+    {
+        public static readonly IPointContainer Instance = new NopPointContainer();
+
+        private NopPointContainer() { }
+
+        /// <inheritdoc />
+        public bool IsClosed => true;
+
+        /// <inheritdoc />
+        public bool IsForcedOpened { get; set; }
+
+        /// <inheritdoc />
+        public List<Player> Owners { get; } = new List<Player>();
+
+        /// <inheritdoc />
+        public void UpdateOwners()
+        {
+        }
+
+        /// <inheritdoc />
+        public void ReturnMeeple()
+        {
+        }
     }
 }

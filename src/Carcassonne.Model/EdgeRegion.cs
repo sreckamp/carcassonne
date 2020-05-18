@@ -7,14 +7,14 @@ namespace Carcassonne.Model
     /// <summary>
     /// Area on a tile of a specific type
     /// </summary>
-    public class EdgeRegion_ : IEdgeRegion
+    public class EdgeRegion_ : IEdgeRegion, IClaimable
     {
-        public EdgeRegion_(RegionType type, params EdgeDirection[] edges)
+        public EdgeRegion_(EdgeRegionType type, params EdgeDirection[] edges)
             :this(type, (IEnumerable<EdgeDirection>)edges)
         {
         }
 
-        protected EdgeRegion_(RegionType type, IEnumerable<EdgeDirection> edges)
+        protected EdgeRegion_(EdgeRegionType type, IEnumerable<EdgeDirection> edges)
         {
             Type = type;
             Edges = new List<EdgeDirection>(edges).AsReadOnly();
@@ -51,8 +51,8 @@ namespace Carcassonne.Model
 
         #endregion
 
-        private PointRegion m_container = PointRegion.None;
-        public PointRegion Container
+        private IPointContainer m_container = NopPointContainer.Instance;
+        public IPointContainer Container
         {
             get => m_container;
             set
@@ -62,10 +62,10 @@ namespace Carcassonne.Model
         }
 
         //This never changes.
-        public Tile Parent { get; set; } = Tile.None;
+        public ITile Parent { get; set; } = Tile.None;
 
         //This never changes.
-        public RegionType Type { get; }
+        public EdgeRegionType Type { get; }
 
         public IList<EdgeDirection> Edges { get; }
 
@@ -79,7 +79,7 @@ namespace Carcassonne.Model
             return $"{Type} {sb}";
         }
 
-        public virtual IEdgeRegion Duplicate(Tile parent)
+        public virtual IEdgeRegion Duplicate(ITile parent)
         {
             return new EdgeRegion_(Type, Edges)
             {
@@ -91,13 +91,13 @@ namespace Carcassonne.Model
     public class CityEdgeRegion:EdgeRegion_
     {
         public CityEdgeRegion(params EdgeDirection[] edges)
-            : base(RegionType.City, edges) { }
+            : base(EdgeRegionType.City, edges) { }
         private CityEdgeRegion(IEnumerable<EdgeDirection> edges)
-            : base(RegionType.City, edges) { }
+            : base(EdgeRegionType.City, edges) { }
 
         public bool HasShield { get; set; }
 
-        public override IEdgeRegion Duplicate(Tile parent)
+        public override IEdgeRegion Duplicate(ITile parent)
         {
             var cer = new CityEdgeRegion(Edges)
             {

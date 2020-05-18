@@ -27,7 +27,7 @@
             </StackPanel>
             <ListBox Name="Regions" Width="200" Height="200">
                 <ListBox.Resources>
-                    <DataTemplate DataType="{x:Type model:TileRegion}">
+                    <DataTemplate DataType="{x:Type model:ITileRegion}">
                         <StackPanel Orientation="Horizontal">
                             <Label Content="{Binding Type}"/>
                             <Label Content="{Binding Score}"/>

@@ -2,12 +2,12 @@
 
 namespace Carcassonne.Model
 {
-    public interface IEdgeRegion : IClaimable
+    public interface IEdgeRegion
     {
-        PointRegion Container { get; set; }
-        RegionType Type { get; }
-        Tile Parent { get; set; }
+        IPointContainer Container { get; set; }
+        EdgeRegionType Type { get; }
+        ITile Parent { get; set; }
         IList<EdgeDirection> Edges { get; }
-        IEdgeRegion Duplicate(Tile parent);
+        IEdgeRegion Duplicate(ITile parent);
     }
 }

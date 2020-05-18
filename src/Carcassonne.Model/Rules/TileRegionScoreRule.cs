@@ -16,22 +16,22 @@
             return AppliesAsTileRegion(region).applies;
         }
 
-        private (bool applies, TileRegion tileRegion) AppliesAsTileRegion(IPointContainer region)
+        private (bool applies, ITileRegion container) AppliesAsTileRegion(IPointContainer container)
         {
-            if(!(region is TileRegion tr)) return (false, TileRegion.None);
-            return (tr.Type == m_type, tr);
+            if(!(container is ITileRegion region)) return (false, NopTileRegion.Instance);
+            return (region.Type == m_type, region);
         }
 
-        public int GetScore(IPointContainer region)
+        public int GetScore(IPointContainer container)
         {
-            var (applies, tr) = AppliesAsTileRegion(region);
-            return applies && tr.IsClosed ? tr.Score : 0;
+            var (applies, region) = AppliesAsTileRegion(container);
+            return applies && container.IsClosed ? region.TileCount : 0;
         }
 
-        public int GetEndScore(IPointContainer region)
+        public int GetEndScore(IPointContainer container)
         {
-            var (applies, tr) = AppliesAsTileRegion(region);
-            return applies  ? tr.Score : 0;
+            var (applies, region) = AppliesAsTileRegion(container);
+            return applies  ? region.TileCount : 0;
         }
 
         #endregion

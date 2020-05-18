@@ -210,27 +210,27 @@ namespace Carcassonne.WPF
     //    }
     //}
 
-    public class TileRegionFilter : MarkupExtension, IValueConverter
-    {
-        #region IValueConverter Members
-
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return value is TileRegion tr && parameter is TileRegionType type && tr.Type == type
-                ? value
-                : DependencyProperty.UnsetValue;
-        }
-
-        public object ConvertBack(object value, Type targetTypes, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        public override object ProvideValue(IServiceProvider serviceProvider)
-        {
-            return this;
-        }
-    }
+    // public class TileRegionFilter : MarkupExtension, IValueConverter
+    // {
+    //     #region IValueConverter Members
+    //
+    //     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    //     {
+    //         return value is ITileRegion tr && parameter is TileRegionType type && tr.Type == type
+    //             ? value
+    //             : DependencyProperty.UnsetValue;
+    //     }
+    //
+    //     public object ConvertBack(object value, Type targetTypes, object parameter, CultureInfo culture)
+    //     {
+    //         throw new NotImplementedException();
+    //     }
+    //
+    //     #endregion
+    //
+    //     public override object ProvideValue(IServiceProvider serviceProvider)
+    //     {
+    //         return this;
+    //     }
+    // }
 }

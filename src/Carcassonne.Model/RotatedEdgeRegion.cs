@@ -3,32 +3,34 @@ using System.Linq;
 
 namespace Carcassonne.Model
 {
-    public class RotatedEdgeRegion : IEdgeRegion
+    public class RotatedEdgeRegion : IEdgeRegion, IClaimable
     {
         public RotatedEdgeRegion(IEdgeRegion region, Rotation rot)
         {
             m_region = region;
+            m_claimable = region is IClaimable c ? c : DefaultClaimable.Instance;
             Rotation = rot;
         }
 
         private readonly IEdgeRegion m_region;
-        public Rotation Rotation { get; set; }
+        private readonly IClaimable m_claimable;
+        public Rotation Rotation { get; }
 
-        public void Claim(Meeple meeple) => m_region.Claim(meeple);
+        public void Claim(Meeple meeple) => m_claimable.Claim(meeple);
 
-        public void ResetClaim() => m_region.ResetClaim();
+        public void ResetClaim() => m_claimable.ResetClaim();
 
-        public Meeple Claimer => m_region.Claimer;
-        public bool IsClosed => m_region.IsClosed;
+        public Meeple Claimer => m_claimable.Claimer;
+        public bool IsClosed => m_claimable.IsClosed;
 
-        public PointRegion Container
+        public IPointContainer Container
         {
             get => m_region.Container;
             set => m_region.Container = value;
         }
 
-        public RegionType Type => m_region.Type;
-        public Tile Parent
+        public EdgeRegionType Type => m_region.Type;
+        public ITile Parent
         {
             get => m_region.Parent;
             set => m_region.Parent = value;
@@ -36,6 +38,6 @@ namespace Carcassonne.Model
 
         public IList<EdgeDirection> Edges => m_region.Edges.Select(d => d.UnRotate(Rotation)).ToList();
 
-        public IEdgeRegion Duplicate(Tile parent) => new RotatedEdgeRegion(m_region.Duplicate(parent), Rotation);
+        public IEdgeRegion Duplicate(ITile parent) => new RotatedEdgeRegion(m_region.Duplicate(parent), Rotation);
     }
 }

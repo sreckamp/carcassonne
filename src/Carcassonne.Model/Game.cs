@@ -96,6 +96,7 @@ namespace Carcassonne.Model
                 {
                     o.Score += score;
                 }
+
                 pr.ReturnMeeple();
             }
         }
@@ -372,72 +373,68 @@ namespace Carcassonne.Model
 
         private List<IPointContainer> Place(ITile tile, Point location)
         {
-            var available = new List<EdgeDirection>((EdgeDirection[])Enum.GetValues(typeof(EdgeDirection)));
+            var available = Enum.GetValues(typeof(EdgeDirection)).Cast<EdgeDirection>().ToList();
             var changedPointRegions = new List<IPointContainer>();
 
             Board.Add(new Placement<ITile>(tile, location));
-            if (tile.TileRegion.Type != TileRegionType.None)
+            if (tile.TileRegion is IPointContainer pc)
             {
-                PointRegions.Add(tile.TileRegion);
-                changedPointRegions.Add(tile.TileRegion);
+                PointRegions.Add(pc);
+                changedPointRegions.Add(pc);
             }
             var allNeighbors = Board.GetAllNeighbors(location);
             foreach (var n in allNeighbors)
             {
-                if (n.TileRegion != TileRegion.None)
+                n.TileRegion.Add(tile);
+                if (n.TileRegion is IPointContainer container)
                 {
-                    n.TileRegion.Add(tile);
-                    changedPointRegions.Add(n.TileRegion);
+                    changedPointRegions.Add(container);
                 }
-                if (tile.TileRegion != TileRegion.None)
-                {
-                    tile.TileRegion.Add(n);
-                }
+                tile.TileRegion.Add(n);
             }
 //            var neighbors = Board.GetNeighbors(move.Location);
             while (available.Count > 0)
             {
                 var r = tile.GetRegion(available[0]);
-                if (r.Type != RegionType.Any)
+                if (r.Type != EdgeRegionType.Any && r.Type != EdgeRegionType.None)
                 {
-                    var regions = new List<PointRegion>();
+                    var containers = new List<IPointContainer>();
                     foreach (var d in r.Edges)
                     {
-                        var n=Board.GetNeighbor(location, d);
-                        if (n != Tile.None)
-                        {
-                            var nr = n.GetRegion(d.Opposite());
-                            regions.Add(nr.Container);
-                        }
+                        var n = Board.GetNeighbor(location, d);
+                        var nr = n.GetRegion(d.Opposite());
+                        containers.Add(nr.Container);
                         available.Remove(d);
                     }
-                    if (regions.Count > 0)
+                    if (containers.Count > 0 && containers[0] is PointRegion pr)
                     {
-                        while (regions.Count > 1)
+                        while (containers.Count > 1)
                         {
-                            var dup = regions[1];
-                            regions[0].Merge(dup);
-                            regions.Remove(dup);
-                            if (PointRegions.Contains(dup))
+                            if (containers[1] is PointRegion dup)
                             {
-                                PointRegions.Remove(dup);
+                                pr.Merge(dup);
+                                if (PointRegions.Contains(dup))
+                                {
+                                    PointRegions.Remove(dup);
+                                }
                             }
+                            containers.RemoveAt(1);
                         }
-                        regions[0].Add(r);
-                        if (!PointRegions.Contains(regions[0]))
+                        pr.Add(r);
+                        if (!PointRegions.Contains(pr))
                         {
-                            PointRegions.Add(regions[0]);
+                            PointRegions.Add(pr);
                         }
-                        if (!changedPointRegions.Contains(regions[0]))
+                        if (!changedPointRegions.Contains(pr))
                         {
-                            changedPointRegions.Add(regions[0]);
+                            changedPointRegions.Add(pr);
                         }
                     }
                     else
                     {
                         switch (r.Type)
                         {
-                            case RegionType.City:
+                            case EdgeRegionType.City:
                                 var cpr = new CityPointRegion();
                                 cpr.Add(r);
                                 PointRegions.Add(cpr);
@@ -446,11 +443,11 @@ namespace Carcassonne.Model
                                     changedPointRegions.Add(cpr);
                                 }
                                 break;
-                            case RegionType.Grass:
+                            case EdgeRegionType.None:
                                 break;
-                            case RegionType.River:
+                            case EdgeRegionType.River:
                                 break;
-                            case RegionType.Road:
+                            case EdgeRegionType.Road:
                                 var rpr = new PointRegion(r.Type);
                                 rpr.Add(r);
                                 PointRegions.Add(rpr);
@@ -459,6 +456,10 @@ namespace Carcassonne.Model
                                     changedPointRegions.Add(rpr);
                                 }
                                 break;
+                            case EdgeRegionType.Any:
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
                         }
                     }
                 }

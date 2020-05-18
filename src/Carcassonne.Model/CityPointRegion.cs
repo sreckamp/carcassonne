@@ -4,9 +4,9 @@ namespace Carcassonne.Model
 {
     public class CityPointRegion : PointRegion
     {
-        private readonly List<Tile> m_shieldTiles = new List<Tile>();
+        private readonly List<ITile> m_shieldTiles = new List<ITile>();
 
-        public CityPointRegion():base(RegionType.City){ }
+        public CityPointRegion():base(EdgeRegionType.City){ }
 
         public int ShieldCount => m_shieldTiles.Count;
 

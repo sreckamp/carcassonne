@@ -7,7 +7,7 @@
         public bool Applies(IClaimable region, MeepleType type)
         {
             return type == MeepleType.Meeple && region is IEdgeRegion er
-                && (er.Type == RegionType.City || er.Type == RegionType.Road);
+                && (er.Type == EdgeRegionType.City || er.Type == EdgeRegionType.Road);
         }
 
         public bool IsAvailable(IClaimable region, MeepleType type)

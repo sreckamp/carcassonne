@@ -79,13 +79,13 @@ namespace Carcassonne.Model.Expansions
         {
             public override bool Applies(IGameBoard board, ITile tile, Point location)
             {
-                return tile.Contains(RegionType.River);
+                return tile.Contains(EdgeRegionType.River);
             }
 
             protected override bool RegionsMatch(IEdgeRegion myRegion, IEdgeRegion theirRegion)
             {
                 // Must map a River region
-                if (myRegion.Type != RegionType.River || theirRegion.Type != RegionType.River) return false;
+                if (myRegion.Type != EdgeRegionType.River || theirRegion.Type != EdgeRegionType.River) return false;
                 // Cannot have 2 turns in the same direction
                 if (myRegion.Edges.Count != 2 || myRegion.Edges[0].Opposite() == myRegion.Edges[1] ||
                     theirRegion.Edges.Count != 2 ||

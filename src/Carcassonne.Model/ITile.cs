@@ -5,10 +5,10 @@ namespace Carcassonne.Model
 {
     public interface ITile : IPiece
     {
-        TileRegion TileRegion { get; }
+        ITileRegion TileRegion { get; }
         IEnumerable<IEdgeRegion> Regions { get; }
-        RegionType GetEdge(EdgeDirection direction);
+        EdgeRegionType GetEdge(EdgeDirection direction);
         IEdgeRegion GetRegion(EdgeDirection direction);
-        bool Contains(RegionType type);
+        bool Contains(EdgeRegionType type);
     }
 }

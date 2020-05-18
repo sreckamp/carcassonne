@@ -14,7 +14,7 @@ namespace Carcassonne.WPF.ViewModel
 {
     public class PlacementViewModel : PlacementViewModel<ITile>
     {
-        private static readonly ClaimableViewModel SDefaultIClaimableModel = new ClaimableViewModel(new EdgeRegion_(RegionType.Any), TileRegion.None);
+        private static readonly ClaimableViewModel SDefaultIClaimableModel = new ClaimableViewModel(new EdgeRegion_(EdgeRegionType.Any), NopTileRegion.Instance);
 
         public PlacementViewModel(ITile tile, GameBoardViewModel boardModel) :
             this(new Placement<ITile>(tile, new DPoint()), boardModel)
@@ -255,8 +255,8 @@ namespace Carcassonne.WPF.ViewModel
             private static readonly MBrush SCityBrush = new SolidColorBrush(Colors.SaddleBrown);
 
             private readonly IEdgeRegion m_edge;
-            private readonly TileRegion m_tile;
-            public ClaimableViewModel(IEdgeRegion edge, TileRegion tile)
+            private readonly ITileRegion m_tile;
+            public ClaimableViewModel(IEdgeRegion edge, ITileRegion tile)
             {
                 m_edge = edge;
                 m_tile = tile;
@@ -266,19 +266,19 @@ namespace Carcassonne.WPF.ViewModel
                 m_edge != null || m_tile != null ? Visibility.Visible : Visibility.Hidden;
 
             public Visibility CityVisibility =>
-                m_edge.Type == RegionType.City ? Visibility.Visible : Visibility.Hidden;
+                m_edge.Type == EdgeRegionType.City ? Visibility.Visible : Visibility.Hidden;
 
             public Visibility PathVisibility =>
                 m_edge.Type.IsPath() ? Visibility.Visible : Visibility.Hidden;
 
             public Visibility RoadVisibility =>
-                m_edge.Type == RegionType.Road ? Visibility.Visible : Visibility.Hidden;
+                m_edge.Type == EdgeRegionType.Road ? Visibility.Visible : Visibility.Hidden;
 
             public Visibility RoadEndVisibility =>
-                m_edge.Type == RegionType.Road ? Visibility.Visible : Visibility.Hidden;
+                m_edge.Type == EdgeRegionType.Road ? Visibility.Visible : Visibility.Hidden;
 
             public Visibility RiverEndVisibility =>
-                m_edge.Type == RegionType.River ? Visibility.Visible : Visibility.Hidden;
+                m_edge.Type == EdgeRegionType.River ? Visibility.Visible : Visibility.Hidden;
 
             public Visibility ShieldVisibility =>
                 m_edge is CityEdgeRegion cer && cer.HasShield ? Visibility.Visible : Visibility.Hidden;
@@ -293,16 +293,13 @@ namespace Carcassonne.WPF.ViewModel
             {
                 get
                 {
-                    switch (m_edge?.Type)
+                    return m_edge.Type switch
                     {
-                        case RegionType.City:
-                            return SCityBrush;
-                        case RegionType.River:
-                            return SRiverBrush;
-                        case RegionType.Road:
-                            return SRoadBrush;
-                    }
-                    return null;
+                        EdgeRegionType.City => SCityBrush,
+                        EdgeRegionType.River => SRiverBrush,
+                        EdgeRegionType.Road => SRoadBrush,
+                        _ => null
+                    };
                 }
             }
         }

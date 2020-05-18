@@ -76,6 +76,7 @@
     <Compile Include="IEdgeRegion.cs" />
     <Compile Include="IGameBoard.cs" />
     <Compile Include="ITile.cs" />
+    <Compile Include="ITileRegion.cs" />
     <Compile Include="MeepleCollection.cs" />
     <Compile Include="ObservableStack.cs" />
     <Compile Include="IClaimProvider.cs" />
