@@ -5,7 +5,9 @@ namespace Carcassonne.Model.Expansions
 {
     public class AbbotExpansion:ExpansionPack
     {
-        public AbbotExpansion()
+        public static readonly ExpansionPack Instance = new AbbotExpansion();
+
+        private AbbotExpansion()
         {
             WritableClaimRules.Add(new AbbotClaimRule());
             WritablePlayerRules.Add(new CreateMeeplePlayerCreationRule(1, MeepleType.Abbot));

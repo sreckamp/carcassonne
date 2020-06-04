@@ -12,10 +12,15 @@ namespace Carcassonne.WPF
     public partial class MeepleView : INotifyPropertyChanged
     {
         private static readonly Brush SDefaultBrush = new SolidColorBrush(Colors.DarkGray);
-        public static readonly DependencyProperty OutlinedProperty = DependencyProperty.Register("Outlined", typeof(bool),
+        public static readonly DependencyProperty OutlinedProperty = DependencyProperty.Register(nameof(Outlined), typeof(bool),
             typeof(MeepleView), new PropertyMetadata(false, UpdateColors));
-        public static readonly DependencyProperty ColorProperty = DependencyProperty.Register("Color", typeof(Brush),
+        public static readonly DependencyProperty ColorProperty = DependencyProperty.Register(nameof(Color), typeof(Brush),
             typeof(MeepleView), new PropertyMetadata(SDefaultBrush, UpdateColors));
+
+        static MeepleView()
+        {
+            SDefaultBrush.Freeze();
+        }
 
         private static void UpdateColors(DependencyObject sender, DependencyPropertyChangedEventArgs args)
         {

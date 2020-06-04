@@ -51,7 +51,7 @@ namespace Carcassonne
             this.lstTiles.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.lstTiles.FormattingEnabled = true;
             this.lstTiles.Location = new System.Drawing.Point(232, 11);
-            this.lstTiles.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.lstTiles.Margin = new System.Windows.Forms.Padding(2);
             this.lstTiles.Name = "lstTiles";
             this.lstTiles.Size = new System.Drawing.Size(358, 186);
             this.lstTiles.TabIndex = 0;
@@ -60,7 +60,7 @@ namespace Carcassonne
             // btnCCW
             // 
             this.btnCCW.Location = new System.Drawing.Point(63, 167);
-            this.btnCCW.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnCCW.Margin = new System.Windows.Forms.Padding(2);
             this.btnCCW.Name = "btnCCW";
             this.btnCCW.Size = new System.Drawing.Size(31, 19);
             this.btnCCW.TabIndex = 1;
@@ -71,7 +71,7 @@ namespace Carcassonne
             // btnCW
             // 
             this.btnCW.Location = new System.Drawing.Point(146, 167);
-            this.btnCW.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnCW.Margin = new System.Windows.Forms.Padding(2);
             this.btnCW.Name = "btnCW";
             this.btnCW.Size = new System.Drawing.Size(30, 19);
             this.btnCW.TabIndex = 2;
@@ -83,7 +83,7 @@ namespace Carcassonne
             // 
             this.pnlTile.BackColor = System.Drawing.Color.Transparent;
             this.pnlTile.Location = new System.Drawing.Point(63, 26);
-            this.pnlTile.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pnlTile.Margin = new System.Windows.Forms.Padding(2);
             this.pnlTile.Name = "pnlTile";
             this.pnlTile.Size = new System.Drawing.Size(112, 122);
             this.pnlTile.TabIndex = 3;
@@ -143,7 +143,7 @@ namespace Carcassonne
             this.tlpGameGrid.ColumnCount = 1;
             this.tlpGameGrid.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 112F));
             this.tlpGameGrid.Location = new System.Drawing.Point(0, 0);
-            this.tlpGameGrid.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tlpGameGrid.Margin = new System.Windows.Forms.Padding(2);
             this.tlpGameGrid.Name = "tlpGameGrid";
             this.tlpGameGrid.RowCount = 1;
             this.tlpGameGrid.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 122F));
@@ -156,7 +156,7 @@ namespace Carcassonne
             this.pnlGameView.AutoScroll = true;
             this.pnlGameView.Controls.Add(this.tlpGameGrid);
             this.pnlGameView.Location = new System.Drawing.Point(9, 207);
-            this.pnlGameView.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pnlGameView.Margin = new System.Windows.Forms.Padding(2);
             this.pnlGameView.Name = "pnlGameView";
             this.pnlGameView.Size = new System.Drawing.Size(580, 277);
             this.pnlGameView.TabIndex = 10;
@@ -164,7 +164,7 @@ namespace Carcassonne
             // btnPlace
             // 
             this.btnPlace.Location = new System.Drawing.Point(100, 166);
-            this.btnPlace.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnPlace.Margin = new System.Windows.Forms.Padding(2);
             this.btnPlace.Name = "btnPlace";
             this.btnPlace.Size = new System.Drawing.Size(40, 20);
             this.btnPlace.TabIndex = 11;
@@ -188,7 +188,7 @@ namespace Carcassonne
             this.Controls.Add(this.btnCW);
             this.Controls.Add(this.btnCCW);
             this.Controls.Add(this.lstTiles);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "CarcassonneForm";
             this.Text = "Form1";
             this.pnlGameView.ResumeLayout(false);

@@ -33,7 +33,7 @@ namespace Carcassonne.Model.Rules
 
         protected virtual bool RegionsMatch(IEdgeRegion myRegion, IEdgeRegion theirRegion)
         {
-            return theirRegion.Type == EdgeRegionType.Any || myRegion.Type == theirRegion.Type;
+            return myRegion.Type.FitsWith(theirRegion.Type);
         }
     }
 }

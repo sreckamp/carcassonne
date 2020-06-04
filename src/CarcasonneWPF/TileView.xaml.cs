@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Windows;
@@ -15,6 +16,17 @@ namespace Carcassonne.WPF
     /// </summary>
     public partial class TileView
     {
+        // protected override void OnMouseMove(MouseEventArgs e)
+        // {
+        //     base.OnMouseMove(e);
+        //     Debug.WriteLine($"TileView:{e.GetPosition(this)}");
+        // }
+        //
+        // protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
+        // {
+        //     base.OnMouseLeftButtonUp(e);
+        //     Debug.WriteLine($"TileView:Click");
+        // }
         //private static readonly Brush s_defaultBrush = new SolidColorBrush(Colors.DarkGray);
         //private static readonly Brush s_cityBrush = new SolidColorBrush(Colors.SaddleBrown);
         //private Meeple m_activeMeeple;
@@ -62,7 +74,6 @@ namespace Carcassonne.WPF
         //{
         //    get
         //    {
-        //        if (ActiveElement != null)
         //        {
         //            return ActiveElement.DataContext as IClaimable;
         //        }
@@ -75,16 +86,16 @@ namespace Carcassonne.WPF
             InitializeComponent();
         }
 
-        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
-        private void SetActiveElement(object sender, MouseEventArgs e)
-        {
-
-        }
-
+        // [SuppressMessage("ReSharper", "UnusedParameter.Local")]
+        // private void SetActiveElement(object sender, MouseEventArgs e)
+        // {
+        //
+        // }
+        
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private void ClearActiveElement(object sender, MouseEventArgs e)
         {
-
+        
         }
 
         //private void GameTileView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)

@@ -3,12 +3,18 @@ using System.Threading;
 using System.Windows.Media;
 using Carcassonne.Model;
 using GameBase.Model;
+using GameBase.WPF.ViewModel;
 using Move = Carcassonne.Model.Move;
 
 namespace Carcassonne.WPF.ViewModel
 {
     public class PlayerViewModel : IMoveProvider, IClaimProvider
     {
+        static PlayerViewModel()
+        {
+            SDefaultColor.Freeze();
+        }
+        private readonly static Brush SDefaultColor = new SolidColorBrush(Colors.Fuchsia);
         public readonly static Dictionary<string, Brush> ColorsForName = new Dictionary<string, Brush>();
         private readonly object m_lock = new object();
         //private readonly Dispatcher m_dispatcher;
@@ -21,7 +27,7 @@ namespace Carcassonne.WPF.ViewModel
         //private PlacementViewModel m_activeTile;
         private Move m_move;
         //private Point? m_overPoint = null;
-        private readonly IClaimable m_activeClaim = null;
+        private readonly IClaimable m_activeClaim = NopClaimable.Instance;
         //private bool m_rightPressed = false;
         private readonly IPlayer m_player;
 
@@ -37,15 +43,12 @@ namespace Carcassonne.WPF.ViewModel
             //m_claimRightButtonUpHandler = new MouseButtonEventHandler(Tile_RightMouseButtonUp);
             //m_rightButtonDownHandler = new MouseButtonEventHandler(RightMouseButtonDown);
             //m_tileEnterHandler = new TileEnterHandler(GameField_TileEnter);
-            MeepleViewModels = new MappingCollection<MeepleViewModel, IMeeple>(player.Meeple);
+            MeepleViewModels = new DispatchedMappingCollection<MeepleViewModel, IMeeple>(player.Meeple);
         }
 
-        public MappingCollection<MeepleViewModel, IMeeple> MeepleViewModels
-        {
-            get;
-        }
+        public MappingCollection<MeepleViewModel, IMeeple> MeepleViewModels { get; }
 
-        public Brush Color => ColorsForName[m_player.Name];
+        public Brush Color => ColorsForName.ContainsKey(m_player.Name) ? ColorsForName[m_player.Name] : SDefaultColor;
         public string Name => m_player.Name;
         public int Score => m_player.Score;
 
@@ -90,10 +93,10 @@ namespace Carcassonne.WPF.ViewModel
             //m_view.ActiveTileView.ActiveMeeple = PeekMeeple(type);
             //if (m_view.ActiveTileView.ActiveMeeple != null)
             //{
-            lock (m_lock)
-            {
-                Monitor.Wait(m_lock);
-            }
+            // lock (m_lock)
+            // {
+            //     Monitor.Wait(m_lock);
+            // }
             //    type = m_view.ActiveTileView.ActiveMeeple.Type;
             //}
             //m_view.ActiveTileView.ActiveMeeple = null;
@@ -101,7 +104,7 @@ namespace Carcassonne.WPF.ViewModel
             //m_view.ActiveTileView.MouseLeftButtonUp -= m_claimLeftButtonUpHandler;
             //m_view.ActiveTileView.MouseRightButtonDown -= m_rightButtonDownHandler;
             //m_rightPressed = false;
-            return (m_activeClaim, MeepleType.Meeple);
+            return (m_activeClaim, MeepleType.None);
         }
 
         //private void GameField_LeftMouseButtonUp(object sender, MouseButtonEventArgs e)

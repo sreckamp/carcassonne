@@ -15,7 +15,7 @@
         {
             for (var i = 0; i < m_count; i++)
             {
-                player.ReturnMeeple(new Meeple_(m_type, player));
+                player.ReturnMeeple(new Meeple(m_type, player));
             }
         }
     }

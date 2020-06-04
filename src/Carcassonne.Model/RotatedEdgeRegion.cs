@@ -36,7 +36,7 @@ namespace Carcassonne.Model
             set => m_region.Parent = value;
         }
 
-        public IList<EdgeDirection> Edges => m_region.Edges.Select(d => d.UnRotate(Rotation)).ToList();
+        public IList<EdgeDirection> Edges => m_region.Edges.Select(d => d.Rotate(Rotation)).ToList();
 
         public IEdgeRegion Duplicate(ITile parent) => new RotatedEdgeRegion(m_region.Duplicate(parent), Rotation);
     }

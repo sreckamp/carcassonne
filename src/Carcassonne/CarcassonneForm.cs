@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using Carcassonne.Model;
 
@@ -8,7 +9,7 @@ namespace Carcassonne
 {
     public partial class CarcassonneForm : Form
     {
-        private readonly Game m_game = new Game();
+        private readonly Game m_game = new Game(Enumerable.Empty<ExpansionPack>());
         private readonly GameTile m_previewTile = new GameTile();
         private GameTile m_activeTile;
         private readonly Dictionary<EdgeRegionType, Color> m_edgeColor = new Dictionary<EdgeRegionType, Color>();
@@ -97,7 +98,7 @@ namespace Carcassonne
 
         private void btnCW_Click(object sender, EventArgs e)
         {
-            if (m_previewTile == null || m_previewTile.Tile == Tile.None) return;
+            if (m_previewTile == null || m_previewTile.Tile == NopTile.Instance) return;
             //                m_previewTile.Tile.RotateCW();
             m_previewTile.UpdateRegions();
             lblNorth.Text = m_previewTile.Tile.GetEdge(EdgeDirection.North).ToString();
@@ -108,9 +109,9 @@ namespace Carcassonne
 
         private void btnPlace_Click(object sender, EventArgs e)
         {
-            if (m_activeTile == null || m_activeTile.Tile != Tile.None || m_previewTile.Tile == Tile.None) return;
+            if (m_activeTile == null || m_activeTile.Tile != NopTile.Instance || m_previewTile.Tile == NopTile.Instance) return;
             m_activeTile.Tile = m_previewTile.Tile;
-            m_previewTile.Tile = Tile.None;
+            m_previewTile.Tile = NopTile.Instance;
             var idx = lstTiles.SelectedIndex;
             lstTiles.SelectedIndex = -1;
             lstTiles.Items.Remove(m_activeTile.Tile);
@@ -123,7 +124,7 @@ namespace Carcassonne
             {
                 lstTiles.SelectedIndex = idx;
             }
-            btnCW.Enabled = btnCCW.Enabled = btnPlace.Enabled = m_previewTile.Tile != Tile.None;
+            btnCW.Enabled = btnCCW.Enabled = btnPlace.Enabled = m_previewTile.Tile != NopTile.Instance;
         }
     }
 }

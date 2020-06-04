@@ -8,7 +8,7 @@ namespace Carcassonne.Model.Rules
     {
         public bool Applies(IGameBoard board, ITile tile, Point location)
         {
-            return tile == Tile.None;
+            return tile == NopTile.Instance;
         }
 
         public bool Fits(IGameBoard board, ITile tile, Point location)

@@ -16,7 +16,7 @@
                         <cmd:EventToCommand Command="{Binding MoveCommand}" PassEventArgsToCommand="True"/>
                     </i:EventTrigger>
                     <i:EventTrigger EventName="MouseLeftButtonUp">
-                        <cmd:EventToCommand Command="{Binding PlaceCommand}"/>
+                        <cmd:EventToCommand Command="{Binding LeftButtonCommand}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </base:DynamicGrid>

@@ -34,14 +34,14 @@ namespace Carcassonne
             // 
             // GameTile
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ForeColor = System.Drawing.SystemColors.ControlText;
             this.Margin = new System.Windows.Forms.Padding(1);
             this.Name = "GameTile";
-            this.Padding = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.Size = new System.Drawing.Size(155, 194);
+            this.Padding = new System.Windows.Forms.Padding(4);
+            this.Size = new System.Drawing.Size(116, 126);
             this.ResumeLayout(false);
         }
 

@@ -1,56 +1,100 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Threading;
 using Carcassonne.Model;
+using GalaSoft.MvvmLight.CommandWpf;
 using GameBase.Model;
+using GameBase.WPF;
 using GameBase.WPF.ViewModel;
+using Move = Carcassonne.Model.Move;
 
 namespace Carcassonne.WPF.ViewModel
 {
     public class GameViewModel: INotifyPropertyChanged
     {
-        //private readonly Game m_game;
-        private readonly Dispatcher m_dispatcher;
+        private static readonly PlayerViewModel SNopPlayerViewModel = new PlayerViewModel(NopPlayer.Instance);
 
-        public GameViewModel(params ExpansionPack[] expansions)
+        private readonly ICommand m_placeCommand;
+        private readonly ICommand m_rotateCommand;
+        private readonly ICommand m_claimCommand;
+        private readonly ICommand m_chooseMeepleCommand;
+        private readonly ICommand m_moveCommand;
+
+        private readonly PlacementViewModel m_defaultPlacement;
+        private PlacementViewModel m_active;
+
+        public GameViewModel(IEnumerable<ExpansionPack> expansions)
         {
-            m_dispatcher = Application.Current.Dispatcher;
+            m_moveCommand = new RelayCommand<GridCellRoutedEventArgs>(Move, CanMove);
+            m_placeCommand = new RelayCommand<object>(Place, CanPlace);
+            m_rotateCommand = new RelayCommand<object>(Rotate, CanRotate);
+            m_claimCommand = new RelayCommand<object>(Claim, CanClaim);
+            m_chooseMeepleCommand = new RelayCommand<object>(ChooseMeeple, CanChooseMeeple);
+
             PropertyChanged += (sender, args) => { };
+
             Game = new Game(expansions);
-            BoardViewModel = new BoardViewModel(Game.Board, Game.RuleSet);
-            BoardViewModel.Placed += boardViewModel_Placed;
-            Game.ActivePlayerChanged += game_ActivePlayerChanged;
-            Game.ActiveTileChanged += game_ActiveTileChanged;
-            PlayerViewModels = new MappingCollection<PlayerViewModel, IPlayer>(Game.Players);
-            DeckViewModel = new DispatchedObservableList<PlacementViewModel>(/*m_dispatcher, */new ObservableList<PlacementViewModel>());
+            BoardViewModel = new BoardViewModel(Game.Board, Game.RuleSet)
+            {
+                MoveCommand = m_moveCommand
+            };
+            m_defaultPlacement = new PlacementViewModel(NopTile.Instance, BoardViewModel);
+            m_active = m_defaultPlacement;
+            Game.ActivePlayerChanged += Game_ActivePlayerChanged;
+            Game.ActiveTileChanged += Game_ActiveTileChanged;
+            Game.GameStateChanged += Game_GameStateChanged;
+            PlayerViewModels = new DispatchedMappingCollection<PlayerViewModel, IPlayer>(Game.Players);
+            // DeckViewModel = new DispatchedObservableList<PlacementViewModel>(/*m_dispatcher, */new ObservableList<PlacementViewModel>());
         }
 
-        private void boardViewModel_Placed(object sender, PlaceEventArgs e)
+        private void Game_GameStateChanged(object sender, ChangedValueArgs<GameState> e)
         {
-            ActivePlayerViewModel.Place(e.Move);
+            switch (e.NewVal)
+            {
+                case GameState.Claim:
+                    m_active = m_defaultPlacement;
+                    BoardViewModel.ClearActiveTile();
+                    BoardViewModel.LeftButtonCommand = m_claimCommand;
+                    BoardViewModel.RightButtonCommand = m_chooseMeepleCommand;
+                    break;
+                case GameState.Place:
+                    BoardViewModel.LeftButtonCommand = m_placeCommand;
+                    BoardViewModel.RightButtonCommand = m_rotateCommand;
+                    break;
+                case GameState.Score:
+                    BoardViewModel.LeftButtonCommand = BoardViewModel.NopCommand;
+                    BoardViewModel.RightButtonCommand = BoardViewModel.NopCommand;
+                    Game.Score();
+                    break;
+                case GameState.Next:
+                    Game.NextTurn();
+                    break;
+                case GameState.End:
+                case GameState.NotStarted:
+                    BoardViewModel.LeftButtonCommand = BoardViewModel.NopCommand;
+                    BoardViewModel.RightButtonCommand = BoardViewModel.NopCommand;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
-        void game_ActiveTileChanged(object sender, ChangedValueArgs<Tile> e)
+        private void Game_ActiveTileChanged(object sender, ChangedValueArgs<ITile> e)
         {
-            BoardViewModel.SetActiveTile(e.NewVal);
-            //Board.SetActiveTile(e.NewVal);
-            //if (Board.ActiveTile != null)
-            //{
-            //    ActivePlayer.SetActiveTile(Board.ActiveTile);
-            //}
+            m_active = new PlacementViewModel(e.NewVal, BoardViewModel);
+            BoardViewModel.SetActivePlacement(m_active);
         }
 
         public MappingCollection<PlayerViewModel, IPlayer> PlayerViewModels { get; }
 
-        void game_ActivePlayerChanged(object sender, ChangedValueArgs<IPlayer> e)
+        private void Game_ActivePlayerChanged(object sender, ChangedValueArgs<IPlayer> e)
         {
             NotifyPropertyChanged(nameof(ActivePlayerViewModel));
         }
 
-        public DispatchedObservableList<PlacementViewModel> DeckViewModel { get; }
         public Game Game { get; }
         public BoardViewModel BoardViewModel { get; }
 
@@ -60,28 +104,79 @@ namespace Carcassonne.WPF.ViewModel
 
         private void NotifyPropertyChanged(string name)
         {
-            if (m_dispatcher.CheckAccess())
-            {
-                Debug.WriteLine("GameViewModel.PropChanged Act:" + name);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-            }
-            else
-            {
-                Debug.WriteLine("GameViewModel.PropChanged Invoke:" + name);
-                m_dispatcher.Invoke(new Action<string>(NotifyPropertyChanged), name);
-            }
+            PropertyChanged.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         #endregion
 
-        public PlayerViewModel ActivePlayerViewModel => PlayerViewModels[Game.ActivePlayer];
+        public PlayerViewModel ActivePlayerViewModel => Game.Players.Contains(Game.ActivePlayer)
+            ? PlayerViewModels[Game.ActivePlayer]
+            : SNopPlayerViewModel;
 
         internal void AddPlayer(string name, Color color)
         {
-            if (Game.AddPlayer(name) != NopPlayer.Instance)
-            {
-                PlayerViewModel.ColorsForName[name] = new SolidColorBrush(color);
-            }
+            if (Game.AddPlayer(name) == NopPlayer.Instance) return;
+            PlayerViewModel.ColorsForName[name] = new SolidColorBrush(color);
+            PlayerViewModel.ColorsForName[name].Freeze();
+        }
+        
+        private void Place(object args)
+        {
+            Game.ApplyMove(m_active.Location, m_active.TileRotation);
+        }
+
+        private bool CanPlace(object obj)
+        {
+            return Game.State == GameState.Place && Game.RuleSet.Applies(Game.Board, m_active.Piece, m_active.Location) && Game.RuleSet.Fits(Game.Board, m_active.Piece, m_active.Location);
+        }
+
+        private void Rotate(object obj)
+        {
+            m_active.TileRotation = m_active.TileRotation.RotateCw();
+            UpdateActiveFits();
+        }
+
+        private bool CanRotate(object obj)
+        {
+            return Game.State == GameState.Place && Game.ActiveTile != NopTile.Instance;
+        }
+
+        private void Claim(object obj)
+        {
+            Debug.WriteLine($"GameViewModel.{nameof(Claim)}");
+            Game.ApplyClaim(NopClaimable.Instance, MeepleType.None);
+        }
+
+        private bool CanClaim(object obj)
+        {
+            Debug.WriteLine($"GameViewModel.{nameof(CanClaim)}");
+            return true;
+        }
+
+        private void ChooseMeeple(object obj)
+        {
+            Debug.WriteLine($"GameViewModel.{nameof(ChooseMeeple)}");
+        }
+
+        private bool CanChooseMeeple(object obj)
+        {
+            Debug.WriteLine($"GameViewModel.{nameof(CanChooseMeeple)}");
+            return true;
+        }
+        
+        private bool CanMove(GridCellRoutedEventArgs args) => Game.State == GameState.Place && m_active.Piece != NopTile.Instance;
+
+        private void Move(GridCellRoutedEventArgs args)
+        {
+            m_active.SetCell(args.Cell);
+            UpdateActiveFits();
+            Debug.WriteLine($"GameViewModel.{nameof(Move)}");
+        }
+
+        private void UpdateActiveFits()
+        {
+            m_active.Fits = Game.RuleSet.Applies(Game.Board, m_active.Piece, m_active.Location)
+                            && Game.RuleSet.Fits(Game.Board, m_active.Piece, m_active.Location);
         }
     }
 }

@@ -29,12 +29,19 @@ namespace Carcassonne.Model
         public IEdgeRegion GetRegion(EdgeDirection direction)
         {
             direction = direction.UnRotate(Rotation);
-            return m_tile.GetRegion(direction);
+            return new RotatedEdgeRegion(m_tile.GetRegion(direction), Rotation);
         }
 
         public bool Contains(EdgeRegionType type)
         {
             return m_tile.Contains(type);
+        }
+
+        public override string ToString() => Rotation == Rotation.None ? m_tile.ToString() : $"{m_tile} @ {Rotation}";
+
+        public void Join(ITile neighbor, EdgeDirection dir)
+        {
+            m_tile.Join(neighbor, dir);
         }
     }
 }

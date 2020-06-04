@@ -20,8 +20,6 @@ namespace Carcassonne.Model
             ScoreRules = new ReadOnlyCollection<IScoreRule>(WritableScoreRules);
         }
 
-        public virtual bool IgnoreDefaultStart => false;
-        // ReSharper disable once UnusedParameter.Global
         public virtual void BeforeDeckShuffle(Deck deck) { }
         public virtual void AfterDeckShuffle(Deck deck) { }
         public ReadOnlyCollection<IPlaceRule<IGameBoard, ITile>> PlaceRules { get; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -17,6 +18,7 @@ namespace Carcassonne.WPF.ViewModel
             Dispatcher = Application.Current.Dispatcher;
             PropertyChanged += (sender, args) => { };
             Meeple = meeple;
+            Stroke.Freeze();
         }
 
         public Brush Fill => PlayerViewModel.ColorsForName[Meeple.Player.Name];
@@ -54,12 +56,13 @@ namespace Carcassonne.WPF.ViewModel
         {
             if (Dispatcher.CheckAccess())
             {
+                Debug.WriteLine($"MeepleViewModel.PropChanged {name}");
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
             }
             else
             {
-                Dispatcher.Invoke(new Action<string>(n =>
-                { NotifyPropertyChanged(n); }), name);
+                Debug.WriteLine($"Invoke MeepleViewModel.PropChanged {name}");
+                Dispatcher.Invoke(new Action<string>(NotifyPropertyChanged), name);
             }
         }
 

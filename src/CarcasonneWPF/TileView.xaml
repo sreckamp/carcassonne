@@ -2,6 +2,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:Carcassonne.WPF"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
     xmlns:base="clr-namespace:GameBase.WPF;assembly=GameBase.WPF"
     xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
     Background="LightGray" Opacity="{Binding Opacity}">
@@ -9,15 +11,7 @@
     Change the regions to buttons to allow them to use standard "MouseOver" and "Click" commands.
     -->
     <UserControl.Resources>
-        <Style TargetType="{x:Type local:PlayerAvatarControl}">
-            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
-            <Setter Property="RenderTransform">
-                <Setter.Value>
-                    <RotateTransform Angle="{Binding Path=DataContext.NegRotationAngle, RelativeSource = {RelativeSource Mode=FindAncestor, AncestorType={x:Type Viewbox}}}"/>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style x:Key ="RegionGrid"  TargetType="{x:Type Grid}">
+        <Style x:Key ="RegionGrid" TargetType="{x:Type Grid}">
             <Setter Property="Visibility" Value="{Binding FullVisibility, FallbackValue=Hidden}"/>
         </Style>
         <Style x:Key ="CityShape"  TargetType="{x:Type Shape}">
@@ -55,13 +49,24 @@
         </Style>
     </UserControl.Resources>
     <Viewbox RenderTransformOrigin="0.5,0.5">
+        <Viewbox.Resources>
+            <Style TargetType="{x:Type local:PlayerAvatarControl}">
+                <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                <Setter Property="RenderTransform">
+                    <Setter.Value>
+                        <RotateTransform Angle="{Binding Path=DataContext.NegRotationAngle, RelativeSource = {RelativeSource Mode=FindAncestor, AncestorType={x:Type Viewbox}}}"/>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Viewbox.Resources>
         <Viewbox.RenderTransform>
             <RotateTransform Angle="{Binding RotationAngle}"/>
         </Viewbox.RenderTransform>
         <Grid Width="150" Height="150">
             <Rectangle Name="RGrass" Fill="DarkGreen" MouseEnter="ClearActiveElement"/>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding AllDataContext}">
-                <Rectangle Style="{StaticResource CityShape}"/>
+                <Rectangle Style="{StaticResource CityShape}">
+                </Rectangle>
                 <Polygon Margin="25,25,0,0" Style="{StaticResource ShieldPolygon}"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthDataContext}">

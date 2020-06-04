@@ -20,7 +20,7 @@ namespace Carcassonne.Model
         }
 
         /// <inheritdoc />
-        public IPointContainer Container { get; set; }
+        public IPointContainer Container { get; set; } = NopPointContainer.Instance;
 
         /// <inheritdoc />
         public EdgeRegionType Type => EdgeRegionType.Any;

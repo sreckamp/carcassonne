@@ -7,14 +7,14 @@ namespace Carcassonne.Model
     /// <summary>
     /// Area on a tile of a specific type
     /// </summary>
-    public class EdgeRegion_ : IEdgeRegion, IClaimable
+    public class EdgeRegion : IEdgeRegion, IClaimable
     {
-        public EdgeRegion_(EdgeRegionType type, params EdgeDirection[] edges)
+        public EdgeRegion(EdgeRegionType type, params EdgeDirection[] edges)
             :this(type, (IEnumerable<EdgeDirection>)edges)
         {
         }
 
-        protected EdgeRegion_(EdgeRegionType type, IEnumerable<EdgeDirection> edges)
+        protected EdgeRegion(EdgeRegionType type, IEnumerable<EdgeDirection> edges)
         {
             Type = type;
             Edges = new List<EdgeDirection>(edges).AsReadOnly();
@@ -63,7 +63,7 @@ namespace Carcassonne.Model
         }
 
         //This never changes.
-        public ITile Parent { get; set; } = Tile.None;
+        public ITile Parent { get; set; } = NopTile.Instance;
 
         //This never changes.
         public EdgeRegionType Type { get; }
@@ -82,14 +82,14 @@ namespace Carcassonne.Model
 
         public virtual IEdgeRegion Duplicate(ITile parent)
         {
-            return new EdgeRegion_(Type, Edges)
+            return new EdgeRegion(Type, Edges)
             {
                 Parent = parent
             };
         }
     }
 
-    public class CityEdgeRegion:EdgeRegion_
+    public class CityEdgeRegion:EdgeRegion
     {
         public CityEdgeRegion(params EdgeDirection[] edges)
             : base(EdgeRegionType.City, edges) { }

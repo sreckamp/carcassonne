@@ -9,7 +9,7 @@ namespace Carcassonne.Model
 {
     public class Board : Board<ITile>, IGameBoard
     {
-        public Board() : base(Tile.None)
+        public Board() : base(NopTile.Instance)
         { }
 
         public ITile GetNeighbor(Point point, EdgeDirection direction)
@@ -39,7 +39,7 @@ namespace Carcassonne.Model
         public IEnumerable<ITile> GetAllNeighbors(Point point)
         {
             return Enum.GetValues(typeof(EdgeDirection)).Cast<EdgeDirection>()
-                .Select(d => GetNeighbor(point, d)).Where(tile => tile != Tile.None);
+                .Select(d => GetNeighbor(point, d)).Where(tile => tile != NopTile.Instance);
         }
     }
 }

@@ -11,6 +11,7 @@ namespace Carcassonne.Model
         EdgeRegionType GetEdge(EdgeDirection direction);
         IEdgeRegion GetRegion(EdgeDirection direction);
         bool Contains(EdgeRegionType type);
+        void Join(ITile getNeighbor, EdgeDirection dir);
     }
 
     public class NopTile : ITile
@@ -35,5 +36,7 @@ namespace Carcassonne.Model
 
         /// <inheritdoc />
         public bool Contains(EdgeRegionType type) => true;
+
+        public void Join(ITile getNeighbor, EdgeDirection dir) { }
     }
 }

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Carcassonne.Model;
@@ -15,21 +12,21 @@ namespace Carcassonne.WPF.ViewModel
 {
     public class PlacementViewModel : PlacementViewModel<ITile>
     {
-        private const int BACKGROUND_DEPTH = 99;
-        private const int FOREGROUND_DEPTH = 50;
+        private const int BackgroundDepth = 99;
+        private const int ForegroundDepth = 50;
 
-        private static readonly ClaimableViewModel SDefaultIClaimableModel = new ClaimableViewModel(new EdgeRegion_(EdgeRegionType.Any), NopTileRegion.Instance);
+        private static readonly ClaimableViewModel SDefaultIClaimableModel = new ClaimableViewModel(new EdgeRegion(EdgeRegionType.Any), NopTileRegion.Instance);
 
-        public PlacementViewModel(ITile tile, IGridManager gridManager) :
-            this(new Placement<ITile>(tile, new DPoint()), gridManager)
+        public PlacementViewModel(ITile tile, BoardViewModel boardViewModel) :
+            this(new Placement<ITile>(tile, new DPoint(int.MinValue, int.MinValue)), boardViewModel)
         { }
-        public PlacementViewModel(Placement<ITile> placement, IGridManager gridManager)
-            : base(placement, gridManager)
+        public PlacementViewModel(Placement<ITile> placement, BoardViewModel boardViewModel)
+            : base(placement, boardViewModel)
         {
             ParseTile();
         }
 
-        private BoardViewModel BoardViewModel => GridManager as BoardViewModel;
+        // private BoardViewModel BoardViewModel => GridManager as BoardViewModel;
 
         // protected override CarcassonneMove GetMove(int locationX, int locationY) =>
         //     new CarcassonneMove(locationX, locationY, TileRotation);
@@ -42,13 +39,34 @@ namespace Carcassonne.WPF.ViewModel
             NotifyPropertyChanged(nameof(Opacity));
         }
 
-        public double Opacity => !(GridManager is BoardViewModel b) || b.Fits(this) ? 1 : 0.5;
+        private bool m_fits;
+        public bool Fits { get => m_fits;
+            set
+            {
+                m_fits = value;
+                NotifyPropertyChanged(nameof(Opacity));
+            }
+        }
 
-        public void ChangedDepth() => NotifyPropertyChanged(nameof(Depth));
+        public double Opacity => !IsForeground || Fits ? 1 : 0.5;
 
-        public int Depth => BoardViewModel.IsBackground(this)
-            ? BACKGROUND_DEPTH
-            : (BoardViewModel.IsForeground(this) ? 50 : 0);
+        // public void ChangedDepth() => NotifyPropertyChanged(nameof(Depth));
+
+        protected bool m_isBackground;
+        public bool IsBackground => m_isBackground;
+
+        private bool m_isForeground;
+        public bool IsForeground
+        {
+            get => m_isForeground;
+            set
+            {
+                m_isForeground = value;
+                NotifyPropertyChanged(nameof(Depth));
+            }
+        }
+
+        public int Depth => IsBackground ? BackgroundDepth : (m_isForeground ? ForegroundDepth : 0);
 
         public Rotation TileRotation
         {
@@ -243,6 +261,13 @@ namespace Carcassonne.WPF.ViewModel
             private static readonly MBrush SRoadBrush = new SolidColorBrush(Colors.Khaki);
             private static readonly MBrush SCityBrush = new SolidColorBrush(Colors.SaddleBrown);
 
+            static ClaimableViewModel()
+            {
+                SRiverBrush.Freeze();
+                SRoadBrush.Freeze();
+                SCityBrush.Freeze();
+            }
+
             private readonly IEdgeRegion m_edge;
             private readonly ITileRegion m_tile;
             public ClaimableViewModel(IEdgeRegion edge, ITileRegion tile)
@@ -252,9 +277,10 @@ namespace Carcassonne.WPF.ViewModel
                 if (m_edge == null || m_tile == null)
                 {
                 }
+                Color.Freeze();
             }
 
-            public MBrush Color { get; } = new SolidColorBrush(Colors.Fuchsia);
+            public MBrush Color { get; } = new SolidColorBrush(Colors.Orange);
 
             public Visibility FullVisibility =>
                 m_edge.Type != EdgeRegionType.Any || m_tile.Type != TileRegionType.None ? Visibility.Visible : Visibility.Hidden;

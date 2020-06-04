@@ -6,73 +6,75 @@ namespace Carcassonne.Model.Expansions
 {
     public class RiverExpansion : ExpansionPack
     {
-        private readonly Tile m_source;
-        private readonly Tile m_sink;
-        private readonly Deck m_riverDeck = new Deck();
+        public static readonly ExpansionPack Instance = new RiverExpansion();
 
-        public RiverExpansion()
+        private readonly Deck m_riverDeck = new Deck();
+        private readonly Tile.TileBuilder m_builder = new Tile.TileBuilder();
+
+        private readonly Tile m_spring;
+        private readonly Tile m_lake;
+
+        private RiverExpansion()
         {
             WritablePlaceRules.Add(new RiverFitRule());
-            var builder = new Tile.TileBuilder();
-            m_source = builder.NewTile()
+            m_spring = m_builder.NewTile()
                 .AddRiverRegion(EdgeDirection.South);
-            m_sink = builder.NewTile()
+            m_lake = m_builder.NewTile()
                 .AddRiverRegion(EdgeDirection.North);
         }
 
-        public override bool IgnoreDefaultStart => true;
-
         public override void AfterDeckShuffle(Deck deck)
         {
-            var builder = new Tile.TileBuilder();
-            m_riverDeck.Clear();
-            m_riverDeck.Push(builder.NewTile()
-                .AddCityRegion(EdgeDirection.North, EdgeDirection.East)
-                .AddRiverRegion(EdgeDirection.South, EdgeDirection.West)
+            if (m_riverDeck.Count == 0)
+            {
+                m_riverDeck.Push(m_builder.NewTile()
+                    .AddCityRegion(EdgeDirection.North, EdgeDirection.East)
+                    .AddRiverRegion(EdgeDirection.South, EdgeDirection.West)
                 );
-            m_riverDeck.Push(builder.NewTile()
-                .AddCityRegion(EdgeDirection.North)
-                .AddRiverRegion(EdgeDirection.East, EdgeDirection.West)
-                .AddCityRegion(EdgeDirection.South)
+                m_riverDeck.Push(m_builder.NewTile()
+                    .AddCityRegion(EdgeDirection.North)
+                    .AddRiverRegion(EdgeDirection.East, EdgeDirection.West)
+                    .AddCityRegion(EdgeDirection.South)
                 );
-            m_riverDeck.Push(builder.NewTile()
-                .AddCityRegion(EdgeDirection.North)
-                .AddRiverRegion(EdgeDirection.East, EdgeDirection.West)
-                .AddRoadRegion(EdgeDirection.South)
+                m_riverDeck.Push(m_builder.NewTile()
+                    .AddCityRegion(EdgeDirection.North)
+                    .AddRiverRegion(EdgeDirection.East, EdgeDirection.West)
+                    .AddRoadRegion(EdgeDirection.South)
                 );
-            m_riverDeck.Push(builder.NewTile()
-                .AddRoadRegion(EdgeDirection.North, EdgeDirection.East)
-                .AddRiverRegion(EdgeDirection.South, EdgeDirection.West)
+                m_riverDeck.Push(m_builder.NewTile()
+                    .AddRoadRegion(EdgeDirection.North, EdgeDirection.East)
+                    .AddRiverRegion(EdgeDirection.South, EdgeDirection.West)
                 );
-            m_riverDeck.Push(builder.NewTile()
-                .AddRoadRegion(EdgeDirection.North)
-                .AddRiverRegion(EdgeDirection.East, EdgeDirection.West)
-                .AddRoadRegion(EdgeDirection.South)
+                m_riverDeck.Push(m_builder.NewTile()
+                    .AddRoadRegion(EdgeDirection.North)
+                    .AddRiverRegion(EdgeDirection.East, EdgeDirection.West)
+                    .AddRoadRegion(EdgeDirection.South)
                 );
-            m_riverDeck.Push(builder.NewTile()
-                .AddRoadRegion(EdgeDirection.South)
-                .AddRiverRegion(EdgeDirection.East, EdgeDirection.West)
-                .AddMonastery()
+                m_riverDeck.Push(m_builder.NewTile()
+                    .AddRoadRegion(EdgeDirection.South)
+                    .AddRiverRegion(EdgeDirection.East, EdgeDirection.West)
+                    .AddMonastery()
                 );
-            m_riverDeck.Push(builder.NewTile()
-                .AddRiverRegion(EdgeDirection.North, EdgeDirection.East)
+                m_riverDeck.Push(m_builder.NewTile()
+                    .AddRiverRegion(EdgeDirection.North, EdgeDirection.East)
                 );
-            m_riverDeck.Push(builder.NewTile()
-                .AddRiverRegion(EdgeDirection.North, EdgeDirection.East)
-                .AddFlowers()
+                m_riverDeck.Push(m_builder.NewTile()
+                    .AddRiverRegion(EdgeDirection.North, EdgeDirection.East)
+                    .AddFlowers()
                 );
-            m_riverDeck.Push(builder.NewTile()
-                .AddRiverRegion(EdgeDirection.North, EdgeDirection.South)
+                m_riverDeck.Push(m_builder.NewTile()
+                    .AddRiverRegion(EdgeDirection.North, EdgeDirection.South)
                 );
-            m_riverDeck.Push(builder.Tile.TileClone());
+                m_riverDeck.Push(m_builder.Tile.TileClone());
+            }
 
             m_riverDeck.Shuffle();
-            deck.Push(m_sink);
-            while (m_riverDeck.Count > 0)
+            deck.Push(m_lake);
+            foreach (var tile in m_riverDeck)
             {
-                deck.Push(m_riverDeck.Pop());
+                deck.Push(tile);
             }
-            deck.Push(m_source);
+            deck.Push(m_spring);
         }
 
         private class RiverFitRule : DefaultPlaceRule
@@ -84,6 +86,7 @@ namespace Carcassonne.Model.Expansions
 
             protected override bool RegionsMatch(IEdgeRegion myRegion, IEdgeRegion theirRegion)
             {
+                if (theirRegion.Type == EdgeRegionType.Any) return true;
                 // Must map a River region
                 if (myRegion.Type != EdgeRegionType.River || theirRegion.Type != EdgeRegionType.River) return false;
                 // Cannot have 2 turns in the same direction

@@ -5,5 +5,10 @@
     /// </summary>
     public class FarmerExpansion:ExpansionPack
     {
+        public static readonly ExpansionPack Instance = new FarmerExpansion();
+
+        private FarmerExpansion()
+        {
+        }
     }
 }

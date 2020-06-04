@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using GameBase.Model;
@@ -12,7 +13,7 @@ namespace Carcassonne.Model
         Place,
         Claim,
         Score,
-        Discard,
+        Next,
         End,
     }
 
@@ -20,60 +21,70 @@ namespace Carcassonne.Model
     /// </summary>
     public sealed class Game
     {
-        private Tile m_defaultStartTile = Tile.None;
-        private readonly ExpansionPack[] m_expansions;
         public RuleSet RuleSet { get; }
 
-        public Game(params ExpansionPack[] expansions)
+        public Game(IEnumerable<ExpansionPack> expansions)
         {
-            ActiveTileChanged += (sender, args) => { };
-            ActivePlayerChanged += (sender, args) => { };
-            m_expansions = expansions;
+            ActiveTileChanged += (sender, args) => { Debug.WriteLine($"{nameof(ActiveTileChanged)}: {args.OldVal}=>{args.NewVal}"); };
+            ActivePlayerChanged += (sender, args) => { Debug.WriteLine($"{nameof(ActivePlayerChanged)}: {args.OldVal}=>{args.NewVal}"); };
+            GameStateChanged += (sender, args) => { Debug.WriteLine($"{nameof(GameStateChanged)}: {args.OldVal}=>{args.NewVal}"); };
             RuleSet = new RuleSet(expansions);
             Board = new Board();
             Players = new ObservableList<IPlayer>();
         }
 
+        private void StateChanged<T>(string name, ChangedValueArgs<T> args)
+        {
+            
+        }
         public Board Board { get; }
         public ObservableList<IPointContainer> PointRegions { get; } = new ObservableList<IPointContainer>();
 
         private readonly Deck m_deck = new Deck();
 
-        public GameState State { get; private set; } = GameState.NotStarted;
+        public event EventHandler<ChangedValueArgs<GameState>> GameStateChanged;
+        private GameState m_state = GameState.NotStarted;
 
-        public event EventHandler<ChangedValueArgs<Tile>> ActiveTileChanged;
-        private Tile m_activeTile = Tile.None;
+        public GameState State
+        {
+            get => m_state;
+            set
+            {
+                var old = m_state;
+                m_state = value;
+                GameStateChanged.Invoke(this, new ChangedValueArgs<GameState>(old, value));
+            }
+        }
 
-        private Tile ActiveTile
+        public event EventHandler<ChangedValueArgs<ITile>> ActiveTileChanged;
+        private ITile m_activeTile = NopTile.Instance;
+
+        public ITile ActiveTile
         {
             get => m_activeTile;
-            set
+            private set
             {
                 var old = m_activeTile;
                 m_activeTile = value;
-                ActiveTileChanged.Invoke(this, new ChangedValueArgs<Tile>(old, value));
+                ActiveTileChanged.Invoke(this, new ChangedValueArgs<ITile>(old, value));
             }
         }
 
         public event EventHandler<ChangedValueArgs<IPlayer>> ActivePlayerChanged;
-        private int m_activePlayerIndex = int.MaxValue;
-        public IPlayer ActivePlayer => m_activePlayerIndex < Players.Count ? Players[m_activePlayerIndex] : NopPlayer.Instance;
+        private int m_activePlayerIndex = int.MinValue;
+        public IPlayer ActivePlayer => m_activePlayerIndex >= 0 ? Players[m_activePlayerIndex] : NopPlayer.Instance;
 
         public ObservableList<IPlayer> Players { get; }
 
-        private IPlayer NextPlayer()
+        private void NextPlayer()
         {
             var old = ActivePlayer;
-            if (m_activePlayerIndex >= Players.Count - 1)
+
+            if (++m_activePlayerIndex >= Players.Count || m_activePlayerIndex < 0)
             {
                 m_activePlayerIndex = 0;
             }
-            else
-            {
-                m_activePlayerIndex++;
-            }
             ActivePlayerChanged.Invoke(this, new ChangedValueArgs<IPlayer>(old, ActivePlayer));
-            return ActivePlayer;
         }
 
         public bool Claim(IClaimable claim, MeepleType type)
@@ -84,7 +95,7 @@ namespace Carcassonne.Model
             return true;
         }
 
-        private void End()
+        public void End()
         {
             foreach (var pr in PointRegions)
             {
@@ -99,15 +110,156 @@ namespace Carcassonne.Model
             }
         }
 
-        private void Score(IEnumerable<IPointContainer> changed)
+        private bool Draw()
         {
-            State = GameState.Score;
-            foreach (var pr in changed)
+            while (m_deck.Count > 0)
             {
-                if (pr.IsForcedOpened)
+                var unplacable = new List<Tile>();
+                var tile = m_deck.Pop();
+                foreach (Rotation rotation in Enum.GetValues(typeof(Rotation)))
                 {
-                    pr.IsForcedOpened = false;
+                    var rotated = new RotatedTile(tile, rotation);
+                    for (var y = Board.MinY - 1; y <= Board.MaxY + 1; y++)
+                    {
+                        for (var x = Board.MinX - 1; x <= Board.MaxX + 1; x++)
+                        {
+                            if (!TryFit(rotated, new Point(x, y))) continue;
+
+                            ActiveTile = tile;
+                            m_deck.ShuffleIn(unplacable);
+                            return true;
+                        }
+                    }
                 }
+                unplacable.Add(tile);
+            }
+
+            ActiveTile = NopTile.Instance;
+
+            return false;
+        }
+
+        public void Start()
+        {
+            State = GameState.NotStarted;
+            foreach (var player in Players)
+            {
+                player.Reset();
+                RuleSet.UpdatePlayer(player);
+            }
+            Shuffle();
+            Draw();
+            Board.Clear();
+            Place(ActiveTile, new Point(0, 0), new List<IPointContainer>());
+            NextPlayer();
+            Draw();
+            State = GameState.Place;
+        }
+
+        public void Play()
+        {
+            Start();
+            do
+            {
+                do
+                {
+                    var mv = ActivePlayer.GetMove(this);
+                    ApplyMove(mv.Location, mv.Rotation);
+                } while (State == GameState.Place);
+                // var changed = new List<IPointContainer>();
+                // bool placed;
+                // do
+                // {
+                //     if (!mv.IsEmpty)
+                //     {
+                //         placed = Place(mv, changed);
+                //     }
+                //     else
+                //     {
+                //         placed = true;
+                //         State = GameState.Discard;
+                //     }
+                // } while (!placed);
+
+                //TODO: Get available regions here (including closed ones on the most recently placed & possibly any open one, or removals, etc.
+                do
+                {
+                    var (c, meeple) = ActivePlayer.GetClaim(this);
+                    ApplyClaim(c, meeple);
+                } while (State == GameState.Claim);
+
+                //TODO: Collect closed regions with 
+                // bool claimed;
+                // do
+                // {
+                //     var (claim, type) = player.GetClaim(this);
+                //     if (claim.IsAvailable)
+                //     {
+                //         claimed = Claim(claim, type);
+                //     }
+                //     else
+                //     {
+                //         //Skip the claim state.
+                //         break;
+                //     }
+                // } while (!claimed);
+                Score();
+                NextTurn();
+            } while (State != GameState.End);
+            End();
+        }
+
+        public void Shuffle()
+        {
+            RuleSet.BeforeDeckShuffle(m_deck);
+            m_deck.Shuffle();
+            RuleSet.AfterDeckShuffle(m_deck);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void NextTurn()
+        {
+            if(State != GameState.Next) throw new InvalidOperationException($"Cannot Change Turn in State {State}!");
+
+            NextPlayer();
+            
+            State = Draw() ? GameState.Place : GameState.End;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void ApplyMove(Point location, Rotation rotation)
+        {
+            if(State != GameState.Place) throw new InvalidOperationException($"Cannot Place in State {State}!");
+            if (Place(new Move(location, rotation), new List<IPointContainer>()))
+            {
+                State = GameState.Claim;
+            }
+        }
+
+        public void ApplyClaim(IClaimable claim, MeepleType type)
+        {
+            if(State != GameState.Claim) throw new InvalidOperationException($"Cannot Claim in State {State}!");
+            State = GameState.Score;
+        }
+
+        public void Score()
+        {
+            if(State != GameState.Score) throw new InvalidOperationException($"Cannot Score in State {State}!");
+
+            var toScore = Board.Placements
+                .Select(p => p.Piece)
+                .SelectMany(t => t.Regions, (t, r) => r.Container)
+                .Union(Board.Placements.Select(p=>p.Piece.TileRegion).Where(tr => tr is IPointContainer).Cast<IPointContainer>())
+                .Distinct()
+                .Where(p => p.IsClosed && p.Owners.Any()).ToList();
+            Debug.WriteLine(toScore.Count);
+
+            foreach (var pr in toScore)
+            {
                 var score = RuleSet.GetScore(pr);
                 if (score <= 0) continue;
                 foreach (var o in pr.Owners)
@@ -116,362 +268,123 @@ namespace Carcassonne.Model
                 }
                 pr.ReturnMeeple();
             }
+
+            State = GameState.Next;
         }
 
-        private Tile Draw()
+        private bool Place(Move move, IList<IPointContainer> changed)
         {
-            if (m_deck.Count > 0)
-            {
-                var t = m_deck.Pop();
-                ActiveTile = t;
-            }
-            else
-            {
-                ActiveTile = Tile.None;
-            }
-            return ActiveTile;
-        }
-
-        private void Reset()
-        {
-            foreach (var player in Players)
-            {
-                player.Reset();
-                RuleSet.UpdatePlayer(player);
-            }
-            m_deck.Clear();
-            PopulateDeck();
-            Shuffle();
-            Board.Clear();
-            var useDefaultStart = m_expansions.All(exp => !exp.IgnoreDefaultStart);
-            if (useDefaultStart)
-            {
-                Place(m_defaultStartTile, new Point(0, 0));
-            }
-            State = GameState.NotStarted;
-        }
-
-        private void PopulateDeck()
-        {
-            var builder = new Tile.TileBuilder();
-            AddTile(1, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North, EdgeDirection.East, EdgeDirection.South, EdgeDirection.West)
-                .AddShield(EdgeDirection.North)
-                );
-            AddTile(1, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North, EdgeDirection.East, EdgeDirection.West)
-                .AddRoadRegion(EdgeDirection.South)
-                );
-            AddTile(2, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North, EdgeDirection.East, EdgeDirection.West)
-                .AddShield(EdgeDirection.North)
-                .AddRoadRegion(EdgeDirection.South)
-                );
-            AddTile(2, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North, EdgeDirection.East, EdgeDirection.West)
-                );
-            AddTile(1, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North, EdgeDirection.East, EdgeDirection.West)
-                .AddFlowers()
-                );
-            AddTile(1, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North, EdgeDirection.East, EdgeDirection.West)
-                .AddShield(EdgeDirection.North)
-                );
-            AddTile(3, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North, EdgeDirection.East)
-                .AddRoadRegion(EdgeDirection.South, EdgeDirection.West)
-                );
-            AddTile(1, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North, EdgeDirection.East)
-                .AddShield(EdgeDirection.North)
-                .AddRoadRegion(EdgeDirection.South, EdgeDirection.West)
-                );
-            AddTile(2, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North, EdgeDirection.East)
-                );
-            AddTile(1, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North, EdgeDirection.East)
-                .AddFlowers()
-                );
-            AddTile(1, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North, EdgeDirection.East)
-                .AddShield(EdgeDirection.North)
-                );
-            AddTile(2, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North, EdgeDirection.East)
-                .AddShield(EdgeDirection.North)
-                .AddFlowers()
-                );
-            AddTile(1, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North)
-                .AddCityRegion(EdgeDirection.West)
-                );
-            AddTile(1, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North)
-                .AddFlowers()
-                .AddCityRegion(EdgeDirection.West)
-                );
-            AddTile(1, builder.NewTile()
-                .AddCityRegion(EdgeDirection.East, EdgeDirection.West)
-                );
-            AddTile(2, builder.NewTile()
-                .AddCityRegion(EdgeDirection.East, EdgeDirection.West)
-                .AddShield(EdgeDirection.East)
-                );
-            AddTile(2, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North)
-                .AddCityRegion(EdgeDirection.South)
-                );
-            AddTile(1, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North)
-                .AddCityRegion(EdgeDirection.South)
-                .AddFlowers()
-                );
-            AddTile(3, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North)
-                .AddRoadRegion(EdgeDirection.East)
-                .AddRoadRegion(EdgeDirection.South)
-                .AddRoadRegion(EdgeDirection.West)
-                );
-            AddTile(3, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North)
-                .AddRoadRegion(EdgeDirection.South, EdgeDirection.West)
-                );
-            AddTile(3, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North)
-                .AddRoadRegion(EdgeDirection.East, EdgeDirection.South)
-                );
-            AddTile(3, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North)
-                .AddRoadRegion(EdgeDirection.East, EdgeDirection.West)
-                );
-            m_defaultStartTile = builder.Tile.TileClone();
-            AddTile(4, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North)
-                );
-            AddTile(1, builder.NewTile()
-                .AddCityRegion(EdgeDirection.North)
-                .AddFlowers()
-                );
-            AddTile(1, builder.NewTile()
-                .AddRoadRegion(EdgeDirection.North)
-                .AddRoadRegion(EdgeDirection.East)
-                .AddRoadRegion(EdgeDirection.South)
-                .AddRoadRegion(EdgeDirection.West)
-                );
-            AddTile(4, builder.NewTile()
-                .AddRoadRegion(EdgeDirection.East)
-                .AddRoadRegion(EdgeDirection.South)
-                .AddRoadRegion(EdgeDirection.West)
-                );
-            AddTile(8, builder.NewTile()
-                .AddRoadRegion(EdgeDirection.North, EdgeDirection.East)
-                );
-            AddTile(1, builder.NewTile()
-                .AddRoadRegion(EdgeDirection.North, EdgeDirection.East)
-                .AddFlowers()
-                );
-            AddTile(7, builder.NewTile()
-                .AddRoadRegion(EdgeDirection.North, EdgeDirection.South)
-                );
-            AddTile(1, builder.NewTile()
-                .AddRoadRegion(EdgeDirection.North, EdgeDirection.South)
-                .AddFlowers()
-                );
-            AddTile(4, builder.NewTile()
-                .AddMonastery()
-                );
-            AddTile(2, builder.NewTile()
-                .AddRoadRegion(EdgeDirection.South)
-                .AddMonastery()
-                );
-        }
-
-        public void Play()
-        {
-            Reset();
-            do
-            {
-                var player = NextPlayer();
-                if (player == NopPlayer.Instance) continue;
-                if (Draw() == Tile.None) break;
-
-                State = GameState.Place;
-                var changed = new List<IPointContainer>();
-                do
-                {
-                    var mv = player.GetMove(this);
-                    if (!mv.IsEmpty)
-                    {
-                        changed = Place(mv);
-                    }
-                    else
-                    {
-                        State = GameState.Discard;
-                        break;
-                    }
-                } while (changed.Count == 0);
-
-                if (State != GameState.Place) continue;
-                State = GameState.Claim;
-                //TODO: Get available regions here (including closed ones on the most recently placed & possibly any open one, or removals, etc.
-                //TODO: Implement claiming
-                bool claimed;
-                do
-                {
-                    var (claim, type) = player.GetClaim(this);
-                    if (claim.IsAvailable)
-                    {
-                        claimed = Claim(claim, type);
-                    }
-                    else
-                    {
-                        //Skip the claim state.
-                        break;
-                    }
-                } while (!claimed);
-                Score(changed);
-            } while (ActiveTile != Tile.None);
-            End();
-            State = GameState.End;
-        }
-
-        public void Shuffle()
-        {
-            foreach (var e in m_expansions)
-            {
-                e.BeforeDeckShuffle(m_deck);
-            }
-            // m_deck.Shuffle();
-            foreach (var e in m_expansions)
-            {
-                e.AfterDeckShuffle(m_deck);
-            }
-        }
-
-        private void AddTile(int count, Tile tile)
-        {
-            for (var i = 1; i < count; i++)
-            {
-                m_deck.Push(tile.TileClone());
-            }
-            m_deck.Push(tile);
-        }
-
-        private List<IPointContainer> Place(Move move)
-        {
-            var changed = new List<IPointContainer>();
             var tile = new RotatedTile(ActiveTile, move.Rotation);
-            if (TryFit(tile, move.Location))
-            {
-                changed = Place(tile, move.Location);
-            }
-            return changed;
+            if (!TryFit(tile, move.Location)) return false;
+            Place(tile, move.Location, changed);
+            return true;
         }
 
-        private List<IPointContainer> Place(ITile tile, Point location)
+        private void Place(ITile tile, Point location, ICollection<IPointContainer> changes)
         {
-            var available = Enum.GetValues(typeof(EdgeDirection)).Cast<EdgeDirection>().ToList();
-            var changedPointRegions = new List<IPointContainer>();
 
             Board.Add(new Placement<ITile>(tile, location));
-            if (tile.TileRegion is IPointContainer pc)
+
+            foreach (EdgeDirection dir in Enum.GetValues(typeof(EdgeDirection)))
             {
-                PointRegions.Add(pc);
-                changedPointRegions.Add(pc);
+                tile.Join(Board.GetNeighbor(location, dir), dir);
             }
-            var allNeighbors = Board.GetAllNeighbors(location);
-            foreach (var n in allNeighbors)
-            {
-                n.TileRegion.Add(tile);
-                if (n.TileRegion is IPointContainer container)
-                {
-                    changedPointRegions.Add(container);
-                }
-                tile.TileRegion.Add(n);
-            }
+            // var available = Enum.GetValues(typeof(EdgeDirection)).Cast<EdgeDirection>().ToList();
+            // if (tile.TileRegion is IPointContainer pc)
+            // {
+            //     PointRegions.Add(pc);
+            //     changes.Add(pc);
+            // }
+            // var allNeighbors = Board.GetAllNeighbors(location);
+            // foreach (var n in allNeighbors)
+            // {
+            //     n.TileRegion.Add(tile);
+            //     if (n.TileRegion is IPointContainer container)
+            //     {
+            //         changes.Add(container);
+            //     }
+            //     tile.TileRegion.Add(n);
+            // }
 //            var neighbors = Board.GetNeighbors(move.Location);
-            while (available.Count > 0)
-            {
-                var r = tile.GetRegion(available[0]);
-                if (r.Type != EdgeRegionType.Any && r.Type != EdgeRegionType.None)
-                {
-                    var containers = new List<IPointContainer>();
-                    foreach (var d in r.Edges)
-                    {
-                        var n = Board.GetNeighbor(location, d);
-                        var nr = n.GetRegion(d.Opposite());
-                        containers.Add(nr.Container);
-                        available.Remove(d);
-                    }
-                    if (containers.Count > 0 && containers[0] is PointRegion pr)
-                    {
-                        while (containers.Count > 1)
-                        {
-                            if (containers[1] is PointRegion dup)
-                            {
-                                pr.Merge(dup);
-                                if (PointRegions.Contains(dup))
-                                {
-                                    PointRegions.Remove(dup);
-                                }
-                            }
-                            containers.RemoveAt(1);
-                        }
-                        pr.Add(r);
-                        if (!PointRegions.Contains(pr))
-                        {
-                            PointRegions.Add(pr);
-                        }
-                        if (!changedPointRegions.Contains(pr))
-                        {
-                            changedPointRegions.Add(pr);
-                        }
-                    }
-                    else
-                    {
-                        switch (r.Type)
-                        {
-                            case EdgeRegionType.City:
-                                var cpr = new CityPointRegion();
-                                cpr.Add(r);
-                                PointRegions.Add(cpr);
-                                if (!changedPointRegions.Contains(cpr))
-                                {
-                                    changedPointRegions.Add(cpr);
-                                }
-                                break;
-                            case EdgeRegionType.None:
-                                break;
-                            case EdgeRegionType.River:
-                                break;
-                            case EdgeRegionType.Road:
-                                var rpr = new PointRegion(r.Type);
-                                rpr.Add(r);
-                                PointRegions.Add(rpr);
-                                if (!changedPointRegions.Contains(rpr))
-                                {
-                                    changedPointRegions.Add(rpr);
-                                }
-                                break;
-                            case EdgeRegionType.Any:
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
-                    }
-                }
-                else
-                {
-                    available.RemoveAt(0);
-                }
-            }
-            foreach (var r in changedPointRegions)
-            {
-                r.IsForcedOpened = true;
-            }
-            return changedPointRegions;
+            // while (available.Count > 0)
+            // {
+            //     var r = tile.GetRegion(available[0]);
+            //     if (r.Type.IsValid())
+            //     {
+            //         var containers = new List<IPointContainer>();
+            //         foreach (var d in r.Edges)
+            //         {
+            //             var nr = n.GetRegion(d.Opposite());
+            //             containers.Add(nr.Container);
+            //             available.Remove(d);
+            //         }
+            //         if (containers.Count > 0 && containers[0] is PointRegion pr)
+            //         {
+            //             while (containers.Count > 1)
+            //             {
+            //                 if (containers[1] is PointRegion dup)
+            //                 {
+            //                     pr.Merge(dup);
+            //                     if (PointRegions.Contains(dup))
+            //                     {
+            //                         PointRegions.Remove(dup);
+            //                     }
+            //                 }
+            //                 containers.RemoveAt(1);
+            //             }
+            //             pr.Add(r);
+            //             if (!PointRegions.Contains(pr))
+            //             {
+            //                 PointRegions.Add(pr);
+            //             }
+            //             if (!changes.Contains(pr))
+            //             {
+            //                 changes.Add(pr);
+            //             }
+            //         }
+            //         else
+            //         {
+            //             switch (r.Type)
+            //             {
+            //                 case EdgeRegionType.City:
+            //                     var cpr = new CityPointRegion();
+            //                     cpr.Add(r);
+            //                     PointRegions.Add(cpr);
+            //                     if (!changes.Contains(cpr))
+            //                     {
+            //                         changes.Add(cpr);
+            //                     }
+            //                     break;
+            //                 case EdgeRegionType.None:
+            //                     break;
+            //                 case EdgeRegionType.River:
+            //                     break;
+            //                 case EdgeRegionType.Road:
+            //                     var rpr = new PointRegion(r.Type);
+            //                     rpr.Add(r);
+            //                     PointRegions.Add(rpr);
+            //                     if (!changes.Contains(rpr))
+            //                     {
+            //                         changes.Add(rpr);
+            //                     }
+            //                     break;
+            //                 case EdgeRegionType.Any:
+            //                     break;
+            //                 default:
+            //                     throw new ArgumentOutOfRangeException();
+            //             }
+            //         }
+            //     }
+            //     else
+            //     {
+            //         available.RemoveAt(0);
+            //     }
+            // }
+            // foreach (var r in changes)
+            // {
+            //     //TODO: Better way to keep a newly placed region open for placement.
+            //     r.IsForcedOpened = true;
+            // }
         }
 
         /// <summary>

@@ -7,6 +7,7 @@
     xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
     xmlns:vm="clr-namespace:Carcassonne.WPF.ViewModel"
     xmlns:model="clr-namespace:Carcassonne.Model;assembly=Carcassonne.Model"
+    xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
     Title="Carcasonne">
     <Window.Resources>
         <DataTemplate DataType="{x:Type vm:MeepleViewModel}">
@@ -69,20 +70,6 @@
                 </ListBox.Resources>
             </ListBox>
         </StackPanel>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{Binding DeckViewModel}" >
-                <ItemsControl.Resources>
-                    <DataTemplate DataType="{x:Type vm:PlacementViewModel}">
-                        <local:TileView Width="100" Height="100" />
-                    </DataTemplate>
-                </ItemsControl.Resources>
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid Columns="8"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        </ScrollViewer>
         <ScrollViewer Name="SvGameField" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <ItemsControl DataContext="{Binding BoardViewModel}" x:Name="GameField"
                           HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -94,11 +81,11 @@
                                 <i:EventTrigger EventName="OverCell">
                                     <cmd:EventToCommand Command="{Binding MoveCommand}" PassEventArgsToCommand="True"/>
                                 </i:EventTrigger>
-                                <i:EventTrigger EventName="MouseLeftButtonUp">
-                                    <cmd:EventToCommand Command="{Binding PlaceCommand}"/>
+                                <i:EventTrigger EventName="LeftClick">
+                                    <cmd:EventToCommand Command="{Binding LeftButtonCommand}"/>
                                 </i:EventTrigger>
-                                <i:EventTrigger EventName="MouseRightButtonUp">
-                                    <cmd:EventToCommand Command="{Binding RotateCommand}"/>
+                                <i:EventTrigger EventName="RightClick">
+                                    <cmd:EventToCommand Command="{Binding RightButtonCommand}"/>
                                 </i:EventTrigger>
                             </i:Interaction.Triggers>
                         </base:DynamicGrid>

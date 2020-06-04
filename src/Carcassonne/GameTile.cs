@@ -37,8 +37,8 @@ namespace Carcassonne
             }
         }
 
-        private Tile m_tile = Tile.None;
-        public Tile Tile
+        private ITile m_tile = NopTile.Instance;
+        public ITile Tile
         {
             get => m_tile;
             set
@@ -67,7 +67,7 @@ namespace Carcassonne
                 Size.Width - Padding.Left - Padding.Right,
                 Size.Height - Padding.Top - Padding.Bottom);
             m_renderers.Clear();
-            if (Tile != Tile.None)
+            if (Tile != NopTile.Instance)
             {
                 m_renderers.Add(new BackgroundRenderer(canvas, Color.DarkGreen));
                 var done = new List<EdgeDirection>();
@@ -504,9 +504,9 @@ namespace Carcassonne
         private sealed class MonasteryRegionRenderer : TileRenderer
         {
             private const float MonasterySize = 0.4f;
-            private readonly Tile m_parent;
+            private readonly ITile m_parent;
 
-            public MonasteryRegionRenderer(RectangleF canvas, Tile parent)
+            public MonasteryRegionRenderer(RectangleF canvas, ITile parent)
                 : base(null)
             {
                 m_parent = parent;
@@ -538,9 +538,9 @@ namespace Carcassonne
             private const float FlowerOffsetSingle = 0.05f;
             private const float FlowerOffsetDual = 0.175f;
             private const float FlowerSize = 0.15f;
-            private readonly Tile m_parent;
+            private readonly ITile m_parent;
 
-            public FlowerRegionRenderer(RectangleF canvas, Tile parent)
+            public FlowerRegionRenderer(RectangleF canvas, ITile parent)
                 : base(null)
             {
                 m_parent = parent;
