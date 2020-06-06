@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Input;
 using System.Windows.Media;
 using Carcassonne.Model;
@@ -47,20 +48,26 @@ namespace Carcassonne.WPF.ViewModel
             Game.ActiveTileChanged += Game_ActiveTileChanged;
             Game.GameStateChanged += Game_GameStateChanged;
             PlayerViewModels = new DispatchedMappingCollection<PlayerViewModel, IPlayer>(Game.Players);
-            // DeckViewModel = new DispatchedObservableList<PlacementViewModel>(/*m_dispatcher, */new ObservableList<PlacementViewModel>());
+            var cards = new ObservableList<ITile>();
+            Game.Shuffle();
+            Game.DumpDeck(cards);
+            DeckViewModel = new DispatchedMappingCollection<PlacementViewModel, ITile>(cards, BoardViewModel);
         }
+        public DispatchedMappingCollection<PlacementViewModel, ITile> DeckViewModel { get; }
 
         private void Game_GameStateChanged(object sender, ChangedValueArgs<GameState> e)
         {
             switch (e.NewVal)
             {
                 case GameState.Claim:
+                    BoardViewModel.MonitorMouse = false;
                     m_active = m_defaultPlacement;
                     BoardViewModel.ClearActiveTile();
                     BoardViewModel.LeftButtonCommand = m_claimCommand;
                     BoardViewModel.RightButtonCommand = m_chooseMeepleCommand;
                     break;
                 case GameState.Place:
+                    BoardViewModel.MonitorMouse = true;
                     BoardViewModel.LeftButtonCommand = m_placeCommand;
                     BoardViewModel.RightButtonCommand = m_rotateCommand;
                     break;
@@ -82,9 +89,15 @@ namespace Carcassonne.WPF.ViewModel
             }
         }
 
+        // TODO: Highlight meeple & allow claiming of closed regions on active tile. 
         private void Game_ActiveTileChanged(object sender, ChangedValueArgs<ITile> e)
         {
             m_active = new PlacementViewModel(e.NewVal, BoardViewModel);
+            var meeple = ActivePlayerViewModel.MeepleViewModels.ToList();
+            if (meeple.Count > 0)
+            {
+                m_active.SetMeeple(meeple[0]);
+            }
             BoardViewModel.SetActivePlacement(m_active);
         }
 

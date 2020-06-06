@@ -15,7 +15,6 @@
             <Setter Property="Visibility" Value="{Binding FullVisibility, FallbackValue=Hidden}"/>
         </Style>
         <Style x:Key ="CityShape"  TargetType="{x:Type Shape}">
-<!--            <EventSetter Event="MouseEnter" Handler="setActiveElement"/>-->
             <Setter Property="Fill" Value="{Binding Fill, FallbackValue=Transparent}"/>
             <Setter Property="Visibility" Value="{Binding CityVisibility, FallbackValue=Hidden}"/>
         </Style>
@@ -23,17 +22,15 @@
             <Setter Property="Visibility" Value="{Binding PathVisibility, FallbackValue=Hidden}"/>
         </Style>
         <Style x:Key ="RoadEndShape"  TargetType="{x:Type Shape}" BasedOn="{StaticResource CityShape}">
-<!--            <EventSetter Event="MouseEnter" Handler="clearActiveElement"/>-->
-            <Setter Property="Visibility" Value="{Binding RoadEndVisibility, FallbackValue=Hidden}"/>
+            <Setter Property="Visibility" Value="{Binding RoadVisibility, FallbackValue=Hidden}"/>
             <Setter Property="Fill" Value="Black"/>
             <Setter Property="Height" Value="30"/>
             <Setter Property="Width" Value="30"/>
         </Style>
         <Style x:Key ="RiverEndShape"  TargetType="{x:Type Shape}" BasedOn="{StaticResource CityShape}">
-            <Setter Property="Visibility" Value="{Binding RiverEndVisibility, FallbackValue=Hidden}"/>
+            <Setter Property="Visibility" Value="{Binding RiverVisibility, FallbackValue=Hidden}"/>
         </Style>
         <Style x:Key ="MonasteryGrid"  TargetType="{x:Type Grid}" BasedOn="{StaticResource RegionGrid}">
-<!--            <EventSetter Event="MouseEnter" Handler="setActiveElement"/>-->
             <Setter Property="Visibility" Value="{Binding MonasteryVisibility, FallbackValue=Hidden}"/>
             <Setter Property="Background" Value="DarkRed"/>
         </Style>
@@ -50,7 +47,7 @@
     </UserControl.Resources>
     <Viewbox RenderTransformOrigin="0.5,0.5">
         <Viewbox.Resources>
-            <Style TargetType="{x:Type local:PlayerAvatarControl}">
+            <Style TargetType="{x:Type local:MeepleView}">
                 <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
                 <Setter Property="RenderTransform">
                     <Setter.Value>
@@ -63,137 +60,330 @@
             <RotateTransform Angle="{Binding RotationAngle}"/>
         </Viewbox.RenderTransform>
         <Grid Width="150" Height="150">
-            <Rectangle Name="RGrass" Fill="DarkGreen" MouseEnter="ClearActiveElement"/>
+            <Rectangle Name="RGrass" Fill="DarkGreen">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="PreviewMouseMove">
+                        <cmd:EventToCommand Command="{Binding ClearCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Rectangle>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding AllDataContext}">
                 <Rectangle Style="{StaticResource CityShape}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </Rectangle>
-                <Polygon Margin="25,25,0,0" Style="{StaticResource ShieldPolygon}"/>
+                <Polygon Margin="25,25,0,0" Style="{StaticResource ShieldPolygon}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Polygon>
+                <!-- City -->
+                <local:MeepleView Margin="55" DataContext="{Binding CityMeeple}" Grid.ZIndex="10"/>
+                <!-- Monastery -->
+                <local:MeepleView Margin="55" DataContext="{Binding MonasteryMeeple}" Grid.ZIndex="10"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthDataContext}">
                 <Polygon Margin="0,0,0,125" Style="{StaticResource CityShape}"
-                 Points="0,0 15,10 30,17 45,21 60,24 75,25 90,24 105,21 120,17 135,10 150,0"/>
-                <Rectangle Margin="65,0,65,90" Style="{StaticResource PathShape}"/>
-                <Ellipse Margin="25" Style="{StaticResource RiverEndShape}"/>
-                <Rectangle Style="{StaticResource RoadEndShape}"/>
-                <Rectangle Margin="62.5" Style="{StaticResource FlowerRectangle}"/>
+                    Points="0,0 15,10 30,17 45,21 60,24 75,25 90,24 105,21 120,17 135,10 150,0">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Polygon>
+                <Rectangle Margin="65,0,65,90" Style="{StaticResource PathShape}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Rectangle>
+                <Ellipse Margin="25" Style="{StaticResource RiverEndShape}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Ellipse>
+                <Rectangle Style="{StaticResource RoadEndShape}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Rectangle>
+                <Rectangle Margin="62.5" Style="{StaticResource FlowerRectangle}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Rectangle>
+                <!-- Road -->
+                <local:MeepleView Margin="55,0,55,110" DataContext="{Binding RoadMeeple}" Grid.ZIndex="10"/>
+                <!-- City -->
+                <local:MeepleView Margin="55,0,55,110" DataContext="{Binding CityMeeple}" Grid.ZIndex="10"/>
+                <!-- Flower -->
+                <local:MeepleView Margin="55" DataContext="{Binding FlowerMeeple}" Grid.ZIndex="10"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding EastDataContext}">
                 <Polygon Style="{StaticResource CityShape}"
-                 Points="150,0 140,15 133,30 129,45 126,60 125,75 126,90 129,105 133,120 140,135 150,150" />
-                <Rectangle Margin="90,65,0,65" Style="{StaticResource PathShape}"/>
-                <Rectangle Style="{StaticResource RoadEndShape}"/>
+                 Points="150,0 140,15 133,30 129,45 126,60 125,75 126,90 129,105 133,120 140,135 150,150">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Polygon>
+                <Rectangle Margin="90,65,0,65" Style="{StaticResource PathShape}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Rectangle>
+                <Rectangle Style="{StaticResource RoadEndShape}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Rectangle>
+                <!-- Road -->
+                <local:MeepleView Margin="110,55,0,55" DataContext="{Binding RoadMeeple}" Grid.ZIndex="10"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding SouthDataContext}">
                 <Polygon Margin="0,125,0,0" Style="{StaticResource CityShape}"
-                 Points="0,25 15,15 30,8 45,4 60,1 75,0 90,1 105,4 120,8 135,15 150,25"/>
-                <Rectangle Margin="65,90,65,0" Style="{StaticResource PathShape}"/>
-                <Ellipse Margin="50" Style="{StaticResource RiverEndShape}"/>
-                <Rectangle Style="{StaticResource RoadEndShape}"/>
+                 Points="0,25 15,15 30,8 45,4 60,1 75,0 90,1 105,4 120,8 135,15 150,25">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Polygon>
+                <Rectangle Margin="65,90,65,0" Style="{StaticResource PathShape}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Rectangle>
+                <Ellipse Margin="50" Style="{StaticResource RiverEndShape}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Ellipse>
+                <Rectangle Style="{StaticResource RoadEndShape}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Rectangle>
+                <!-- Road -->
+                <local:MeepleView Margin="55,110,55,0" DataContext="{Binding RoadMeeple}" Grid.ZIndex="10"/>
+                <!-- City -->
+                <local:MeepleView Margin="55,110,55,0" DataContext="{Binding CityMeeple}" Grid.ZIndex="10"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding WestDataContext}">
                 <Polygon Style="{StaticResource CityShape}"
-                 Points="0,0 10,15 17,30 21,45 24,60 25,75 24,90 21,105 17,120 10,135 0,150"/>
-                <Rectangle Margin="0,65,90,65" Canvas.Top="65" Style="{StaticResource PathShape}"/>
-                <Rectangle Style="{StaticResource RoadEndShape}"/>
+                 Points="0,0 10,15 17,30 21,45 24,60 25,75 24,90 21,105 17,120 10,135 0,150">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Polygon>
+                <Rectangle Margin="0,65,90,65" Canvas.Top="65" Style="{StaticResource PathShape}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Rectangle>
+                <Rectangle Style="{StaticResource RoadEndShape}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Rectangle>
+                <!-- Road -->
+                <local:MeepleView Margin="0,55,110,55" DataContext="{Binding RoadMeeple}" Grid.ZIndex="10"/>
+                <!-- City -->
+                <local:MeepleView Margin="0,55,110,55" DataContext="{Binding CityMeeple}" Grid.ZIndex="10"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding EastWestDataContext}">
                 <Polygon Name="PgEastWest" Style="{StaticResource CityShape}"
                  Points="0,0 15,10 30,17 45,21 60,24 75,25 90,24 105,21 120,17 135,10 150,0
-                         150,150 135,140 120,133 105,129 90,126 75,125 60,126 45,129 30,133 15,140 0,150"/>
-                <Polygon Margin="25,35,0,0" Style="{StaticResource ShieldPolygon}"/>
-                <Rectangle Margin="0,65" Style="{StaticResource PathShape}"/>
+                         150,150 135,140 120,133 105,129 90,126 75,125 60,126 45,129 30,133 15,140 0,150">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Polygon>
+                <Polygon Margin="25,35,0,0" Style="{StaticResource ShieldPolygon}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Polygon>
+                <Rectangle Margin="0,65" Style="{StaticResource PathShape}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Rectangle>
+                <!-- Road -->
+                <local:MeepleView Margin="55" DataContext="{Binding RoadMeeple}" Grid.ZIndex="10"/>
+                <!-- City -->
+                <local:MeepleView Margin="55" DataContext="{Binding CityMeeple}" Grid.ZIndex="10"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthSouthDataContext}">
                 <Polygon Style="{StaticResource CityShape}"
                  Points="150,0 140,15 133,30 129,45 126,60 125,75 126,90 129,105 133,120 140,135 150,150
-                         0,150 10,135 17,120 21,105 24,90 25,75 24,60 21,45 17,30 10,15 0,0 "/>
-                <Rectangle Margin="65,0" Style="{StaticResource PathShape}"/>
-                <Rectangle Margin="20,62.5,105,62.5" Style="{StaticResource FlowerRectangle}"/>
+                         0,150 10,135 17,120 21,105 24,90 25,75 24,60 21,45 17,30 10,15 0,0 ">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Polygon>
+                <Rectangle Margin="65,0" Style="{StaticResource PathShape}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Rectangle>
+                <Rectangle Margin="20,62.5,105,62.5" Style="{StaticResource FlowerRectangle}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Rectangle>
+                <!-- Road -->
+                <local:MeepleView Margin="55" DataContext="{Binding RoadMeeple}" Grid.ZIndex="10"/>
+                <!-- Flower -->
+                <local:MeepleView Margin="12,55,98,55" DataContext="{Binding FlowerMeeple}" Grid.ZIndex="10"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthEastDataContext}">
-                <Polygon Style="{StaticResource CityShape}" Points="0,0 150,0 150,150"/>
-                <Polygon Margin="85,25,0,0" Style="{StaticResource ShieldPolygon}"/>
-                <Polygon Margin="65,0,0,0" Points="0,0 20,0 85,65 85,85" Style="{StaticResource PathShape}"/>
-                <Rectangle Margin="27.5,92.5,97.5,32.5" Style="{StaticResource FlowerRectangle}"/>
+                <Polygon Style="{StaticResource CityShape}" Points="0,0 150,0 150,150">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Polygon>
+                <Polygon Margin="85,25,0,0" Style="{StaticResource ShieldPolygon}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Polygon>
+                <Polygon Margin="65,0,0,0" Points="0,0 20,0 85,65 85,85" Style="{StaticResource PathShape}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Polygon>
+                <Rectangle Margin="27.5,92.5,97.5,32.5" Style="{StaticResource FlowerRectangle}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Rectangle>
+                <!-- Road -->
+                <local:MeepleView Margin="90,15,20,95" DataContext="{Binding RoadMeeple}" Grid.ZIndex="10"/>
+                <!-- City -->
+                <local:MeepleView Margin="90,15,20,95" DataContext="{Binding CityMeeple}" Grid.ZIndex="10"/>
+                <!-- Flower -->
+                <local:MeepleView Margin="20,82.5,90,27.5" DataContext="{Binding FlowerMeeple}" Grid.ZIndex="10"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding EastSouthDataContext}">
-                <Polygon Points="150,0 150,150 0,150" Style="{StaticResource CityShape}"/>
-                <Polygon Margin="65,65,0,0" Points="85,0 85,20 20,85 0,85" Style="{StaticResource PathShape}"/>
+                <Polygon Points="150,0 150,150 0,150" Style="{StaticResource CityShape}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Polygon>
+                <Polygon Margin="65,65,0,0" Points="85,0 85,20 20,85 0,85" Style="{StaticResource PathShape}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Polygon>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding SouthWestDataContext}">
-                <Polygon Points="0,0 150,150 0,150" Style="{StaticResource CityShape}"/>
-                <Polygon Margin="0,65,0,0" Points="0,0 0,20 65,85 85,85" Style="{StaticResource PathShape}"/>
+                <Polygon Points="0,0 150,150 0,150" Style="{StaticResource CityShape}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Polygon>
+                <Polygon Margin="0,65,0,0" Points="0,0 0,20 65,85 85,85" Style="{StaticResource PathShape}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Polygon>
+                <!-- Road -->
+                <local:MeepleView Margin="20,95,90,15" DataContext="{Binding RoadMeeple}" Grid.ZIndex="10"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthEastWestDataContext}">
                 <Polygon Style="{StaticResource CityShape}"
-                 Points="0,0 150,0 150,150 135,140 120,133 105,129 90,126 75,125 60,126 45,129 30,133 15,140 0,150"/>
-                <Polygon Margin="25,25,0,0" Style="{StaticResource ShieldPolygon}"/>
-                <Rectangle Margin="62.5,125,62.5,0" Style="{StaticResource FlowerRectangle}"/>
+                 Points="0,0 150,0 150,150 135,140 120,133 105,129 90,126 75,125 60,126 45,129 30,133 15,140 0,150">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Polygon>
+                <Polygon Margin="25,25,0,0" Style="{StaticResource ShieldPolygon}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Polygon>
+                <Rectangle Margin="62.5,125,62.5,0" Style="{StaticResource FlowerRectangle}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseMove">
+                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Rectangle>
+                <!-- City -->
+                <local:MeepleView Margin="55,40,55,70" DataContext="{Binding CityMeeple}" Grid.ZIndex="10"/>
+                <!-- Flower -->
+                <local:MeepleView Margin="55,110,55,0" DataContext="{Binding FlowerMeeple}" Grid.ZIndex="10"/>
             </Grid>
             <Grid Style="{StaticResource MonasteryGrid}" DataContext="{Binding AllDataContext}" Margin="35">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="PreviewMouseMove">
+                        <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
                 <Polygon Margin="20,10" Fill="Black"
-                        Points="15,0 25,0 25,15 40,15 40,25, 25,25 25,60, 15,60 15,25 0,25 0,15 15,15"/>
-            </Grid>
-            <!-- Meeple -->
-            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthDataContext}">
-                <!-- Road -->
-                <local:PlayerAvatarControl Margin="55,0,55,110" Visibility="{Binding RoadVisibility, FallbackValue=Hidden}"/>
-                <!-- City -->
-                <local:PlayerAvatarControl Margin="55,0,55,110" Visibility="{Binding CityVisibility, FallbackValue=Hidden}"/>
-                <!-- Flower -->
-                <local:PlayerAvatarControl Margin="55" Visibility="{Binding FlowerVisibility, FallbackValue=Hidden}"/>
-            </Grid>
-            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding EastDataContext}">
-                <!-- Road -->
-                <local:PlayerAvatarControl Margin="110,55,0,55" Visibility="{Binding RoadVisibility, FallbackValue=Hidden}"/>
-            </Grid>
-            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding SouthDataContext}">
-                <!-- Road -->
-                <local:PlayerAvatarControl Margin="55,110,55,0" Visibility="{Binding RoadVisibility, FallbackValue=Hidden}"/>
-                <!-- City -->
-                <local:PlayerAvatarControl Margin="55,110,55,0" Visibility="{Binding CityVisibility, FallbackValue=Hidden}"/>
-            </Grid>
-            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding WestDataContext}">
-                <!-- Road -->
-                <local:PlayerAvatarControl Margin="0,55,110,55" Visibility="{Binding RoadVisibility, FallbackValue=Hidden}"/>
-                <!-- City -->
-                <local:PlayerAvatarControl Margin="0,55,110,55" Visibility="{Binding CityVisibility, FallbackValue=Hidden}"/>
-            </Grid>
-            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding EastWestDataContext}">
-                <!-- Road -->
-                <local:PlayerAvatarControl Margin="55" Visibility="{Binding RoadVisibility, FallbackValue=Hidden}"/>
-                <!-- City -->
-                <local:PlayerAvatarControl Margin="55" Visibility="{Binding CityVisibility, FallbackValue=Hidden}"/>
-            </Grid>
-            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthSouthDataContext}">
-                <!-- Road -->
-                <local:PlayerAvatarControl Margin="55" Visibility="{Binding RoadVisibility, FallbackValue=Hidden}"/>
-                <!-- Flower -->
-                <local:PlayerAvatarControl Margin="12,55,98,55" Visibility="{Binding FlowerVisibility, FallbackValue=Hidden}"/>
-            </Grid>
-            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthEastDataContext}">
-                <!-- Road -->
-                <local:PlayerAvatarControl Margin="90,15,20,95" Visibility="{Binding RoadVisibility, FallbackValue=Hidden}"/>
-                <!-- City -->
-                <local:PlayerAvatarControl Margin="90,15,20,95" Visibility="{Binding CityVisibility, FallbackValue=Hidden}"/>
-                <!-- Flower -->
-                <local:PlayerAvatarControl Margin="20,82.5,90,27.5" Visibility="{Binding FlowerVisibility, FallbackValue=Hidden}"/>
-            </Grid>
-            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding SouthWestDataContext}">
-                <!-- Road -->
-                <local:PlayerAvatarControl Margin="20,95,90,15" Visibility="{Binding RoadVisibility, FallbackValue=Hidden}"/>
-            </Grid>
-            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthEastWestDataContext}">
-                <!-- City -->
-                <local:PlayerAvatarControl Margin="55,40,55,70" Visibility="{Binding CityVisibility, FallbackValue=Hidden}"/>
-                <!-- Flower -->
-                <local:PlayerAvatarControl Margin="55,110,55,0" Visibility="{Binding FlowerVisibility, FallbackValue=Hidden}"/>
-            </Grid>
-            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding AllDataContext}">
-                <!-- City -->
-                <local:PlayerAvatarControl Margin="55" Visibility="{Binding CityVisibility, FallbackValue=Hidden}"/>
-                <!-- Monastery -->
-                <local:PlayerAvatarControl Margin="55" Visibility="{Binding MonasteryVisibility, FallbackValue=Hidden}"/>
+                         Points="15,0 25,0 25,15 40,15 40,25, 25,25 25,60, 15,60 15,25 0,25 0,15 15,15"/>
             </Grid>
         </Grid>
     </Viewbox>

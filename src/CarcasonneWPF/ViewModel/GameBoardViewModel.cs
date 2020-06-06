@@ -227,6 +227,18 @@ namespace Carcassonne.WPF.ViewModel
 
         public ICommand MoveCommand { get; set; } = NopCommand;
 
+        private bool m_monitorMouse = true;
+
+        public bool MonitorMouse
+        {
+            get => m_monitorMouse;
+            set
+            {
+                m_monitorMouse = value;
+                NotifyPropertyChanged(nameof(MonitorMouse));
+            }
+        }
+        
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -246,23 +258,5 @@ namespace Carcassonne.WPF.ViewModel
         }
 
         #endregion
-
-        // internal bool IsBackground(PlacementViewModel pvm)
-        // {
-        //     return m_grid.Contains(pvm);
-        // }
-        // internal bool IsForeground(PlacementViewModel pvm)
-        // {
-        //     return m_active.Contains(pvm);
-        // }
-    }
-    public class PlaceEventArgs : EventArgs
-    {
-        public PlaceEventArgs(ITile tile, Point location)
-        {
-            Move = new Move(location, (tile is RotatedTile rt) ? rt.Rotation : Rotation.None);
-        }
-
-        public Move Move { get; }
     }
 }

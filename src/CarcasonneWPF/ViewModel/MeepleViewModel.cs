@@ -5,47 +5,34 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Carcassonne.Model;
+using GameBase.WPF.ViewModel;
 
 namespace Carcassonne.WPF.ViewModel
 {
     public class MeepleViewModel: INotifyPropertyChanged
     {
-        protected readonly Dispatcher Dispatcher;
-        protected readonly IMeeple Meeple;
+        private IMeeple m_meeple = new Meeple(MeepleType.None, NopPlayer.Instance);
 
         public MeepleViewModel(IMeeple meeple)
         {
-            Dispatcher = Application.Current.Dispatcher;
             PropertyChanged += (sender, args) => { };
-            Meeple = meeple;
+            m_meeple = meeple;
             Stroke.Freeze();
         }
 
-        public Brush Fill => PlayerViewModel.ColorsForName[Meeple.Player.Name];
+        public Brush Fill => new SolidColorBrush(Colors.Chartreuse);// PlayerViewModel.ColorsForName[m_meeple.Player.Name];
         public Brush Stroke => new SolidColorBrush(Colors.Transparent);
 
-        public Visibility MeepleVisibility
-        {
-            get
-            {
-                if (Meeple.Type == MeepleType.Meeple)
-                {
-                    return Visibility.Visible;
-                }
-                return Visibility.Hidden;
-            }
-        }
+        public Visibility MeepleVisibility => Visibility.Visible;// (m_meeple.Type == MeepleType.Meeple).ToVisibility();
 
-        public Visibility AbbotVisibility
+        public Visibility AbbotVisibility => (m_meeple.Type == MeepleType.Abbot).ToVisibility();
+
+        public void SetMeeple(Meeple meeple)
         {
-            get
-            {
-                if (Meeple.Type == MeepleType.Abbot)
-                {
-                    return Visibility.Visible;
-                }
-                return Visibility.Hidden;
-            }
+            m_meeple = meeple;
+            NotifyPropertyChanged(nameof(Fill));
+            NotifyPropertyChanged(nameof(MeepleVisibility));
+            NotifyPropertyChanged(nameof(AbbotVisibility));
         }
 
         #region INotifyPropertyChanged Members
@@ -54,16 +41,7 @@ namespace Carcassonne.WPF.ViewModel
 
         protected void NotifyPropertyChanged(string name)
         {
-            if (Dispatcher.CheckAccess())
-            {
-                Debug.WriteLine($"MeepleViewModel.PropChanged {name}");
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-            }
-            else
-            {
-                Debug.WriteLine($"Invoke MeepleViewModel.PropChanged {name}");
-                Dispatcher.Invoke(new Action<string>(NotifyPropertyChanged), name);
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         #endregion

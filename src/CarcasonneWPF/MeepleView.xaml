@@ -1,8 +1,7 @@
 ﻿<UserControl x:Class="Carcassonne.WPF.MeepleView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:base="clr-namespace:GameBase.WPF;assembly=GameBase.WPF"
-    xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase">
+    xmlns:base="clr-namespace:GameBase.WPF;assembly=GameBase.WPF">
     <UserControl.Resources>
         <Style x:Key="MeepleMarkerPolygon" TargetType="{x:Type Polygon}">
             <Setter Property="Fill" Value="{Binding Fill}"/>
@@ -12,10 +11,6 @@
         <Canvas Name="Canvas">
             <Canvas.RenderTransform>
                 <TransformGroup>
-<!--                    <RotateTransform
-                                Angle="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:MeepleControl}}, Path=Angle}"
-                                CenterX="{Binding ElementName=SizeBase, Path=ActualWidth, Converter={local:MathConverter}, ConverterParameter=@value/2}"
-                                CenterY="{Binding ElementName=SizeBase, Path=ActualHeight, Converter={local:MathConverter}, ConverterParameter=@value/2}"/>-->
                     <ScaleTransform>
                         <ScaleTransform.ScaleX>
                             <MultiBinding Converter="{base:DoubleFormulaConverter}" ConverterParameter="A,B:A/B">

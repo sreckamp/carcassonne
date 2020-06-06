@@ -70,6 +70,14 @@ namespace Carcassonne.Model
             }
         }
 
+        public void DumpDeck(IList<ITile> target)
+        {
+            while (m_deck.Count > 0)
+            {
+                target.Add(m_deck.Pop());
+            }
+        }
+
         public event EventHandler<ChangedValueArgs<IPlayer>> ActivePlayerChanged;
         private int m_activePlayerIndex = int.MinValue;
         public IPlayer ActivePlayer => m_activePlayerIndex >= 0 ? Players[m_activePlayerIndex] : NopPlayer.Instance;
