@@ -82,10 +82,6 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Polygon>
-                <!-- City -->
-                <local:MeepleView Margin="55" DataContext="{Binding CityMeeple}" Grid.ZIndex="10"/>
-                <!-- Monastery -->
-                <local:MeepleView Margin="55" DataContext="{Binding MonasteryMeeple}" Grid.ZIndex="10"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthDataContext}">
                 <Polygon Margin="0,0,0,125" Style="{StaticResource CityShape}"
@@ -113,7 +109,7 @@
                 <Rectangle Style="{StaticResource RoadEndShape}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding ClearCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Rectangle>
@@ -124,12 +120,6 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Rectangle>
-                <!-- Road -->
-                <local:MeepleView Margin="55,0,55,110" DataContext="{Binding RoadMeeple}" Grid.ZIndex="10"/>
-                <!-- City -->
-                <local:MeepleView Margin="55,0,55,110" DataContext="{Binding CityMeeple}" Grid.ZIndex="10"/>
-                <!-- Flower -->
-                <local:MeepleView Margin="55" DataContext="{Binding FlowerMeeple}" Grid.ZIndex="10"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding EastDataContext}">
                 <Polygon Style="{StaticResource CityShape}"
@@ -150,12 +140,10 @@
                 <Rectangle Style="{StaticResource RoadEndShape}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding ClearCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Rectangle>
-                <!-- Road -->
-                <local:MeepleView Margin="110,55,0,55" DataContext="{Binding RoadMeeple}" Grid.ZIndex="10"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding SouthDataContext}">
                 <Polygon Margin="0,125,0,0" Style="{StaticResource CityShape}"
@@ -183,14 +171,10 @@
                 <Rectangle Style="{StaticResource RoadEndShape}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding ClearCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Rectangle>
-                <!-- Road -->
-                <local:MeepleView Margin="55,110,55,0" DataContext="{Binding RoadMeeple}" Grid.ZIndex="10"/>
-                <!-- City -->
-                <local:MeepleView Margin="55,110,55,0" DataContext="{Binding CityMeeple}" Grid.ZIndex="10"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding WestDataContext}">
                 <Polygon Style="{StaticResource CityShape}"
@@ -211,14 +195,10 @@
                 <Rectangle Style="{StaticResource RoadEndShape}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding ClearCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Rectangle>
-                <!-- Road -->
-                <local:MeepleView Margin="0,55,110,55" DataContext="{Binding RoadMeeple}" Grid.ZIndex="10"/>
-                <!-- City -->
-                <local:MeepleView Margin="0,55,110,55" DataContext="{Binding CityMeeple}" Grid.ZIndex="10"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding EastWestDataContext}">
                 <Polygon Name="PgEastWest" Style="{StaticResource CityShape}"
@@ -244,10 +224,6 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Rectangle>
-                <!-- Road -->
-                <local:MeepleView Margin="55" DataContext="{Binding RoadMeeple}" Grid.ZIndex="10"/>
-                <!-- City -->
-                <local:MeepleView Margin="55" DataContext="{Binding CityMeeple}" Grid.ZIndex="10"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthSouthDataContext}">
                 <Polygon Style="{StaticResource CityShape}"
@@ -273,10 +249,6 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Rectangle>
-                <!-- Road -->
-                <local:MeepleView Margin="55" DataContext="{Binding RoadMeeple}" Grid.ZIndex="10"/>
-                <!-- Flower -->
-                <local:MeepleView Margin="12,55,98,55" DataContext="{Binding FlowerMeeple}" Grid.ZIndex="10"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthEastDataContext}">
                 <Polygon Style="{StaticResource CityShape}" Points="0,0 150,0 150,150">
@@ -307,12 +279,6 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Rectangle>
-                <!-- Road -->
-                <local:MeepleView Margin="90,15,20,95" DataContext="{Binding RoadMeeple}" Grid.ZIndex="10"/>
-                <!-- City -->
-                <local:MeepleView Margin="90,15,20,95" DataContext="{Binding CityMeeple}" Grid.ZIndex="10"/>
-                <!-- Flower -->
-                <local:MeepleView Margin="20,82.5,90,27.5" DataContext="{Binding FlowerMeeple}" Grid.ZIndex="10"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding EastSouthDataContext}">
                 <Polygon Points="150,0 150,150 0,150" Style="{StaticResource CityShape}">
@@ -345,8 +311,6 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Polygon>
-                <!-- Road -->
-                <local:MeepleView Margin="20,95,90,15" DataContext="{Binding RoadMeeple}" Grid.ZIndex="10"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthEastWestDataContext}">
                 <Polygon Style="{StaticResource CityShape}"
@@ -371,10 +335,6 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Rectangle>
-                <!-- City -->
-                <local:MeepleView Margin="55,40,55,70" DataContext="{Binding CityMeeple}" Grid.ZIndex="10"/>
-                <!-- Flower -->
-                <local:MeepleView Margin="55,110,55,0" DataContext="{Binding FlowerMeeple}" Grid.ZIndex="10"/>
             </Grid>
             <Grid Style="{StaticResource MonasteryGrid}" DataContext="{Binding AllDataContext}" Margin="35">
                 <i:Interaction.Triggers>
@@ -384,6 +344,67 @@
                 </i:Interaction.Triggers>
                 <Polygon Margin="20,10" Fill="Black"
                          Points="15,0 25,0 25,15 40,15 40,25, 25,25 25,60, 15,60 15,25 0,25 0,15 15,15"/>
+            </Grid>
+            <!-- Meeple -->
+            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthDataContext}">
+                <!-- Road -->
+                <local:MeepleView Margin="55,0,55,110" DataContext="{Binding RoadMeeple}"/>
+                <!-- City -->
+                <local:MeepleView Margin="55,0,55,110" DataContext="{Binding CityMeeple}"/>
+                <!-- Flower -->
+                <local:MeepleView Margin="55" DataContext="{Binding FlowerMeeple}"/>
+            </Grid>
+            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding EastDataContext}">
+                <!-- Road -->
+                <local:MeepleView Margin="110,55,0,55" DataContext="{Binding RoadMeeple}"/>
+            </Grid>
+            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding SouthDataContext}">
+                <!-- Road -->
+                <local:MeepleView Margin="55,110,55,0" DataContext="{Binding RoadMeeple}"/>
+                <!-- City -->
+                <local:MeepleView Margin="55,110,55,0" DataContext="{Binding CityMeeple}"/>
+            </Grid>
+            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding WestDataContext}">
+                <!-- Road -->
+                <local:MeepleView Margin="0,55,110,55" DataContext="{Binding RoadMeeple}"/>
+                <!-- City -->
+                <local:MeepleView Margin="0,55,110,55" DataContext="{Binding CityMeeple}"/>
+            </Grid>
+            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding EastWestDataContext}">
+                <!-- Road -->
+                <local:MeepleView Margin="55" DataContext="{Binding RoadMeeple}"/>
+                <!-- City -->
+                <local:MeepleView Margin="55" DataContext="{Binding CityMeeple}"/>
+            </Grid>
+            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthSouthDataContext}">
+                <!-- Road -->
+                <local:MeepleView Margin="55" DataContext="{Binding RoadMeeple}"/>
+                <!-- Flower -->
+                <local:MeepleView Margin="12,55,98,55" DataContext="{Binding FlowerMeeple}"/>
+            </Grid>
+            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthEastDataContext}">
+                <!-- Road -->
+                <local:MeepleView Margin="90,15,20,95" DataContext="{Binding RoadMeeple}"/>
+                <!-- City -->
+                <local:MeepleView Margin="90,15,20,95" DataContext="{Binding CityMeeple}"/>
+                <!-- Flower -->
+                <local:MeepleView Margin="20,82.5,90,27.5" DataContext="{Binding FlowerMeeple}"/>
+            </Grid>
+            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding SouthWestDataContext}">
+                <!-- Road -->
+                <local:MeepleView Margin="20,95,90,15" DataContext="{Binding RoadMeeple}"/>
+            </Grid>
+            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthEastWestDataContext}">
+                <!-- City -->
+                <local:MeepleView Margin="55,40,55,70" DataContext="{Binding CityMeeple}"/>
+                <!-- Flower -->
+                <local:MeepleView Margin="55,110,55,0" DataContext="{Binding FlowerMeeple}"/>
+            </Grid>
+            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding AllDataContext}">
+                <!-- City -->
+                <local:MeepleView Margin="55" DataContext="{Binding CityMeeple}"/>
+                <!-- Monastery -->
+                <local:MeepleView Margin="55" DataContext="{Binding MonasteryMeeple}"/>
             </Grid>
         </Grid>
     </Viewbox>

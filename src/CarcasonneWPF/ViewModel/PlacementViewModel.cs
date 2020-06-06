@@ -162,6 +162,7 @@ namespace Carcassonne.WPF.ViewModel
             foreach (var r in regions)
             {
                 var cvm = new TileFeatureViewModel(this, r, Placement.Piece.TileRegion);
+
                 switch (r.Edges.Count)
                 {
                     case 1:
@@ -227,10 +228,10 @@ namespace Carcassonne.WPF.ViewModel
             }
         }
 
-        private MeepleViewModel? m_meeple;
+        private MeepleViewModel m_meeple = new MeepleViewModel(new Meeple(MeepleType.Meeple, NopPlayer.Instance));
         public void SetMeeple(MeepleViewModel meeple)
         {
-            m_meeple = meeple;
+             // m_meeple = meeple;
         }
 
         public override string ToString()
@@ -308,9 +309,9 @@ namespace Carcassonne.WPF.ViewModel
 
             // public Visibility RoadEndVisibility => IsRoad.ToVisibility();
 
-            public MeepleViewModel RoadMeeple => IsCity ? m_meeple : null;
+            public MeepleViewModel RoadMeeple => IsRoad ? m_meeple : null;
 
-            public Visibility RoadMeepleVisibility => (IsCity && m_meeple != null).ToVisibility();
+            public Visibility RoadMeepleVisibility => (IsRoad && m_meeple != null).ToVisibility();
 
             public Visibility RiverVisibility => (m_edge.Type == EdgeRegionType.River).ToVisibility();
 
