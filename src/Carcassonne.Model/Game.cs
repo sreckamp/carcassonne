@@ -33,11 +33,8 @@ namespace Carcassonne.Model
             Players = new ObservableList<IPlayer>();
         }
 
-        private void StateChanged<T>(string name, ChangedValueArgs<T> args)
-        {
-            
-        }
         public Board Board { get; }
+
         public ObservableList<IPointContainer> PointRegions { get; } = new ObservableList<IPointContainer>();
 
         private readonly Deck m_deck = new Deck();
@@ -48,7 +45,7 @@ namespace Carcassonne.Model
         public GameState State
         {
             get => m_state;
-            set
+            private set
             {
                 var old = m_state;
                 m_state = value;

@@ -72,7 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CityPointRegion.cs" />
-    <Compile Include="CarcassonneGameBoard.cs" />
+    <Compile Include="Board.cs" />
     <Compile Include="Expansions\StandardRules.cs" />
     <Compile Include="IEdgeRegion.cs" />
     <Compile Include="IGameBoard.cs" />
@@ -104,7 +104,7 @@
     <Compile Include="Meeple.cs" />
     <Compile Include="MeepleType.cs" />
     <Compile Include="Player.cs" />
-    <Compile Include="CarcassonneMove.cs" />
+    <Compile Include="Move.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegionType.cs" />
     <Compile Include="Rotation.cs" />

@@ -118,10 +118,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PlayerAvatarControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -132,12 +128,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ViewModel\IMeepleViewDataContext.cs" />
     <Compile Include="ViewModel\MeepleViewModel.cs" />
     <Compile Include="ViewModel\PlayerViewModel.cs" />
     <Compile Include="MeepleView.xaml.cs">
       <DependentUpon>MeepleView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModel\GameBoardViewModel.cs" />
+    <Compile Include="ViewModel\BoardViewModel.cs" />
     <Compile Include="ViewModel\GameViewModel.cs" />
     <Compile Include="ViewModel\PointViewModel.cs" />
     <Compile Include="ViewModel\TileCommands.cs" />
@@ -157,9 +154,6 @@
     </Compile>
     <Compile Include="TileView.xaml.cs">
       <DependentUpon>TileView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PlayerAvatarControl.xaml.cs">
-      <DependentUpon>PlayerAvatarControl.xaml</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

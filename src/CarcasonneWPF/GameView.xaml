@@ -16,7 +16,7 @@
     <DockPanel Margin="0,0,-0.4,0.2">
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
             <StackPanel DataContext="{Binding ActivePlayerViewModel}">
-                <local:PlayerAvatarControl Height="150" Width="110" Margin="0,10,0,0"/>
+                <local:MeepleView Height="150" Width="110" Margin="0,10,0,0"/>
                 <ItemsControl ItemsSource="{Binding MeepleViewModels}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -60,7 +60,7 @@
                 <ListBox.Resources>
                     <DataTemplate DataType="{x:Type vm:PlayerViewModel}">
                         <StackPanel Orientation="Horizontal">
-                            <local:PlayerAvatarControl VerticalAlignment="Center" Height="20" Width="14.5"/>
+                            <local:MeepleView VerticalAlignment="Center" Height="20" Width="14.5"/>
                             <Label Content="{Binding Name}" VerticalAlignment="Center"/>
                             <Label VerticalAlignment="Center">:</Label>
                             <Label Content="{Binding Score}" VerticalAlignment="Center"/>

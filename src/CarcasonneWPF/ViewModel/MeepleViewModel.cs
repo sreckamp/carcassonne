@@ -6,7 +6,7 @@ using GameBase.WPF.ViewModel;
 
 namespace Carcassonne.WPF.ViewModel
 {
-    public class MeepleViewModel: INotifyPropertyChanged
+    public class MeepleViewModel: IMeepleViewDataContext, INotifyPropertyChanged
     {
         private IMeeple m_meeple = new Meeple(MeepleType.None, NopPlayer.Instance);
 
@@ -20,7 +20,7 @@ namespace Carcassonne.WPF.ViewModel
         public Brush Fill => new SolidColorBrush(Colors.Chartreuse);// PlayerViewModel.ColorsForName[m_meeple.Player.Name];
         public Brush Stroke => new SolidColorBrush(Colors.Transparent);
 
-        public Visibility MeepleVisibility => Visibility.Visible;// (m_meeple.Type == MeepleType.Meeple).ToVisibility();
+        public Visibility MeepleVisibility => (m_meeple.Type == MeepleType.Meeple).ToVisibility();
 
         public Visibility AbbotVisibility => (m_meeple.Type == MeepleType.Abbot).ToVisibility();
 

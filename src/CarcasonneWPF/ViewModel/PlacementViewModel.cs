@@ -32,6 +32,7 @@ namespace Carcassonne.WPF.ViewModel
         {
         }
 
+        // ReSharper disable once SuggestBaseTypeForParameter
         public PlacementViewModel(Placement<ITile> placement, BoardViewModel boardViewModel)
             : base(placement, boardViewModel)
         {
