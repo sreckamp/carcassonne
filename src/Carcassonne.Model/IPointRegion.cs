@@ -13,12 +13,6 @@ namespace Carcassonne.Model
         /// </summary>
         bool IsClosed { get; }
 
-        /// TODO:May be better to have a "HasMeeple" flag
-        /// <summary>
-        /// I think this is to be "forced" open to allow scoring.
-        /// </summary>
-        bool IsForcedOpened { get; set; }
-
         /// <summary>
         /// The player(s) who own the Container (have the most Meeple on it)
         /// </summary>
@@ -44,9 +38,6 @@ namespace Carcassonne.Model
 
         /// <inheritdoc />
         public bool IsClosed => true;
-
-        /// <inheritdoc />
-        public bool IsForcedOpened { get; set; }
 
         /// <inheritdoc />
         public IEnumerable<IPlayer> Owners { get; } = Enumerable.Empty<IPlayer>();

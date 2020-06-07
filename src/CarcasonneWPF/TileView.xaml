@@ -7,9 +7,6 @@
     xmlns:base="clr-namespace:GameBase.WPF;assembly=GameBase.WPF"
     xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
     Background="LightGray" Opacity="{Binding Opacity}">
-    <!--
-    Change the regions to buttons to allow them to use standard "MouseOver" and "Click" commands.
-    -->
     <UserControl.Resources>
         <Style x:Key ="RegionGrid" TargetType="{x:Type Grid}">
             <Setter Property="Visibility" Value="{Binding FullVisibility, FallbackValue=Hidden}"/>
@@ -76,14 +73,14 @@
                 <Rectangle Style="{StaticResource CityShape}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Rectangle>
                 <Polygon Margin="25,25,0,0" Style="{StaticResource ShieldPolygon}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Polygon>
@@ -93,21 +90,21 @@
                     Points="0,0 15,10 30,17 45,21 60,24 75,25 90,24 105,21 120,17 135,10 150,0">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Polygon>
                 <Rectangle Margin="65,0,65,90" Style="{StaticResource PathShape}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Rectangle>
                 <Ellipse Margin="25" Style="{StaticResource RiverEndShape}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Ellipse>
@@ -121,7 +118,7 @@
                 <Rectangle Margin="62.5" Style="{StaticResource FlowerRectangle}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding TileMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Rectangle>
@@ -131,14 +128,14 @@
                  Points="150,0 140,15 133,30 129,45 126,60 125,75 126,90 129,105 133,120 140,135 150,150">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Polygon>
                 <Rectangle Margin="90,65,0,65" Style="{StaticResource PathShape}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Rectangle>
@@ -155,21 +152,21 @@
                  Points="0,25 15,15 30,8 45,4 60,1 75,0 90,1 105,4 120,8 135,15 150,25">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Polygon>
                 <Rectangle Margin="65,90,65,0" Style="{StaticResource PathShape}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Rectangle>
                 <Ellipse Margin="50" Style="{StaticResource RiverEndShape}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Ellipse>
@@ -186,14 +183,14 @@
                  Points="0,0 10,15 17,30 21,45 24,60 25,75 24,90 21,105 17,120 10,135 0,150">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Polygon>
                 <Rectangle Margin="0,65,90,65" Canvas.Top="65" Style="{StaticResource PathShape}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Rectangle>
@@ -211,21 +208,21 @@
                          150,150 135,140 120,133 105,129 90,126 75,125 60,126 45,129 30,133 15,140 0,150">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Polygon>
                 <Polygon Margin="25,35,0,0" Style="{StaticResource ShieldPolygon}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Polygon>
                 <Rectangle Margin="0,65" Style="{StaticResource PathShape}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Rectangle>
@@ -236,21 +233,21 @@
                          0,150 10,135 17,120 21,105 24,90 25,75 24,60 21,45 17,30 10,15 0,0 ">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Polygon>
                 <Rectangle Margin="65,0" Style="{StaticResource PathShape}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Rectangle>
                 <Rectangle Margin="20,62.5,105,62.5" Style="{StaticResource FlowerRectangle}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding TileMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Rectangle>
@@ -259,28 +256,28 @@
                 <Polygon Style="{StaticResource CityShape}" Points="0,0 150,0 150,150">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Polygon>
                 <Polygon Margin="85,25,0,0" Style="{StaticResource ShieldPolygon}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Polygon>
                 <Polygon Margin="65,0,0,0" Points="0,0 20,0 85,65 85,85" Style="{StaticResource PathShape}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Polygon>
                 <Rectangle Margin="27.5,92.5,97.5,32.5" Style="{StaticResource FlowerRectangle}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding TileMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Rectangle>
@@ -289,14 +286,14 @@
                 <Polygon Points="150,0 150,150 0,150" Style="{StaticResource CityShape}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Polygon>
                 <Polygon Margin="65,65,0,0" Points="85,0 85,20 20,85 0,85" Style="{StaticResource PathShape}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Polygon>
@@ -305,14 +302,14 @@
                 <Polygon Points="0,0 150,150 0,150" Style="{StaticResource CityShape}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Polygon>
                 <Polygon Margin="0,65,0,0" Points="0,0 0,20 65,85 85,85" Style="{StaticResource PathShape}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Polygon>
@@ -322,21 +319,21 @@
                  Points="0,0 150,0 150,150 135,140 120,133 105,129 90,126 75,125 60,126 45,129 30,133 15,140 0,150">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Polygon>
                 <Polygon Margin="25,25,0,0" Style="{StaticResource ShieldPolygon}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding EdgeMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Polygon>
                 <Rectangle Margin="62.5,125,62.5,0" Style="{StaticResource FlowerRectangle}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseMove">
-                            <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                            <cmd:EventToCommand Command="{Binding TileMoveCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Rectangle>
@@ -344,7 +341,7 @@
             <Grid Style="{StaticResource MonasteryGrid}" DataContext="{Binding AllDataContext}" Margin="35">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="PreviewMouseMove">
-                        <cmd:EventToCommand Command="{Binding MoveCommand}"/>
+                        <cmd:EventToCommand Command="{Binding TileMoveCommand}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
                 <Polygon Margin="20,10" Fill="Black"
@@ -353,63 +350,67 @@
             <!-- Meeple -->
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthDataContext}">
                 <!-- Road -->
-                <local:MeepleView Margin="55,0,55,110" DataContext="{Binding RoadMeeple}"/>
+                <local:MeepleView Margin="55,0,55,110" DataContext="{Binding EdgeMeeple}"/>
                 <!-- City -->
-                <local:MeepleView Margin="55,0,55,110" DataContext="{Binding CityMeeple}"/>
+                <local:MeepleView Margin="55,0,55,110" DataContext="{Binding EdgeMeeple}"/>
                 <!-- Flower -->
-                <local:MeepleView Margin="55" DataContext="{Binding FlowerMeeple}"/>
+                <local:MeepleView Margin="55" DataContext="{Binding TileMeeple}"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding EastDataContext}">
                 <!-- Road -->
-                <local:MeepleView Margin="110,55,0,55" DataContext="{Binding RoadMeeple}"/>
+                <local:MeepleView Margin="110,55,0,55" DataContext="{Binding EdgeMeeple}"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding SouthDataContext}">
                 <!-- Road -->
-                <local:MeepleView Margin="55,110,55,0" DataContext="{Binding RoadMeeple}"/>
+                <local:MeepleView Margin="55,110,55,0" DataContext="{Binding EdgeMeeple}"/>
                 <!-- City -->
-                <local:MeepleView Margin="55,110,55,0" DataContext="{Binding CityMeeple}"/>
+                <local:MeepleView Margin="55,110,55,0" DataContext="{Binding EdgeMeeple}"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding WestDataContext}">
                 <!-- Road -->
-                <local:MeepleView Margin="0,55,110,55" DataContext="{Binding RoadMeeple}"/>
+                <local:MeepleView Margin="0,55,110,55" DataContext="{Binding EdgeMeeple}"/>
                 <!-- City -->
-                <local:MeepleView Margin="0,55,110,55" DataContext="{Binding CityMeeple}"/>
+                <local:MeepleView Margin="0,55,110,55" DataContext="{Binding EdgeMeeple}"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding EastWestDataContext}">
                 <!-- Road -->
-                <local:MeepleView Margin="55" DataContext="{Binding RoadMeeple}"/>
+                <local:MeepleView Margin="55" DataContext="{Binding EdgeMeeple}"/>
                 <!-- City -->
-                <local:MeepleView Margin="55" DataContext="{Binding CityMeeple}"/>
+                <local:MeepleView Margin="55" DataContext="{Binding EdgeMeeple}"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthSouthDataContext}">
                 <!-- Road -->
-                <local:MeepleView Margin="55" DataContext="{Binding RoadMeeple}"/>
+                <local:MeepleView Margin="55" DataContext="{Binding EdgeMeeple}"/>
                 <!-- Flower -->
-                <local:MeepleView Margin="12,55,98,55" DataContext="{Binding FlowerMeeple}"/>
+                <local:MeepleView Margin="12,55,98,55" DataContext="{Binding TileMeeple}"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthEastDataContext}">
                 <!-- Road -->
-                <local:MeepleView Margin="90,15,20,95" DataContext="{Binding RoadMeeple}"/>
+                <local:MeepleView Margin="90,15,20,95" DataContext="{Binding EdgeMeeple}"/>
                 <!-- City -->
-                <local:MeepleView Margin="90,15,20,95" DataContext="{Binding CityMeeple}"/>
+                <local:MeepleView Margin="90,15,20,95" DataContext="{Binding EdgeMeeple}"/>
                 <!-- Flower -->
-                <local:MeepleView Margin="20,82.5,90,27.5" DataContext="{Binding FlowerMeeple}"/>
+                <local:MeepleView Margin="20,82.5,90,27.5" DataContext="{Binding TileMeeple}"/>
+            </Grid>
+            <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding EastSouthDataContext}">
+                <!-- Road -->
+                <local:MeepleView Margin="90,15,95,20" DataContext="{Binding EdgeMeeple}"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding SouthWestDataContext}">
                 <!-- Road -->
-                <local:MeepleView Margin="20,95,90,15" DataContext="{Binding RoadMeeple}"/>
+                <local:MeepleView Margin="20,95,90,15" DataContext="{Binding EdgeMeeple}"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthEastWestDataContext}">
                 <!-- City -->
-                <local:MeepleView Margin="55,40,55,70" DataContext="{Binding CityMeeple}"/>
+                <local:MeepleView Margin="55,40,55,70" DataContext="{Binding EdgeMeeple}"/>
                 <!-- Flower -->
-                <local:MeepleView Margin="55,110,55,0" DataContext="{Binding FlowerMeeple}"/>
+                <local:MeepleView Margin="55,110,55,0" DataContext="{Binding TileMeeple}"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding AllDataContext}">
                 <!-- City -->
-                <local:MeepleView Margin="55" DataContext="{Binding CityMeeple}"/>
+                <local:MeepleView Margin="55" DataContext="{Binding EdgeMeeple}"/>
                 <!-- Monastery -->
-                <local:MeepleView Margin="55" DataContext="{Binding MonasteryMeeple}"/>
+                <local:MeepleView Margin="55" DataContext="{Binding TileMeeple}"/>
             </Grid>
         </Grid>
     </Viewbox>

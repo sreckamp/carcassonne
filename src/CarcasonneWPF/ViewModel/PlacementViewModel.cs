@@ -21,13 +21,16 @@ namespace Carcassonne.WPF.ViewModel
         private const int ForegroundDepth = 50;
         private const int DefaultDepth = 25;
 
-        private static readonly TileFeatureViewModel SDefaultIClaimableModel = new TileFeatureViewModel(null, new EdgeRegion(EdgeRegionType.Any), NopTileRegion.Instance);
+        private static readonly TileFeatureViewModel SDefaultIClaimableModel =
+            new TileFeatureViewModel(null, new EdgeRegion(EdgeRegionType.Any), NopTileRegion.Instance);
 
-        private TileFeatureViewModel? m_overFeature = null;
+        private TileFeatureViewModel? m_edgeFeature = null;
+        private TileFeatureViewModel? m_tileFeature = null;
 
         public PlacementViewModel(ITile tile, BoardViewModel boardViewModel) :
             this(new Placement<ITile>(tile, new DPoint(int.MinValue, int.MinValue)), boardViewModel)
-        { }
+        {
+        }
 
         public PlacementViewModel(Placement<ITile> placement, BoardViewModel boardViewModel)
             : base(placement, boardViewModel)
@@ -42,23 +45,40 @@ namespace Carcassonne.WPF.ViewModel
 
         private void Clear()
         {
-            if (m_overFeature != null)
+            if (m_edgeFeature != null || m_tileFeature != null)
             {
-                m_overFeature.SetMeeple(null);
-                m_overFeature = null;
                 Debug.WriteLine("Over Grass");
             }
+
+            ClearMeeple();
         }
 
-        private void EnterFeature(TileFeatureViewModel feature)
+        private void EnterEdgeFeature(TileFeatureViewModel feature)
         {
-            if (m_overFeature != feature)
-            {
-                m_overFeature?.SetMeeple(null);
-                m_overFeature = feature;
-                m_overFeature.SetMeeple(m_meeple);
-                Debug.WriteLine($"Enter:{feature}");
-            }
+            if (m_edgeFeature == feature) return;
+            ClearMeeple();
+            m_edgeFeature = feature;
+            if (m_edgeFeature == null) return;
+            m_edgeFeature.SetEdgeMeeple(m_meeple);
+            Debug.WriteLine($"Enter:{feature}");
+        }
+
+        private void EnterTileFeature(TileFeatureViewModel feature)
+        {
+            if (m_tileFeature == feature) return;
+            ClearMeeple();
+            m_tileFeature = feature;
+            if (m_tileFeature == null) return;
+            m_tileFeature.SetTileMeeple(m_abbot);
+            Debug.WriteLine($"Enter:{feature}");
+        }
+
+        private void ClearMeeple()
+        {
+            m_tileFeature?.SetTileMeeple(null);
+            m_tileFeature = null;
+            m_edgeFeature?.SetEdgeMeeple(null);
+            m_edgeFeature = null;
         }
 
         public override void SetCell(DPoint cell)
@@ -68,7 +88,10 @@ namespace Carcassonne.WPF.ViewModel
         }
 
         private bool m_fits;
-        public bool Fits { get => m_fits;
+
+        public bool Fits
+        {
+            get => m_fits;
             set
             {
                 m_fits = value;
@@ -84,6 +107,7 @@ namespace Carcassonne.WPF.ViewModel
         public bool IsBackground => m_isBackground;
 
         private bool m_isForeground;
+
         public bool IsForeground
         {
             get => m_isForeground;
@@ -106,6 +130,7 @@ namespace Carcassonne.WPF.ViewModel
                     rt = new RotatedTile(Placement.Piece, Rotation.None);
                     Placement.Piece = rt;
                 }
+
                 rt.Rotation = value;
                 NotifyPropertyChanged(nameof(RotationAngle));
                 NotifyPropertyChanged(nameof(NegRotationAngle));
@@ -118,44 +143,27 @@ namespace Carcassonne.WPF.ViewModel
 
         public string Name => Placement.Piece.ToString();
 
-        private TileFeatureViewModel m_allDataContext = SDefaultIClaimableModel;
-        public object AllDataContext => m_allDataContext;
+        public object AllDataContext { get; private set; } = SDefaultIClaimableModel;
 
-        readonly TileFeatureViewModel m_tileDataContext = SDefaultIClaimableModel;
-        public object TileDataContext => m_tileDataContext;
+        public object NorthEastWestDataContext { get; private set; } = SDefaultIClaimableModel;
 
-        TileFeatureViewModel m_northEastWestDataContext = SDefaultIClaimableModel;
-        public object NorthEastWestDataContext => m_northEastWestDataContext;
+        public object NorthDataContext { get; private set; } = SDefaultIClaimableModel;
 
-        TileFeatureViewModel m_northDataContext = SDefaultIClaimableModel;
-        public object NorthDataContext => m_northDataContext;
+        public object SouthDataContext { get; private set; } = SDefaultIClaimableModel;
 
-        TileFeatureViewModel m_southDataContext = SDefaultIClaimableModel;
-        public object SouthDataContext => m_southDataContext;
+        public object WestDataContext { get; private set; } = SDefaultIClaimableModel;
 
-        TileFeatureViewModel m_westDataContext = SDefaultIClaimableModel;
-        public object WestDataContext => m_westDataContext;
+        public object EastDataContext { get; private set; } = SDefaultIClaimableModel;
 
-        TileFeatureViewModel m_eastDataContext = SDefaultIClaimableModel;
-        public object EastDataContext => m_eastDataContext;
+        public object SouthWestDataContext { get; private set; } = SDefaultIClaimableModel;
 
-        TileFeatureViewModel m_southWestDataContext = SDefaultIClaimableModel;
-        public object SouthWestDataContext => m_southWestDataContext;
+        public object EastWestDataContext { get; private set; } = SDefaultIClaimableModel;
 
-        TileFeatureViewModel m_eastWestDataContext = SDefaultIClaimableModel;
-        public object EastWestDataContext => m_eastWestDataContext;
+        public object NorthSouthDataContext { get; private set; } = SDefaultIClaimableModel;
 
-        TileFeatureViewModel m_northSouthDataContext = SDefaultIClaimableModel;
-        public object NorthSouthDataContext => m_northSouthDataContext;
+        public object NorthEastDataContext { get; private set; } = SDefaultIClaimableModel;
 
-        readonly TileFeatureViewModel m_northSouthFlowerDataContext = SDefaultIClaimableModel;
-        public object NorthSouthFlowerDataContext => m_northSouthFlowerDataContext;
-
-        TileFeatureViewModel m_northEastDataContext = SDefaultIClaimableModel;
-        public object NorthEastDataContext => m_northEastDataContext;
-
-        TileFeatureViewModel m_eastSouthDataContext = SDefaultIClaimableModel;
-        public object EastSouthDataContext => m_eastSouthDataContext;
+        public object EastSouthDataContext { get; private set; } = SDefaultIClaimableModel;
 
         private void ParseTile()
         {
@@ -166,73 +174,61 @@ namespace Carcassonne.WPF.ViewModel
 
                 switch (r.Edges.Count)
                 {
-                    case 1:
-                        switch (r.Edges[0])
-                        {
-                            case EdgeDirection.North:
-                                m_northDataContext = cvm;
-                                break;
-                            case EdgeDirection.South:
-                                m_southDataContext = cvm;
-                                break;
-                            case EdgeDirection.West:
-                                m_westDataContext = cvm;
-                                break;
-                            case EdgeDirection.East:
-                                m_eastDataContext = cvm;
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
-
+                    case 1 when r.Edges[0] == EdgeDirection.North:
+                        NorthDataContext = cvm;
+                        break;
+                    case 1 when r.Edges[0] == EdgeDirection.South:
+                        SouthDataContext = cvm;
+                        break;
+                    case 1 when r.Edges[0] == EdgeDirection.West:
+                        WestDataContext = cvm;
+                        break;
+                    case 1 when r.Edges[0] == EdgeDirection.East:
+                        EastDataContext = cvm;
                         break;
                     case 2 when r.Edges.Contains(EdgeDirection.South)
                                 && r.Edges.Contains(EdgeDirection.West):
-                        m_southWestDataContext = cvm;
+                        SouthWestDataContext = cvm;
                         break;
                     case 2 when r.Edges.Contains(EdgeDirection.East)
                                 && r.Edges.Contains(EdgeDirection.West):
-                        m_eastWestDataContext = cvm;
+                        EastWestDataContext = cvm;
                         break;
                     case 2 when r.Edges.Contains(EdgeDirection.North)
                                 && r.Edges.Contains(EdgeDirection.South):
-                        m_northSouthDataContext = cvm;
+                        NorthSouthDataContext = cvm;
                         break;
                     case 2 when r.Edges.Contains(EdgeDirection.North)
                                 && r.Edges.Contains(EdgeDirection.East):
-                        m_northEastDataContext = cvm;
+                        NorthEastDataContext = cvm;
                         break;
-                    case 2:
-                    {
-                        if (r.Edges.Contains(EdgeDirection.East)
-                            && r.Edges.Contains(EdgeDirection.South))
-                        {
-                            m_eastSouthDataContext = cvm;
-                        }
-
+                    case 2 when (r.Edges.Contains(EdgeDirection.East)
+                                 && r.Edges.Contains(EdgeDirection.South)):
+                        EastSouthDataContext = cvm;
                         break;
-                    }
                     case 3:
-                        m_northEastWestDataContext = cvm;
+                        NorthEastWestDataContext = cvm;
                         break;
                     case 4:
-                        m_allDataContext = cvm;
-                        //m_northEastWestDataContext = cvm;
+                        AllDataContext = cvm;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
             }
-            if (m_allDataContext == SDefaultIClaimableModel)
+
+            if (AllDataContext == SDefaultIClaimableModel)
             {
-                m_allDataContext = new TileFeatureViewModel(this, NopEdgeRegion.Instance, Placement.Piece.TileRegion);
+                AllDataContext = new TileFeatureViewModel(this, NopEdgeRegion.Instance, Placement.Piece.TileRegion);
             }
         }
 
         private MeepleViewModel m_meeple = new MeepleViewModel(new Meeple(MeepleType.Meeple, NopPlayer.Instance));
+        private MeepleViewModel m_abbot = new MeepleViewModel(new Meeple(MeepleType.Abbot, NopPlayer.Instance));
+
         public void SetMeeple(MeepleViewModel meeple)
         {
-             // m_meeple = meeple;
+            // m_meeple = meeple;
         }
 
         public override string ToString()
@@ -256,41 +252,51 @@ namespace Carcassonne.WPF.ViewModel
             private readonly PlacementViewModel m_parent;
             private readonly IEdgeRegion m_edge;
             private readonly ITileRegion m_tile;
+
             public TileFeatureViewModel(PlacementViewModel parent, IEdgeRegion edge, ITileRegion tile)
             {
                 m_parent = parent;
                 m_edge = edge;
                 m_tile = tile;
-                // Color.Freeze();
-                MoveCommand = new RelayCommand(RegionMove, CanMove);
+                EdgeMoveCommand = new RelayCommand(EdgeRegionMove, CanMove);
+                TileMoveCommand = new RelayCommand(TileRegionMove, CanMove);
             }
 
-            public ICommand MoveCommand { get; set; }
+            public ICommand EdgeMoveCommand { get; set; }
+
+            public ICommand TileMoveCommand { get; set; }
 
             private bool CanMove() => m_parent != null;
 
-            private void RegionMove()
+            private void EdgeRegionMove()
             {
-                m_parent.EnterFeature(this);
+                m_parent.EnterEdgeFeature(this);
             }
 
-            private MeepleViewModel? m_meeple = null;
-
-            public void SetMeeple(MeepleViewModel meeple)
+            private void TileRegionMove()
             {
-                m_meeple = meeple;
-                NotifyPropertyChanged(nameof(CityMeeple));
-                NotifyPropertyChanged(nameof(CityMeepleVisibility));
-                NotifyPropertyChanged(nameof(RoadMeeple));
-                NotifyPropertyChanged(nameof(RoadMeepleVisibility));
-                NotifyPropertyChanged(nameof(FlowerMeeple));
-                NotifyPropertyChanged(nameof(FlowerMeepleVisibility));
-                NotifyPropertyChanged(nameof(MonasteryMeeple));
-                NotifyPropertyChanged(nameof(MonasteryMeepleVisibility));
+                m_parent.EnterTileFeature(this);
             }
+
+            public void SetEdgeMeeple(MeepleViewModel meeple)
+            {
+                if (!IsCity && !IsRoad) return;
+                EdgeMeeple = meeple;
+                NotifyPropertyChanged(nameof(EdgeMeeple));
+            }
+
+            public void SetTileMeeple(MeepleViewModel meeple)
+            {
+                TileMeeple = meeple;
+                NotifyPropertyChanged(nameof(TileMeeple));
+            }
+
+            public MeepleViewModel EdgeMeeple { get; private set; }
+
+            public MeepleViewModel TileMeeple { get; private set; }
 
             public Visibility FullVisibility =>
-                m_edge.Type != EdgeRegionType.Any || m_tile.Type != TileRegionType.None ? Visibility.Visible : Visibility.Hidden;
+                (m_edge.Type != EdgeRegionType.Any || m_tile.Type != TileRegionType.None).ToVisibility();
 
             private bool IsCity => m_edge.Type == EdgeRegionType.City;
 
@@ -298,21 +304,11 @@ namespace Carcassonne.WPF.ViewModel
 
             public Visibility ShieldVisibility => (m_edge is CityEdgeRegion cer && cer.HasShield).ToVisibility();
 
-            public MeepleViewModel CityMeeple => IsCity ? m_meeple : null;
-
-            public Visibility CityMeepleVisibility => (IsCity && m_meeple != null).ToVisibility();
-
             public Visibility PathVisibility => m_edge.Type.IsPath().ToVisibility();
 
             private bool IsRoad => m_edge.Type == EdgeRegionType.Road;
 
             public Visibility RoadVisibility => IsRoad.ToVisibility();
-
-            // public Visibility RoadEndVisibility => IsRoad.ToVisibility();
-
-            public MeepleViewModel RoadMeeple => IsRoad ? m_meeple : null;
-
-            public Visibility RoadMeepleVisibility => (IsRoad && m_meeple != null).ToVisibility();
 
             public Visibility RiverVisibility => (m_edge.Type == EdgeRegionType.River).ToVisibility();
 
@@ -320,17 +316,9 @@ namespace Carcassonne.WPF.ViewModel
 
             public Visibility FlowerVisibility => IsFlower.ToVisibility();
 
-            public MeepleViewModel FlowerMeeple => IsFlower ? m_meeple : null;
-
-            public Visibility FlowerMeepleVisibility => (IsFlower && m_meeple != null).ToVisibility();
-
             private bool IsMonastary => m_tile.Type == TileRegionType.Monastery;
 
             public Visibility MonasteryVisibility => IsMonastary.ToVisibility();
-
-            public MeepleViewModel MonasteryMeeple => IsMonastary ? m_meeple : null;
-
-            public Visibility MonasteryMeepleVisibility => (IsMonastary && m_meeple != null).ToVisibility();
 
             #region INotifyPropertyChanged Members
 
@@ -343,19 +331,13 @@ namespace Carcassonne.WPF.ViewModel
 
             #endregion
 
-            public MBrush Fill
+            public MBrush Fill => m_edge.Type switch
             {
-                get
-                {
-                    return m_edge.Type switch
-                    {
-                        EdgeRegionType.City => SCityBrush,
-                        EdgeRegionType.River => SRiverBrush,
-                        EdgeRegionType.Road => SRoadBrush,
-                        _ => null
-                    };
-                }
-            }
+                EdgeRegionType.City => SCityBrush,
+                EdgeRegionType.River => SRiverBrush,
+                EdgeRegionType.Road => SRoadBrush,
+                _ => null
+            };
 
             public override string ToString()
             {

@@ -61,11 +61,9 @@ namespace Carcassonne.Model
             Claimer = NopMeeple.Instance;
         }
 
-        public bool IsForcedOpened { get; set; } = false;
-
         public bool IsAvailable => !IsClosed;
 
-        public bool IsClosed => !IsForcedOpened && TileCount == 9;
+        public bool IsClosed => TileCount == 9;
 
         public void ReturnMeeple()
         {

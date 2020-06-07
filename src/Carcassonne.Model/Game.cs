@@ -390,9 +390,9 @@ namespace Carcassonne.Model
             // }
             // foreach (var r in changes)
             // {
-            //     //TODO: Better way to keep a newly placed region open for placement.
-            //     r.IsForcedOpened = true;
-            // }
+            //TODO: Better way to keep a newly placed region open for placement.
+            //TODO: All regions on newly placed tile are fair game.
+
         }
 
         /// <summary>

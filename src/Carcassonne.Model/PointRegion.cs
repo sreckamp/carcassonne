@@ -23,17 +23,7 @@ namespace Carcassonne.Model
             IsClosedChanged.Invoke(this, new EventArgs());
         }
 
-        private bool m_isForcedOpened;
-        public bool IsForcedOpened
-        {
-            get => m_isForcedOpened;
-            set
-            {
-                m_isForcedOpened = value;
-                OnIsClosedChange();
-            }
-        }
-        public bool IsClosed => !IsForcedOpened && OpenEdges == 0;
+        public bool IsClosed => OpenEdges == 0;
 
         private int m_edges;
         public int OpenEdges
