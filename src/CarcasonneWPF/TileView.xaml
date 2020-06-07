@@ -46,6 +46,11 @@
         </Style>
     </UserControl.Resources>
     <Viewbox RenderTransformOrigin="0.5,0.5">
+        <i:Interaction.Triggers>
+            <i:EventTrigger EventName="MouseLeave">
+                <cmd:EventToCommand Command="{Binding ClearCommand}"/>
+            </i:EventTrigger>
+        </i:Interaction.Triggers>
         <Viewbox.Resources>
             <Style TargetType="{x:Type local:MeepleView}">
                 <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>

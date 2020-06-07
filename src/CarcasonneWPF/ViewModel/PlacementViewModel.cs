@@ -54,6 +54,7 @@ namespace Carcassonne.WPF.ViewModel
         {
             if (m_overFeature != feature)
             {
+                m_overFeature?.SetMeeple(null);
                 m_overFeature = feature;
                 m_overFeature.SetMeeple(m_meeple);
                 Debug.WriteLine($"Enter:{feature}");
