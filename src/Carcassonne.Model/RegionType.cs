@@ -6,7 +6,7 @@
         None,
         Road,
         City,
-        River,
+        River
     }
 
     public static class EdgeRegionTypeExtensions

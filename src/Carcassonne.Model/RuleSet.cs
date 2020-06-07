@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Security.Policy;
 using Carcassonne.Model.Expansions;
 using Carcassonne.Model.Rules;
-using GameBase.Model;
 using GameBase.Model.Rules;
 
 namespace Carcassonne.Model

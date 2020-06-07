@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-using GameBase.Model;
+﻿using System.Drawing;
 
 namespace Carcassonne.Model
 {
@@ -47,11 +45,11 @@ namespace Carcassonne.Model
         
         #region IEquatable<Move> Members
         
-        public bool Equals(Move other)
-        {
-            return base.Equals(other);
-            // && Rotation.Equals(other?.Rotation);
-        }
+        // public bool Equals(Move other)
+        // {
+        //     return base.Equals(other);
+        //     // && Rotation.Equals(other?.Rotation);
+        // }
         
         #endregion
         

@@ -10,7 +10,6 @@ using GalaSoft.MvvmLight.CommandWpf;
 using GameBase.Model;
 using GameBase.WPF;
 using GameBase.WPF.ViewModel;
-using Move = Carcassonne.Model.Move;
 
 namespace Carcassonne.WPF.ViewModel
 {
@@ -22,14 +21,12 @@ namespace Carcassonne.WPF.ViewModel
         private readonly ICommand m_rotateCommand;
         private readonly ICommand m_claimCommand;
         private readonly ICommand m_chooseMeepleCommand;
-        private readonly ICommand m_moveCommand;
 
         private readonly PlacementViewModel m_defaultPlacement;
         private PlacementViewModel m_active;
 
         public GameViewModel(IEnumerable<ExpansionPack> expansions)
         {
-            m_moveCommand = new RelayCommand<GridCellRoutedEventArgs>(Move, CanMove);
             m_placeCommand = new RelayCommand<object>(Place, CanPlace);
             m_rotateCommand = new RelayCommand<object>(Rotate, CanRotate);
             m_claimCommand = new RelayCommand<object>(Claim, CanClaim);
@@ -38,22 +35,22 @@ namespace Carcassonne.WPF.ViewModel
             PropertyChanged += (sender, args) => { };
 
             Game = new Game(expansions);
-            BoardViewModel = new BoardViewModel(Game.Board, Game.RuleSet)
+            BoardViewModel = new BoardViewModel(Game.Board/*, Game.RuleSet*/)
             {
-                MoveCommand = m_moveCommand
+                MoveCommand = new RelayCommand<GridCellRoutedEventArgs>(Move, CanMove)
             };
             m_defaultPlacement = new PlacementViewModel(NopTile.Instance, BoardViewModel);
             m_active = m_defaultPlacement;
             Game.ActivePlayerChanged += Game_ActivePlayerChanged;
             Game.ActiveTileChanged += Game_ActiveTileChanged;
             Game.GameStateChanged += Game_GameStateChanged;
-            PlayerViewModels = new DispatchedMappingCollection<PlayerViewModel, IPlayer>(Game.Players);
+            PlayerViewModels = new MappingCollection<PlayerViewModel, IPlayer>(Game.Players);
             var cards = new ObservableList<ITile>();
             Game.Shuffle();
             Game.DumpDeck(cards);
-            DeckViewModel = new DispatchedMappingCollection<PlacementViewModel, ITile>(cards, BoardViewModel);
+            DeckViewModel = new MappingCollection<PlacementViewModel, ITile>(cards, BoardViewModel);
         }
-        public DispatchedMappingCollection<PlacementViewModel, ITile> DeckViewModel { get; }
+        public MappingCollection<PlacementViewModel, ITile> DeckViewModel { get; }
 
         private void Game_GameStateChanged(object sender, ChangedValueArgs<GameState> e)
         {

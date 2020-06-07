@@ -28,7 +28,7 @@ namespace Carcassonne.Model
             new EdgeRegion(EdgeRegionType.Any, EdgeDirection.North),
             new EdgeRegion(EdgeRegionType.Any, EdgeDirection.East),
             new EdgeRegion(EdgeRegionType.Any, EdgeDirection.South),
-            new EdgeRegion(EdgeRegionType.Any, EdgeDirection.West),
+            new EdgeRegion(EdgeRegionType.Any, EdgeDirection.West)
         };
 
         public IEnumerable<IEdgeRegion> Regions => m_regions;

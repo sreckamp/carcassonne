@@ -9,9 +9,9 @@ using Carcassonne.Model;
 using GalaSoft.MvvmLight.CommandWpf;
 using GameBase.Model;
 using GameBase.WPF.ViewModel;
-using MBrush = System.Windows.Media.Brush;
 using DPoint = System.Drawing.Point;
-//using System.Drawing;
+
+// ReSharper disable UnusedMember.Local
 
 namespace Carcassonne.WPF.ViewModel
 {
@@ -24,8 +24,8 @@ namespace Carcassonne.WPF.ViewModel
         private static readonly TileFeatureViewModel SDefaultIClaimableModel =
             new TileFeatureViewModel(null, new EdgeRegion(EdgeRegionType.Any), NopTileRegion.Instance);
 
-        private TileFeatureViewModel? m_edgeFeature = null;
-        private TileFeatureViewModel? m_tileFeature = null;
+        private TileFeatureViewModel m_edgeFeature = null;
+        private TileFeatureViewModel m_tileFeature = null;
 
         public PlacementViewModel(ITile tile, BoardViewModel boardViewModel) :
             this(new Placement<ITile>(tile, new DPoint(int.MinValue, int.MinValue)), boardViewModel)
@@ -103,8 +103,7 @@ namespace Carcassonne.WPF.ViewModel
 
         // public void ChangedDepth() => NotifyPropertyChanged(nameof(Depth));
 
-        protected bool m_isBackground;
-        public bool IsBackground => m_isBackground;
+        public bool IsBackground { get; protected set; }
 
         private bool m_isForeground;
 
@@ -118,7 +117,7 @@ namespace Carcassonne.WPF.ViewModel
             }
         }
 
-        public int Depth => IsBackground ? BackgroundDepth : (m_isForeground ? ForegroundDepth : DefaultDepth);
+        public int Depth => IsBackground ? BackgroundDepth : m_isForeground ? ForegroundDepth : DefaultDepth;
 
         public Rotation TileRotation
         {
@@ -167,7 +166,7 @@ namespace Carcassonne.WPF.ViewModel
 
         private void ParseTile()
         {
-            var regions = (Placement.Piece is RotatedTile rt) ? rt.RegionsNotRotated : Placement.Piece.Regions;
+            var regions = Placement.Piece is RotatedTile rt ? rt.RegionsNotRotated : Placement.Piece.Regions;
             foreach (var r in regions)
             {
                 var cvm = new TileFeatureViewModel(this, r, Placement.Piece.TileRegion);
@@ -202,8 +201,8 @@ namespace Carcassonne.WPF.ViewModel
                                 && r.Edges.Contains(EdgeDirection.East):
                         NorthEastDataContext = cvm;
                         break;
-                    case 2 when (r.Edges.Contains(EdgeDirection.East)
-                                 && r.Edges.Contains(EdgeDirection.South)):
+                    case 2 when r.Edges.Contains(EdgeDirection.East)
+                                && r.Edges.Contains(EdgeDirection.South):
                         EastSouthDataContext = cvm;
                         break;
                     case 3:
@@ -238,9 +237,9 @@ namespace Carcassonne.WPF.ViewModel
 
         private class TileFeatureViewModel : INotifyPropertyChanged
         {
-            private static readonly MBrush SRiverBrush = new SolidColorBrush(Colors.DarkBlue);
-            private static readonly MBrush SRoadBrush = new SolidColorBrush(Colors.Khaki);
-            private static readonly MBrush SCityBrush = new SolidColorBrush(Colors.SaddleBrown);
+            private static readonly Brush SRiverBrush = new SolidColorBrush(Colors.DarkBlue);
+            private static readonly Brush SRoadBrush = new SolidColorBrush(Colors.Khaki);
+            private static readonly Brush SCityBrush = new SolidColorBrush(Colors.SaddleBrown);
 
             static TileFeatureViewModel()
             {
@@ -312,13 +311,9 @@ namespace Carcassonne.WPF.ViewModel
 
             public Visibility RiverVisibility => (m_edge.Type == EdgeRegionType.River).ToVisibility();
 
-            private bool IsFlower => m_tile.Type == TileRegionType.Flower;
+            public Visibility FlowerVisibility => (m_tile.Type == TileRegionType.Flower).ToVisibility();
 
-            public Visibility FlowerVisibility => IsFlower.ToVisibility();
-
-            private bool IsMonastary => m_tile.Type == TileRegionType.Monastery;
-
-            public Visibility MonasteryVisibility => IsMonastary.ToVisibility();
+            public Visibility MonasteryVisibility => (m_tile.Type == TileRegionType.Monastery).ToVisibility();
 
             #region INotifyPropertyChanged Members
 
@@ -331,7 +326,7 @@ namespace Carcassonne.WPF.ViewModel
 
             #endregion
 
-            public MBrush Fill => m_edge.Type switch
+            public Brush Fill => m_edge.Type switch
             {
                 EdgeRegionType.City => SCityBrush,
                 EdgeRegionType.River => SRiverBrush,

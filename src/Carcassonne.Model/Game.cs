@@ -14,7 +14,7 @@ namespace Carcassonne.Model
         Claim,
         Score,
         Next,
-        End,
+        End
     }
 
     /// <summary>
@@ -164,58 +164,58 @@ namespace Carcassonne.Model
             State = GameState.Place;
         }
 
-        public void Play()
-        {
-            Start();
-            do
-            {
-                do
-                {
-                    var mv = ActivePlayer.GetMove(this);
-                    ApplyMove(mv.Location, mv.Rotation);
-                } while (State == GameState.Place);
-                // var changed = new List<IPointContainer>();
-                // bool placed;
-                // do
-                // {
-                //     if (!mv.IsEmpty)
-                //     {
-                //         placed = Place(mv, changed);
-                //     }
-                //     else
-                //     {
-                //         placed = true;
-                //         State = GameState.Discard;
-                //     }
-                // } while (!placed);
-
-                //TODO: Get available regions here (including closed ones on the most recently placed & possibly any open one, or removals, etc.
-                do
-                {
-                    var (c, meeple) = ActivePlayer.GetClaim(this);
-                    ApplyClaim(c, meeple);
-                } while (State == GameState.Claim);
-
-                //TODO: Collect closed regions with 
-                // bool claimed;
-                // do
-                // {
-                //     var (claim, type) = player.GetClaim(this);
-                //     if (claim.IsAvailable)
-                //     {
-                //         claimed = Claim(claim, type);
-                //     }
-                //     else
-                //     {
-                //         //Skip the claim state.
-                //         break;
-                //     }
-                // } while (!claimed);
-                Score();
-                NextTurn();
-            } while (State != GameState.End);
-            End();
-        }
+        // public void Play()
+        // {
+        //     Start();
+        //     do
+        //     {
+        //         do
+        //         {
+        //             var mv = ActivePlayer.GetMove(this);
+        //             ApplyMove(mv.Location, mv.Rotation);
+        //         } while (State == GameState.Place);
+        //         // var changed = new List<IPointContainer>();
+        //         // bool placed;
+        //         // do
+        //         // {
+        //         //     if (!mv.IsEmpty)
+        //         //     {
+        //         //         placed = Place(mv, changed);
+        //         //     }
+        //         //     else
+        //         //     {
+        //         //         placed = true;
+        //         //         State = GameState.Discard;
+        //         //     }
+        //         // } while (!placed);
+        //
+        //         //TODO: Get available regions here (including closed ones on the most recently placed & possibly any open one, or removals, etc.
+        //         do
+        //         {
+        //             var (c, meeple) = ActivePlayer.GetClaim(this);
+        //             ApplyClaim(c, meeple);
+        //         } while (State == GameState.Claim);
+        //
+        //         //TODO: Collect closed regions with 
+        //         // bool claimed;
+        //         // do
+        //         // {
+        //         //     var (claim, type) = player.GetClaim(this);
+        //         //     if (claim.IsAvailable)
+        //         //     {
+        //         //         claimed = Claim(claim, type);
+        //         //     }
+        //         //     else
+        //         //     {
+        //         //         //Skip the claim state.
+        //         //         break;
+        //         //     }
+        //         // } while (!claimed);
+        //         Score();
+        //         NextTurn();
+        //     } while (State != GameState.End);
+        //     End();
+        // }
 
         public void Shuffle()
         {
@@ -409,7 +409,7 @@ namespace Carcassonne.Model
         public IPlayer AddPlayer(string name)
         {
             if (State != GameState.NotStarted) return NopPlayer.Instance;
-            var p = new Player_(name);
+            var p = new Player(name);
             Players.Add(p);
             return p;
         }

@@ -1,10 +1,7 @@
-﻿using System.Collections.Specialized;
-using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Media;
 using Carcassonne.Model;
 using GameBase.Model;
-using GameBase.WPF.ViewModel;
 using MBrush = System.Windows.Media.Brush;
 
 namespace Carcassonne.WPF.ViewModel
@@ -23,19 +20,7 @@ namespace Carcassonne.WPF.ViewModel
         public PointViewModel(Point p, BoardViewModel boardViewModel)
             : base(new Placement<ITile>(NopTile.Instance, p), boardViewModel)
         {
-            m_isBackground = true;
-            //Location = p;
-            //board.AvailablePositions.CollectionChanged += new NotifyCollectionChangedEventHandler(AvailablePositions_CollectionChanged);
-        }
-
-        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
-        void availablePositions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            //if ((e.NewItems != null && e.NewItems.Contains(Location))
-            //    || (e.OldItems != null && e.OldItems.Contains(Location)))
-            //{
-            //    NotifyPropertyChanged("Color");
-            //}
+            IsBackground = true;
         }
 
         public MBrush Color => SAvailableColor;

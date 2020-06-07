@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO.Packaging;
 using System.Windows.Media;
 using Carcassonne.Model;
 using Carcassonne.Model.Expansions;
@@ -9,7 +8,7 @@ using Carcassonne.WPF.ViewModel;
 namespace Carcassonne.WPF
 {
     /// <summary>
-    /// Interaction logic for CarcasonneWindow.xaml
+    /// Interaction logic for CarcassonneWindow.xaml
     /// </summary>
     public partial class GameView
     {

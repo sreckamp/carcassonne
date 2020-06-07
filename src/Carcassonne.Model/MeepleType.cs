@@ -4,6 +4,6 @@
     {
         None,
         Meeple,
-        Abbot,
+        Abbot
     }
 }

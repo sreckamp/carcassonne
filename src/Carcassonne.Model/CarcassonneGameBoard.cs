@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using GameBase.Model;
-using GameBase.Model.Rules;
 
 namespace Carcassonne.Model
 {

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using GameBase.Model;
 
 namespace Carcassonne.Model
 {

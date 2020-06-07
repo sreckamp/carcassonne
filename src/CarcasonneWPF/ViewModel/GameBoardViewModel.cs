@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Carcassonne.Model;
 using GalaSoft.MvvmLight.CommandWpf;
 using GameBase.Model;
-using GameBase.Model.Rules;
 using GameBase.WPF;
 using GameBase.WPF.ViewModel;
-using Move = Carcassonne.Model.Move;
 using Point = System.Drawing.Point;
 
 namespace Carcassonne.WPF.ViewModel
@@ -20,8 +15,8 @@ namespace Carcassonne.WPF.ViewModel
     public class BoardViewModel : IGridManager, INotifyPropertyChanged
     {
         internal static readonly ICommand NopCommand = new RelayCommand<GridCellRoutedEventArgs>(
-            (o) => { Debug.WriteLine("Nop Action"); },
-            (o) =>
+            o => { Debug.WriteLine("Nop Action"); },
+            o =>
             {
                 Debug.WriteLine("Nop Action");
                 return false;
@@ -30,9 +25,8 @@ namespace Carcassonne.WPF.ViewModel
         private readonly Board m_board;
         private readonly ObservableList<PlacementViewModel> m_grid = new ObservableList<PlacementViewModel>();
         private readonly ObservableList<PlacementViewModel> m_active = new ObservableList<PlacementViewModel>();
-        private readonly IPlaceRule<IGameBoard, ITile> m_placeRule;
 
-        public BoardViewModel(Board board, IPlaceRule<IGameBoard, ITile> placeRule)
+        public BoardViewModel(Board board)
         {
             StartColumnChanged += (sender, args) => Debug.WriteLine($"BoardViewModel.StartColumn {args.OldVal}=>{args.NewVal}");
             StartRowChanged += (sender, args) => Debug.WriteLine($"BoardViewModel.StartRow {args.OldVal}=>{args.NewVal}");
@@ -40,8 +34,8 @@ namespace Carcassonne.WPF.ViewModel
             RowsChanged += (sender, args) => Debug.WriteLine($"BoardViewModel.Rows {args.OldVal}=>{args.NewVal}");
             PropertyChanged += (sender, args) => Debug.WriteLine($"BoardViewModel.Property {args.PropertyName}");
 
-            var placements = new DispatchedMappingCollection<PlacementViewModel, Placement<ITile>>(board.Placements, this);
-            Grid = new OverlayDispatchedObservableList<PlacementViewModel>(m_grid, placements, m_active);
+            var placements = new MappingCollection<PlacementViewModel, Placement<ITile>>(board.Placements, this);
+            Grid = new OverlayObservableList<PlacementViewModel>(m_grid, placements, m_active);
 
             m_board = board;
 
@@ -50,12 +44,10 @@ namespace Carcassonne.WPF.ViewModel
             board.MinYChanged += board_MinYChanged;
             board.MaxYChanged += board_MaxYChanged;
 
-            m_placeRule = placeRule;
-
             InitializeGrid();
         }
 
-        public OverlayDispatchedObservableList<PlacementViewModel> Grid { get; }
+        public OverlayObservableList<PlacementViewModel> Grid { get; }
 
         public event EventHandler<ChangedValueArgs<int>> StartColumnChanged;
         private int m_startColumn;
@@ -66,7 +58,7 @@ namespace Carcassonne.WPF.ViewModel
             {
                 var old = m_startColumn;
                 m_startColumn = value;
-                StartColumnChanged.Invoke(this, new ChangedValueArgs<int>(old, value));
+                StartColumnChanged?.Invoke(this, new ChangedValueArgs<int>(old, value));
             }
         }
 
@@ -79,7 +71,7 @@ namespace Carcassonne.WPF.ViewModel
             {
                 var old = m_startRow;
                 m_startRow = value;
-                StartRowChanged.Invoke(this, new ChangedValueArgs<int>(old, value));
+                StartRowChanged?.Invoke(this, new ChangedValueArgs<int>(old, value));
             }
         }
 
@@ -92,7 +84,7 @@ namespace Carcassonne.WPF.ViewModel
             {
                 var old = m_columns;
                 m_columns = value;
-                ColumnsChanged.Invoke(this, new ChangedValueArgs<int>(old, value));
+                ColumnsChanged?.Invoke(this, new ChangedValueArgs<int>(old, value));
                 NotifyPropertyChanged(nameof(Columns));
             }
         }
@@ -106,7 +98,7 @@ namespace Carcassonne.WPF.ViewModel
             {
                 var old = m_columns;
                 m_rows = value;
-                RowsChanged.Invoke(this, new ChangedValueArgs<int>(old, value));
+                RowsChanged?.Invoke(this, new ChangedValueArgs<int>(old, value));
                 NotifyPropertyChanged(nameof(Rows));
             }
         }
@@ -187,8 +179,6 @@ namespace Carcassonne.WPF.ViewModel
             m_grid.Add(new PointViewModel(p, this));
         }
 
-        private IEnumerable<Move> m_availableMoves = Enumerable.Empty<Move>();
-
         public void SetActivePlacement(PlacementViewModel placement)
         {
             m_active.Clear();
@@ -245,16 +235,16 @@ namespace Carcassonne.WPF.ViewModel
 
         private void NotifyPropertyChanged(string name)
         {
-            if (Application.Current.Dispatcher.CheckAccess())
-            {
+            // if (Application.Current.Dispatcher.CheckAccess())
+            // {
                 Debug.WriteLine($"BoardViewModel.PropChanged {name}");
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs(name));
-            }
-            else
-            {
-                Debug.WriteLine($"Invoke BoardViewModel.PropChanged {name}");
-                Application.Current.Dispatcher.Invoke(new Action<string>(NotifyPropertyChanged), name);
-            }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            // }
+            // else
+            // {
+            //     Debug.WriteLine($"Invoke BoardViewModel.PropChanged {name}");
+            //     Application.Current.Dispatcher.Invoke(new Action<string>(NotifyPropertyChanged), name);
+            // }
         }
 
         #endregion

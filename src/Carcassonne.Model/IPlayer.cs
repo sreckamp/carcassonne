@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Resources;
-
-namespace Carcassonne.Model
+﻿namespace Carcassonne.Model
 {
     public interface IPlayer
     {
@@ -15,7 +12,7 @@ namespace Carcassonne.Model
         void ReturnMeeple(IMeeple meeple);
         // void AddMeeple(IEnumerable<IMeeple> meeple);
         Move GetMove(Game game);
-        (IClaimable, MeepleType) GetClaim(Game game);
+        // (IClaimable, MeepleType) GetClaim(Game game);
 
         void Reset();
     }
@@ -54,15 +51,8 @@ namespace Carcassonne.Model
         /// <inheritdoc />
         public Move GetMove(Game game) => Move.None;
 
-        /// <inheritdoc />
-        public (IClaimable, MeepleType) GetClaim(Game game) => (NopClaimable.Instance, MeepleType.None);
-
         public void Reset()
         {
         }
-        // /// <inheritdoc />
-        // public void AddMeeple(IEnumerable<IMeeple> meeple)
-        // {
-        // }
     }
 }

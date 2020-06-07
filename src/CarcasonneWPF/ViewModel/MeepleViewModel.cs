@@ -1,9 +1,6 @@
-﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Threading;
 using Carcassonne.Model;
 using GameBase.WPF.ViewModel;
 

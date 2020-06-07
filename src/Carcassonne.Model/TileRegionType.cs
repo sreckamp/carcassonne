@@ -4,6 +4,6 @@
     {
         None,
         Flower,
-        Monastery,
+        Monastery
     }
 }

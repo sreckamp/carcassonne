@@ -17,7 +17,7 @@ namespace Carcassonne
         public CarcassonneForm()
         {
             InitializeComponent();
-            m_game.Play();
+            // m_game.Play();
             //foreach (var t in m_game.Deck)
             //{
             //    lstTiles.Items.Add(t);
@@ -69,10 +69,9 @@ namespace Carcassonne
             {
                 m_activeTile.Active = false;
             }
-            var gt = sender as GameTile;
+            if(!(sender is GameTile gt)) return;
             m_activeTile = gt;
-            if(gt != null)
-                m_activeTile.Active = true;
+            m_activeTile.Active = true;
         }
 
         private void lstTiles_SelectedIndexChanged(object sender, EventArgs e)

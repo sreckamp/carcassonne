@@ -52,15 +52,7 @@ namespace Carcassonne.Model
 
         #endregion
 
-        private IPointContainer m_container = NopPointContainer.Instance;
-        public IPointContainer Container
-        {
-            get => m_container;
-            set
-            {
-                m_container = value;
-            }
-        }
+        public IPointContainer Container { get; set; } = NopPointContainer.Instance;
 
         //This never changes.
         public ITile Parent { get; set; } = NopTile.Instance;

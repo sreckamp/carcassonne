@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 using Carcassonne.Model;
 
@@ -105,6 +104,10 @@ namespace Carcassonne
                         case TileRegionType.Flower:
                             m_renderers.Add(new FlowerRegionRenderer(canvas, Tile));
                             break;
+                        case TileRegionType.None:
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
                 }
             }
@@ -174,65 +177,45 @@ namespace Carcassonne
 
             protected void AddEllipse(RectangleF canvas, Color color, RectangleF rect, Rotation rotation)
             {
-                var scaled = new RectangleF();
-                switch (rotation)
+                var scaled = rotation switch
                 {
-                    case Rotation.None:
-                        scaled = new RectangleF(canvas.X + rect.X * canvas.Width,
-                                    canvas.Y + rect.Y * canvas.Height,
-                                    rect.Width * canvas.Width, rect.Height * canvas.Height);
-                        break;
-                    case Rotation.CounterClockwise:
-                        scaled = new RectangleF(canvas.X + rect.Y * canvas.Width,
-                                    canvas.Y + (1 - rect.X - rect.Width) * canvas.Height,
-                                    rect.Height * canvas.Width, rect.Width * canvas.Height);
-                        break;
-                    case Rotation.UpsideDown:
-                        scaled = new RectangleF(canvas.X + (1 - rect.X - rect.Width) * canvas.Width,
-                                    canvas.Y + (1 - rect.Y - rect.Height) * canvas.Height,
-                                    rect.Width * canvas.Width, rect.Height * canvas.Height);
-                        break;
-                    case Rotation.Clockwise:
-                        scaled = new RectangleF(canvas.X + (1 - rect.Y - rect.Height) * canvas.Width,
-                                    canvas.Y + rect.X * canvas.Height,
-                                    rect.Height * canvas.Width, rect.Width * canvas.Height);
-                        break;
-                }
+                    Rotation.None => new RectangleF(canvas.X + rect.X * canvas.Width, canvas.Y + rect.Y * canvas.Height,
+                        rect.Width * canvas.Width, rect.Height * canvas.Height),
+                    Rotation.CounterClockwise => new RectangleF(canvas.X + rect.Y * canvas.Width,
+                        canvas.Y + (1 - rect.X - rect.Width) * canvas.Height, rect.Height * canvas.Width,
+                        rect.Width * canvas.Height),
+                    Rotation.UpsideDown => new RectangleF(canvas.X + (1 - rect.X - rect.Width) * canvas.Width,
+                        canvas.Y + (1 - rect.Y - rect.Height) * canvas.Height, rect.Width * canvas.Width,
+                        rect.Height * canvas.Height),
+                    Rotation.Clockwise => new RectangleF(canvas.X + (1 - rect.Y - rect.Height) * canvas.Width,
+                        canvas.Y + rect.X * canvas.Height, rect.Height * canvas.Width, rect.Width * canvas.Height),
+                    _ => new RectangleF()
+                };
                 Ellipses.Add(scaled, new SolidBrush(color));
             }
 
             protected void AddRectangle(RectangleF canvas, Color color, RectangleF rect, Rotation rotation)
             {
-                var scaled = new RectangleF();
-                switch (rotation)
+                var scaled = rotation switch
                 {
-                    case Rotation.None:
-                        scaled = new RectangleF(canvas.X + rect.X * canvas.Width,
-                                    canvas.Y + rect.Y * canvas.Height,
-                                    rect.Width * canvas.Width, rect.Height * canvas.Height);
-                        break;
-                    case Rotation.CounterClockwise:
-                        scaled = new RectangleF(canvas.X + rect.Y * canvas.Width,
-                                    canvas.Y + (1 - rect.X - rect.Width) * canvas.Height,
-                                    rect.Height * canvas.Width, rect.Width * canvas.Height);
-                        break;
-                    case Rotation.UpsideDown:
-                        scaled = new RectangleF(canvas.X + (1 - rect.X - rect.Width) * canvas.Width,
-                                    canvas.Y + (1 - rect.Y - rect.Height) * canvas.Height,
-                                    rect.Width * canvas.Width, rect.Height * canvas.Height);
-                        break;
-                    case Rotation.Clockwise:
-                        scaled = new RectangleF(canvas.X + (1 - rect.Y - rect.Height) * canvas.Width,
-                                    canvas.Y + rect.X * canvas.Height,
-                                    rect.Height * canvas.Width, rect.Width * canvas.Height);
-                        break;
-                }
+                    Rotation.None => new RectangleF(canvas.X + rect.X * canvas.Width, canvas.Y + rect.Y * canvas.Height,
+                        rect.Width * canvas.Width, rect.Height * canvas.Height),
+                    Rotation.CounterClockwise => new RectangleF(canvas.X + rect.Y * canvas.Width,
+                        canvas.Y + (1 - rect.X - rect.Width) * canvas.Height, rect.Height * canvas.Width,
+                        rect.Width * canvas.Height),
+                    Rotation.UpsideDown => new RectangleF(canvas.X + (1 - rect.X - rect.Width) * canvas.Width,
+                        canvas.Y + (1 - rect.Y - rect.Height) * canvas.Height, rect.Width * canvas.Width,
+                        rect.Height * canvas.Height),
+                    Rotation.Clockwise => new RectangleF(canvas.X + (1 - rect.Y - rect.Height) * canvas.Width,
+                        canvas.Y + rect.X * canvas.Height, rect.Height * canvas.Width, rect.Width * canvas.Height),
+                    _ => new RectangleF()
+                };
                 var points = new[]
                 {
                         scaled.Location,
                         new PointF(scaled.Right, scaled.Top),
                         new PointF(scaled.Right, scaled.Bottom),
-                        new PointF(scaled.Left, scaled.Bottom),
+                        new PointF(scaled.Left, scaled.Bottom)
                 };
                 Shapes.Add(points, new SolidBrush(color));
             }
@@ -256,6 +239,8 @@ namespace Carcassonne
                         case EdgeDirection.West:
                             rot = Rotation.CounterClockwise;
                             break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
                     AddRectangle(canvas, color, new RectangleF((1 - PathWidth) / 2, 0, PathWidth, SinglePathWidth), rot);
                     AddRectangle(canvas, Color.Black, new RectangleF(SinglePathWidth, SinglePathWidth, 1 - 2 * SinglePathWidth, 0.5f - SinglePathWidth), rot);
@@ -288,6 +273,8 @@ namespace Carcassonne
                                 pts.Add(new PointF(canvas.Left, highY));
                                 pts.Add(new PointF(canvas.Left, lowY));
                                 break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
                         }
                     }
                     var points = pts.ToArray();
@@ -322,6 +309,8 @@ namespace Carcassonne
                             pts.Add(tl);
                             InsertExtraPoint(pts, tl, bl, canvas);
                             break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
                 }
                 else
@@ -350,6 +339,8 @@ namespace Carcassonne
                                 pt1 = bl;
                                 pt2 = tl;
                                 break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
                         }
                         InsertExtraPoint(pts, lastPt, pt1, canvas);
                         pts.Add(pt2);
@@ -561,58 +552,63 @@ namespace Carcassonne
                         grass.Add(dir);
                     }
                 }
-                if (grass.Count == 1)
+
+                switch (grass.Count)
                 {
-                    switch (grass[0])
+                    case 1 when grass[0] == EdgeDirection.North:
+                        y = FlowerOffsetSingle;
+                        break;
+                    case 1 when grass[0] == EdgeDirection.East:
+                        x = 1 - FlowerOffsetSingle - FlowerSize;
+                        break;
+                    case 1 when grass[0] == EdgeDirection.South:
+                        y = 1 - FlowerOffsetSingle - FlowerSize;
+                        break;
+                    case 1 when grass[0] == EdgeDirection.West:
+                        x = FlowerOffsetSingle;
+                        break;
+                    case 1:
+                        throw new ArgumentOutOfRangeException();
+                    case 2:
                     {
-                        case EdgeDirection.North:
-                            y = FlowerOffsetSingle;
-                            break;
-                        case EdgeDirection.East:
-                            x = 1 - FlowerOffsetSingle - FlowerSize;
-                            break;
-                        case EdgeDirection.South:
-                            y = 1 - FlowerOffsetSingle - FlowerSize;
-                            break;
-                        case EdgeDirection.West:
-                            x = FlowerOffsetSingle;
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
+                        var min = (EdgeDirection) Math.Min((int) grass[0], (int) grass[1]);
+                        var max = (EdgeDirection) Math.Max((int) grass[0], (int) grass[1]);
+                        switch (min)
+                        {
+                            case EdgeDirection.North when max == EdgeDirection.East:
+                                x = 1 - FlowerSize - FlowerOffsetDual;
+                                y = FlowerOffsetDual;
+                                break;
+                            case EdgeDirection.North when max == EdgeDirection.West:
+                                x = y = FlowerOffsetDual;
+                                break;
+                            case EdgeDirection.East when max == EdgeDirection.South:
+                                x = y = 1 - FlowerSize - FlowerOffsetDual;
+                                break;
+                            case EdgeDirection.South when max == EdgeDirection.West:
+                                x = FlowerOffsetDual;
+                                y = 1 - FlowerSize - FlowerOffsetDual;
+                                break;
+                            case EdgeDirection.North
+                                when max == EdgeDirection.South &&
+                                     m_parent.GetRegion(EdgeDirection.West).Edges.Count == 2:
+                                y = FlowerOffsetSingle;
+                                break;
+                            case EdgeDirection.East
+                                when max == EdgeDirection.West &&
+                                     m_parent.GetRegion(EdgeDirection.North).Edges.Count == 2:
+                                x = FlowerOffsetSingle;
+                                break;
+                            case EdgeDirection.West:
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+
+                        break;
                     }
                 }
-                else if (grass.Count == 2)
-                {
-                    var min = (EdgeDirection)Math.Min((int)grass[0], (int)grass[1]);
-                    var max = (EdgeDirection)Math.Max((int)grass[0], (int)grass[1]);
-                    switch (min)
-                    {
-                        case EdgeDirection.North when max == EdgeDirection.East:
-                            x = 1 - FlowerSize - FlowerOffsetDual;
-                            y = FlowerOffsetDual;
-                            break;
-                        case EdgeDirection.North when max == EdgeDirection.West:
-                            x = y = FlowerOffsetDual;
-                            break;
-                        case EdgeDirection.East when max == EdgeDirection.South:
-                            x = y = 1 - FlowerSize - FlowerOffsetDual;
-                            break;
-                        case EdgeDirection.South when max == EdgeDirection.West:
-                            x = FlowerOffsetDual;
-                            y = 1 - FlowerSize - FlowerOffsetDual;
-                            break;
-                        case EdgeDirection.North when max == EdgeDirection.South && m_parent.GetRegion(EdgeDirection.West).Edges.Count == 2:
-                            y = FlowerOffsetSingle;
-                            break;
-                        case EdgeDirection.East when max == EdgeDirection.West && m_parent.GetRegion(EdgeDirection.North).Edges.Count == 2:
-                            x = FlowerOffsetSingle;
-                            break;
-                        case EdgeDirection.West:
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                }
+
                 AddRectangle(canvas, Color.Yellow, new RectangleF(x, y, FlowerSize, FlowerSize),
                     Rotation.None);
             }

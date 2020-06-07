@@ -106,14 +106,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <None Include="app.config" />
-    <None Include="TileViewOld.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </None>
-    <Page Include="GameBoardView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="GameView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -140,12 +132,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="TileViewOld.xaml.cs">
-      <DependentUpon>TileViewOld.xaml</DependentUpon>
-    </None>
-    <Compile Include="GameBoardView.xaml.cs">
-      <DependentUpon>GameBoardView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ViewModel\MeepleViewModel.cs" />
     <Compile Include="ViewModel\PlayerViewModel.cs" />
     <Compile Include="MeepleView.xaml.cs">

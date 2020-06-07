@@ -5,7 +5,7 @@
         None,
         CounterClockwise,
         UpsideDown,
-        Clockwise,
+        Clockwise
     }
 
     public static class RotationExtensions

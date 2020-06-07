@@ -4,9 +4,9 @@ using GameBase.Model;
 
 namespace Carcassonne.Model
 {
-    public class Player_ : IPlayer
+    public class Player : IPlayer
     {
-        public Player_(string name)
+        public Player(string name)
         {
             Name = name;
             ScoreChanged += (sender, args) => { };

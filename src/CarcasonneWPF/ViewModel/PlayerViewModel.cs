@@ -14,8 +14,8 @@ namespace Carcassonne.WPF.ViewModel
         {
             SDefaultColor.Freeze();
         }
-        private readonly static Brush SDefaultColor = new SolidColorBrush(Colors.Fuchsia);
-        public readonly static Dictionary<string, Brush> ColorsForName = new Dictionary<string, Brush>();
+        private static readonly Brush SDefaultColor = new SolidColorBrush(Colors.Fuchsia);
+        public static readonly Dictionary<string, Brush> ColorsForName = new Dictionary<string, Brush>();
         private readonly object m_lock = new object();
         //private readonly Dispatcher m_dispatcher;
         //private readonly MouseButtonEventHandler m_placeLeftButtonUpHandler;
@@ -43,7 +43,7 @@ namespace Carcassonne.WPF.ViewModel
             //m_claimRightButtonUpHandler = new MouseButtonEventHandler(Tile_RightMouseButtonUp);
             //m_rightButtonDownHandler = new MouseButtonEventHandler(RightMouseButtonDown);
             //m_tileEnterHandler = new TileEnterHandler(GameField_TileEnter);
-            MeepleViewModels = new DispatchedMappingCollection<MeepleViewModel, IMeeple>(player.Meeple);
+            MeepleViewModels = new MappingCollection<MeepleViewModel, IMeeple>(player.Meeple);
         }
 
         public MappingCollection<MeepleViewModel, IMeeple> MeepleViewModels { get; }

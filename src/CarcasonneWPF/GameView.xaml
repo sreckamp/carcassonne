@@ -7,8 +7,7 @@
     xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
     xmlns:vm="clr-namespace:Carcassonne.WPF.ViewModel"
     xmlns:model="clr-namespace:Carcassonne.Model;assembly=Carcassonne.Model"
-    xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
-    Title="Carcasonne">
+    Title="Carcassonne">
     <Window.Resources>
         <DataTemplate DataType="{x:Type vm:MeepleViewModel}">
             <local:MeepleView Height="40" Width="29"/>

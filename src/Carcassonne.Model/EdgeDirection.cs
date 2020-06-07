@@ -5,7 +5,7 @@
         North,
         East,
         South,
-        West,
+        West
     }
 
     public static class EdgeDirectionExtensions
