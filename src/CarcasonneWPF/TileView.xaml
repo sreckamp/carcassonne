@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Carcassonne.WPF.TileView"
+﻿<UserControl x:Class="Carcassonne.WPF.TileControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:Carcassonne.WPF"
@@ -47,7 +47,7 @@
             </i:EventTrigger>
         </i:Interaction.Triggers>
         <Viewbox.Resources>
-            <Style TargetType="{x:Type local:MeepleView}">
+            <Style TargetType="{x:Type local:MeepleControl}">
                 <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
                 <Setter Property="RenderTransform">
                     <Setter.Value>
@@ -348,67 +348,67 @@
             <!-- Meeple -->
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthDataContext}">
                 <!-- Road -->
-                <local:MeepleView Margin="55,0,55,110" DataContext="{Binding EdgeMeeple}"/>
+                <local:MeepleControl Margin="55,0,55,110" DataContext="{Binding EdgeMeeple}"/>
                 <!-- City -->
-                <local:MeepleView Margin="55,0,55,110" DataContext="{Binding EdgeMeeple}"/>
+                <local:MeepleControl Margin="55,0,55,110" DataContext="{Binding EdgeMeeple}"/>
                 <!-- Flower -->
-                <local:MeepleView Margin="55" DataContext="{Binding TileMeeple}"/>
+                <local:MeepleControl Margin="55" DataContext="{Binding TileMeeple}"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding EastDataContext}">
                 <!-- Road -->
-                <local:MeepleView Margin="110,55,0,55" DataContext="{Binding EdgeMeeple}"/>
+                <local:MeepleControl Margin="110,55,0,55" DataContext="{Binding EdgeMeeple}"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding SouthDataContext}">
                 <!-- Road -->
-                <local:MeepleView Margin="55,110,55,0" DataContext="{Binding EdgeMeeple}"/>
+                <local:MeepleControl Margin="55,110,55,0" DataContext="{Binding EdgeMeeple}"/>
                 <!-- City -->
-                <local:MeepleView Margin="55,110,55,0" DataContext="{Binding EdgeMeeple}"/>
+                <local:MeepleControl Margin="55,110,55,0" DataContext="{Binding EdgeMeeple}"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding WestDataContext}">
                 <!-- Road -->
-                <local:MeepleView Margin="0,55,110,55" DataContext="{Binding EdgeMeeple}"/>
+                <local:MeepleControl Margin="0,55,110,55" DataContext="{Binding EdgeMeeple}"/>
                 <!-- City -->
-                <local:MeepleView Margin="0,55,110,55" DataContext="{Binding EdgeMeeple}"/>
+                <local:MeepleControl Margin="0,55,110,55" DataContext="{Binding EdgeMeeple}"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding EastWestDataContext}">
                 <!-- Road -->
-                <local:MeepleView Margin="55" DataContext="{Binding EdgeMeeple}"/>
+                <local:MeepleControl Margin="55" DataContext="{Binding EdgeMeeple}"/>
                 <!-- City -->
-                <local:MeepleView Margin="55" DataContext="{Binding EdgeMeeple}"/>
+                <local:MeepleControl Margin="55" DataContext="{Binding EdgeMeeple}"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthSouthDataContext}">
                 <!-- Road -->
-                <local:MeepleView Margin="55" DataContext="{Binding EdgeMeeple}"/>
+                <local:MeepleControl Margin="55" DataContext="{Binding EdgeMeeple}"/>
                 <!-- Flower -->
-                <local:MeepleView Margin="12,55,98,55" DataContext="{Binding TileMeeple}"/>
+                <local:MeepleControl Margin="12,55,98,55" DataContext="{Binding TileMeeple}"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthEastDataContext}">
                 <!-- Road -->
-                <local:MeepleView Margin="90,15,20,95" DataContext="{Binding EdgeMeeple}"/>
+                <local:MeepleControl Margin="90,15,20,95" DataContext="{Binding EdgeMeeple}"/>
                 <!-- City -->
-                <local:MeepleView Margin="90,15,20,95" DataContext="{Binding EdgeMeeple}"/>
+                <local:MeepleControl Margin="90,15,20,95" DataContext="{Binding EdgeMeeple}"/>
                 <!-- Flower -->
-                <local:MeepleView Margin="20,82.5,90,27.5" DataContext="{Binding TileMeeple}"/>
+                <local:MeepleControl Margin="20,82.5,90,27.5" DataContext="{Binding TileMeeple}"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding EastSouthDataContext}">
                 <!-- Road -->
-                <local:MeepleView Margin="90,15,95,20" DataContext="{Binding EdgeMeeple}"/>
+                <local:MeepleControl Margin="90,15,95,20" DataContext="{Binding EdgeMeeple}"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding SouthWestDataContext}">
                 <!-- Road -->
-                <local:MeepleView Margin="20,95,90,15" DataContext="{Binding EdgeMeeple}"/>
+                <local:MeepleControl Margin="20,95,90,15" DataContext="{Binding EdgeMeeple}"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding NorthEastWestDataContext}">
                 <!-- City -->
-                <local:MeepleView Margin="55,40,55,70" DataContext="{Binding EdgeMeeple}"/>
+                <local:MeepleControl Margin="55,40,55,70" DataContext="{Binding EdgeMeeple}"/>
                 <!-- Flower -->
-                <local:MeepleView Margin="55,110,55,0" DataContext="{Binding TileMeeple}"/>
+                <local:MeepleControl Margin="55,110,55,0" DataContext="{Binding TileMeeple}"/>
             </Grid>
             <Grid Style="{StaticResource RegionGrid}" DataContext="{Binding AllDataContext}">
                 <!-- City -->
-                <local:MeepleView Margin="55" DataContext="{Binding EdgeMeeple}"/>
+                <local:MeepleControl Margin="55" DataContext="{Binding EdgeMeeple}"/>
                 <!-- Monastery -->
-                <local:MeepleView Margin="55" DataContext="{Binding TileMeeple}"/>
+                <local:MeepleControl Margin="55" DataContext="{Binding TileMeeple}"/>
             </Grid>
         </Grid>
     </Viewbox>

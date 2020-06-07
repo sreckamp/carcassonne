@@ -4,9 +4,9 @@
 //TODO: Separate the Flower from the Paths/Cities edge region separate from Tile Region for Flower.
 namespace Carcassonne.WPF
 {
-    public partial class TileView
+    public partial class TileControl
     {
-        public TileView()
+        public TileControl()
         {
             InitializeComponent();
         }

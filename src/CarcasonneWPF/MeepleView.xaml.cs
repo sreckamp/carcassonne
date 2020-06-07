@@ -9,22 +9,22 @@ namespace Carcassonne.WPF
     /// <summary>
     /// Interaction logic for MeepleControl.xaml
     /// </summary>
-    public partial class MeepleView : INotifyPropertyChanged
+    public partial class MeepleControl : INotifyPropertyChanged
     {
         private static readonly Brush SDefaultBrush = new SolidColorBrush(Colors.DarkGray);
         public static readonly DependencyProperty OutlinedProperty = DependencyProperty.Register(nameof(Outlined), typeof(bool),
-            typeof(MeepleView), new PropertyMetadata(false, UpdateColors));
+            typeof(MeepleControl), new PropertyMetadata(false, UpdateColors));
         public static readonly DependencyProperty ColorProperty = DependencyProperty.Register(nameof(Color), typeof(Brush),
-            typeof(MeepleView), new PropertyMetadata(SDefaultBrush, UpdateColors));
+            typeof(MeepleControl), new PropertyMetadata(SDefaultBrush, UpdateColors));
 
-        static MeepleView()
+        static MeepleControl()
         {
             SDefaultBrush.Freeze();
         }
 
         private static void UpdateColors(DependencyObject sender, DependencyPropertyChangedEventArgs args)
         {
-            if (sender is MeepleView mc)
+            if (sender is MeepleControl mc)
             {
                 mc.UpdateMeepleColoring();
             }
@@ -40,7 +40,7 @@ namespace Carcassonne.WPF
         }
 
         #endregion
-        public MeepleView()
+        public MeepleControl()
         {
             InitializeComponent();
             PropertyChanged += (sender, args) => { };
