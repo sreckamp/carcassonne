@@ -20,6 +20,14 @@ namespace Carcassonne.WPF.ViewModel
         public Brush Fill => new SolidColorBrush(Colors.Chartreuse);// PlayerViewModel.ColorsForName[m_meeple.Player.Name];
         public Brush Stroke => new SolidColorBrush(Colors.Transparent);
 
+        public void SetRotationAngle(float value)
+        {
+            RotationAngle = value;
+            NotifyPropertyChanged(nameof(RotationAngle));
+        }
+
+        public float RotationAngle { get; private set; }
+
         public Visibility MeepleVisibility => (m_meeple.Type == MeepleType.Meeple).ToVisibility();
 
         public Visibility AbbotVisibility => (m_meeple.Type == MeepleType.Abbot).ToVisibility();

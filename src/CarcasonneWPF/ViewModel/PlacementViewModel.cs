@@ -21,11 +21,8 @@ namespace Carcassonne.WPF.ViewModel
         private const int ForegroundDepth = 50;
         private const int DefaultDepth = 25;
 
-        private static readonly TileFeatureViewModel SDefaultIClaimableModel =
-            new TileFeatureViewModel(null, new EdgeRegion(EdgeRegionType.Any), NopTileRegion.Instance);
-
-        private TileFeatureViewModel m_edgeFeature = null;
-        private TileFeatureViewModel m_tileFeature = null;
+        private TileFeatureViewModel m_edgeFeature;
+        private TileFeatureViewModel m_tileFeature;
 
         public PlacementViewModel(ITile tile, BoardViewModel boardViewModel) :
             this(new Placement<ITile>(tile, new DPoint(int.MinValue, int.MinValue)), boardViewModel)
@@ -46,9 +43,14 @@ namespace Carcassonne.WPF.ViewModel
 
         private void Clear()
         {
-            if (m_edgeFeature != null || m_tileFeature != null)
+            if (m_edgeFeature != null)
             {
-                Debug.WriteLine("Over Grass");
+                Debug.WriteLine($"Exit{m_edgeFeature}");
+            }
+
+            if (m_tileFeature != null)
+            {
+                Debug.WriteLine($"Exit{m_tileFeature}");
             }
 
             ClearMeeple();
@@ -57,9 +59,12 @@ namespace Carcassonne.WPF.ViewModel
         private void EnterEdgeFeature(TileFeatureViewModel feature)
         {
             if (m_edgeFeature == feature) return;
+
             ClearMeeple();
+
             m_edgeFeature = feature;
             if (m_edgeFeature == null) return;
+
             m_edgeFeature.SetEdgeMeeple(m_meeple);
             Debug.WriteLine($"Enter:{feature}");
         }
@@ -67,9 +72,12 @@ namespace Carcassonne.WPF.ViewModel
         private void EnterTileFeature(TileFeatureViewModel feature)
         {
             if (m_tileFeature == feature) return;
+
             ClearMeeple();
+
             m_tileFeature = feature;
             if (m_tileFeature == null) return;
+
             m_tileFeature.SetTileMeeple(m_abbot);
             Debug.WriteLine($"Enter:{feature}");
         }
@@ -102,8 +110,6 @@ namespace Carcassonne.WPF.ViewModel
 
         public double Opacity => !IsForeground || Fits ? 1 : 0.5;
 
-        // public void ChangedDepth() => NotifyPropertyChanged(nameof(Depth));
-
         public bool IsBackground { get; protected set; }
 
         private bool m_isForeground;
@@ -133,40 +139,46 @@ namespace Carcassonne.WPF.ViewModel
 
                 rt.Rotation = value;
                 NotifyPropertyChanged(nameof(RotationAngle));
-                NotifyPropertyChanged(nameof(NegRotationAngle));
                 NotifyPropertyChanged(nameof(Opacity));
+                RotationAngleChanged?.Invoke(this, new EventArgs());
             }
         }
 
+        public event EventHandler RotationAngleChanged;
         public float RotationAngle => TileRotation.ToDegrees();
-        public float NegRotationAngle => -RotationAngle;
 
         public string Name => Placement.Piece.ToString();
 
-        public object AllDataContext { get; private set; } = SDefaultIClaimableModel;
+        public object AllDataContext { get; private set; }
 
-        public object NorthEastWestDataContext { get; private set; } = SDefaultIClaimableModel;
+        public object NorthEastWestDataContext { get; private set; }
 
-        public object NorthDataContext { get; private set; } = SDefaultIClaimableModel;
+        public object NorthDataContext { get; private set; }
 
-        public object SouthDataContext { get; private set; } = SDefaultIClaimableModel;
+        public object SouthDataContext { get; private set; }
 
-        public object WestDataContext { get; private set; } = SDefaultIClaimableModel;
+        public object WestDataContext { get; private set; }
 
-        public object EastDataContext { get; private set; } = SDefaultIClaimableModel;
+        public object EastDataContext { get; private set; }
 
-        public object SouthWestDataContext { get; private set; } = SDefaultIClaimableModel;
+        public object SouthWestDataContext { get; private set; }
 
-        public object EastWestDataContext { get; private set; } = SDefaultIClaimableModel;
+        public object EastWestDataContext { get; private set; }
 
-        public object NorthSouthDataContext { get; private set; } = SDefaultIClaimableModel;
+        public object NorthSouthDataContext { get; private set; }
 
-        public object NorthEastDataContext { get; private set; } = SDefaultIClaimableModel;
+        public object NorthEastDataContext { get; private set; }
 
-        public object EastSouthDataContext { get; private set; } = SDefaultIClaimableModel;
+        public object EastSouthDataContext { get; private set; }
 
         private void ParseTile()
         {
+            AllDataContext = NorthEastWestDataContext =
+                NorthDataContext = SouthDataContext = WestDataContext = EastDataContext =
+                    SouthWestDataContext = NorthEastDataContext = EastSouthDataContext =
+                        EastWestDataContext = NorthSouthDataContext = new TileFeatureViewModel(this,
+                            new EdgeRegion(EdgeRegionType.Any), NopTileRegion.Instance);
+
             var regions = Placement.Piece is RotatedTile rt ? rt.RegionsNotRotated : Placement.Piece.Regions;
             foreach (var r in regions)
             {
@@ -217,7 +229,7 @@ namespace Carcassonne.WPF.ViewModel
                 }
             }
 
-            if (AllDataContext == SDefaultIClaimableModel)
+            if (Placement.Piece.TileRegion.Type == TileRegionType.Monastery)
             {
                 AllDataContext = new TileFeatureViewModel(this, NopEdgeRegion.Instance, Placement.Piece.TileRegion);
             }
@@ -252,21 +264,35 @@ namespace Carcassonne.WPF.ViewModel
             private readonly PlacementViewModel m_parent;
             private readonly IEdgeRegion m_edge;
             private readonly ITileRegion m_tile;
+            private static readonly MeepleViewModel SEmptyMeepleViewModel = new MeepleViewModel(new Meeple(MeepleType.None, NopPlayer.Instance));
 
             public TileFeatureViewModel(PlacementViewModel parent, IEdgeRegion edge, ITileRegion tile)
             {
                 m_parent = parent;
+                parent.RotationAngleChanged += (sender, args) =>
+                {
+                    TileMeeple.SetRotationAngle(-m_parent.RotationAngle);
+                    EdgeMeeple.SetRotationAngle(-m_parent.RotationAngle);
+                };
                 m_edge = edge;
                 m_tile = tile;
                 EdgeMoveCommand = new RelayCommand(EdgeRegionMove, CanMove);
                 TileMoveCommand = new RelayCommand(TileRegionMove, CanMove);
+                ClearCommand = new RelayCommand(ClearMove, CanMove);
             }
 
             public ICommand EdgeMoveCommand { get; set; }
 
             public ICommand TileMoveCommand { get; set; }
 
+            public ICommand ClearCommand { get; set; }
+
             private bool CanMove() => m_parent != null;
+
+            private void ClearMove()
+            {
+                m_parent.Clear();
+            }
 
             private void EdgeRegionMove()
             {
@@ -281,19 +307,21 @@ namespace Carcassonne.WPF.ViewModel
             public void SetEdgeMeeple(MeepleViewModel meeple)
             {
                 if (!IsCity && !IsRoad) return;
-                EdgeMeeple = meeple;
+                EdgeMeeple = meeple ?? SEmptyMeepleViewModel;
                 NotifyPropertyChanged(nameof(EdgeMeeple));
+                EdgeMeeple.SetRotationAngle(-m_parent.RotationAngle);
             }
 
             public void SetTileMeeple(MeepleViewModel meeple)
             {
-                TileMeeple = meeple;
+                TileMeeple = meeple ?? SEmptyMeepleViewModel;
                 NotifyPropertyChanged(nameof(TileMeeple));
+                TileMeeple.SetRotationAngle(-m_parent.RotationAngle);
             }
 
-            public MeepleViewModel EdgeMeeple { get; private set; }
+            public MeepleViewModel EdgeMeeple { get; private set; } = SEmptyMeepleViewModel;
 
-            public MeepleViewModel TileMeeple { get; private set; }
+            public MeepleViewModel TileMeeple { get; private set; } = SEmptyMeepleViewModel;
 
             public Visibility FullVisibility =>
                 (m_edge.Type != EdgeRegionType.Any || m_tile.Type != TileRegionType.None).ToVisibility();
@@ -315,6 +343,8 @@ namespace Carcassonne.WPF.ViewModel
             public Visibility FlowerVisibility => (m_tile.Type == TileRegionType.Flower).ToVisibility();
 
             public Visibility MonasteryVisibility => (m_tile.Type == TileRegionType.Monastery).ToVisibility();
+
+            public double MeepleRotationAngle => -m_parent.RotationAngle;
 
             #region INotifyPropertyChanged Members
 
