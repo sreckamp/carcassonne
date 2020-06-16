@@ -6,6 +6,5 @@ namespace Carcassonne.Model
 {
     public interface IGameBoard:IGameBoard<ITile>
     {
-        IEnumerable<ITile> GetAllNeighbors(Point point);
     }
 }

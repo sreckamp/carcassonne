@@ -4,7 +4,7 @@
     {
         public bool Applies(ITile newTile, ITile neighbor, EdgeDirection direction)
         {
-
+            if (!direction.IsCardinal()) return false;
             var mine = newTile.GetEdge(direction);
             return mine.FitsWith(neighbor.GetEdge(direction.Opposite()))
                    && (mine == EdgeRegionType.City || mine == EdgeRegionType.Road);

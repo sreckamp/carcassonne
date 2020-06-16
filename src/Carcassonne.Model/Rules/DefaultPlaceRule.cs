@@ -17,14 +17,16 @@ namespace Carcassonne.Model.Rules
         {
             if(!(board is Board b)) return false;
             var hasNeighbor = false;
-            foreach (EdgeDirection dir in Enum.GetValues(typeof(EdgeDirection)))
+            var dir = EdgeDirection.North;
+            do
             {
                 var n = b.GetNeighbor(location, dir);
                 var mine = tile.GetRegion(dir);
                 var theirs = n.GetRegion(dir.Opposite());
                 hasNeighbor = hasNeighbor || theirs.Type != EdgeRegionType.Any;
                 if (!RegionsMatch(mine, theirs)) return false;
-            }
+                dir = dir.Rotate(Rotation.Clockwise);
+            } while (dir != EdgeDirection.North);
 
             return hasNeighbor;
         }

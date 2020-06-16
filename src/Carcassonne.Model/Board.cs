@@ -13,32 +13,27 @@ namespace Carcassonne.Model
 
         public ITile GetNeighbor(Point point, EdgeDirection direction)
         {
-            var xOffset = 0;
-            var yOffset = 0;
-            switch (direction)
+            var xOffset = direction switch
             {
-                case EdgeDirection.North:
-                    yOffset = -1;
-                    break;
-                case EdgeDirection.South:
-                    yOffset = 1;
-                    break;
-                case EdgeDirection.West:
-                    xOffset = -1;
-                    break;
-                case EdgeDirection.East:
-                    xOffset = 1;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
-            }
+                EdgeDirection.NorthEast => 1,
+                EdgeDirection.East => 1,
+                EdgeDirection.SouthEast => 1,
+                EdgeDirection.SouthWest => -1,
+                EdgeDirection.West => -1,
+                EdgeDirection.NorthWest => -1,
+                _ => 0
+            };
+            var yOffset = direction switch
+            {
+                EdgeDirection.NorthWest => -1,
+                EdgeDirection.North => -1,
+                EdgeDirection.NorthEast => -1,
+                EdgeDirection.SouthWest => 1,
+                EdgeDirection.South => 1,
+                EdgeDirection.SouthEast => 1,
+                _ => 0
+            };
             return base[point.X + xOffset, point.Y + yOffset];
-        }
-
-        public IEnumerable<ITile> GetAllNeighbors(Point point)
-        {
-            return Enum.GetValues(typeof(EdgeDirection)).Cast<EdgeDirection>()
-                .Select(d => GetNeighbor(point, d)).Where(tile => tile != NopTile.Instance);
         }
     }
 }

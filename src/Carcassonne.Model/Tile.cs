@@ -219,13 +219,15 @@ namespace Carcassonne.Model
 
             public static implicit operator Tile(TileBuilder builder)
             {
-                foreach (EdgeDirection dir in Enum.GetValues(typeof(EdgeDirection)))
+                var dir = EdgeDirection.North;
+                do
                 {
                     if (builder.Tile.GetEdge(dir) == EdgeRegionType.Any)
                     {
                         builder.Tile.AddRegion(new EdgeRegion(EdgeRegionType.None, dir));
                     }
-                }
+                    dir = dir.Rotate(Rotation.Clockwise);
+                } while (dir != EdgeDirection.North);
                 return builder.Tile;
             }
         }
