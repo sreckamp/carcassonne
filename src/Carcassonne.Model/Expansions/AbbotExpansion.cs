@@ -12,6 +12,7 @@ namespace Carcassonne.Model.Expansions
             WritableClaimRules.Add(new AbbotClaimRule());
             WritablePlayerRules.Add(new CreateMeeplePlayerCreationRule(1, MeepleType.Abbot));
             WritableScoreRules.Add(new TileRegionScoreRule(TileRegionType.Flower));
+            WritableJoinRules.Add(new FlowerJoinRule());
         }
 
         private class AbbotClaimRule : IClaimRule
@@ -30,6 +31,29 @@ namespace Carcassonne.Model.Expansions
             }
 
             #endregion
+        }
+        
+        private class FlowerJoinRule : IJoinRule
+        {
+            public bool Applies(ITile newTile, ITile neighbor, EdgeDirection direction) =>
+                neighbor != NopTile.Instance && (newTile.HasFlowers || neighbor.HasFlowers);
+
+            public void Join(ITile newTile, ITile neighbor, EdgeDirection direction)
+            {
+                //TODO: All 8 directions, only 4 now.
+                if (newTile.HasFlowers)
+                {
+                    if (newTile.TileRegion1.Type != TileRegionType.Flower)
+                    {
+                        newTile.TileRegion1 = new TileRegion(TileRegionType.Flower);
+                    }
+                    newTile.TileRegion1.Add(neighbor);
+                }
+                if (neighbor.HasFlowers)
+                {
+                    newTile.TileRegion1.Add(newTile);
+                }
+            }
         }
     }
 }

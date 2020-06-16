@@ -34,7 +34,7 @@ namespace Carcassonne.WPF.ViewModel
             RowsChanged += (sender, args) => Debug.WriteLine($"BoardViewModel.Rows {args.OldVal}=>{args.NewVal}");
             PropertyChanged += (sender, args) => Debug.WriteLine($"BoardViewModel.Property {args.PropertyName}");
 
-            var placements = new MappingCollection<PlacementViewModel, Placement<ITile>>(board.Placements, this);
+            var placements = new MappingCollection<PlacementViewModel, Placement<ITile>>(board.Placements, (IGridManager)this);
             Grid = new OverlayObservableList<PlacementViewModel>(m_grid, placements, m_active);
 
             m_board = board;
@@ -176,7 +176,7 @@ namespace Carcassonne.WPF.ViewModel
         private void AddPoint(int x, int y)
         {
             var p = new Point(x, y);
-            m_grid.Add(new PointViewModel(p, this));
+            m_grid.Add(new LocationViewModel(p, this));
         }
 
         public void SetActivePlacement(PlacementViewModel placement)

@@ -10,12 +10,16 @@ namespace Carcassonne.WPF.ViewModel
     {
         private static readonly Brush SDefaultColor = new SolidColorBrush(Colors.Fuchsia);
         private static readonly Brush STransparent = new SolidColorBrush(Colors.Transparent);
-        internal static readonly Dictionary<string, Brush> ColorsForName = new Dictionary<string, Brush>();
+        internal static readonly Dictionary<string, Brush> ColorsForName;
 
         static PlayerViewModel()
         {
             SDefaultColor.Freeze();
             STransparent.Freeze();
+            ColorsForName = new Dictionary<string, Brush>
+            {
+                {"", SDefaultColor}
+            };
         }
         private readonly IPlayer m_player;
 

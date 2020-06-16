@@ -4,16 +4,18 @@ using System.Linq;
 
 namespace Carcassonne.Model
 {
-    public class PointRegion : IPointContainer
+    public class PointContainer : IPointContainer
     {
         private readonly List<IEdgeRegion> m_regions = new List<IEdgeRegion>();
         private readonly List<ITile> m_tiles = new List<ITile>();
 
-        public PointRegion(EdgeRegionType type)
+        public PointContainer(EdgeRegionType type)
         {
             Type = type;
             IsClosedChanged += (sender, args) => { };
         }
+
+        public string[] Regions => m_regions.Select(r => r.ToString()).ToArray();
 
         public event EventHandler IsClosedChanged;
         public EdgeRegionType Type { get; }
@@ -108,7 +110,7 @@ namespace Carcassonne.Model
             }
         }
 
-        public void Merge(PointRegion other)
+        public void Merge(PointContainer other)
         {
             foreach (var er in other.m_regions)
             {

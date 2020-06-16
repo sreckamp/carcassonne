@@ -74,6 +74,7 @@
     <Compile Include="CityPointRegion.cs" />
     <Compile Include="Board.cs" />
     <Compile Include="Expansions\StandardRules.cs" />
+    <Compile Include="ICityEdgeRegion.cs" />
     <Compile Include="IEdgeRegion.cs" />
     <Compile Include="IGameBoard.cs" />
     <Compile Include="IMeeple.cs" />
@@ -97,6 +98,9 @@
     <Compile Include="RotatedEdgeRegion.cs" />
     <Compile Include="RotatedTile.cs" />
     <Compile Include="Rules\CityRegionScoreRule.cs" />
+    <Compile Include="Rules\EdgeRegionJoinRule.cs" />
+    <Compile Include="Rules\IJoinRule.cs" />
+    <Compile Include="Rules\MonasteryJoinRule.cs" />
     <Compile Include="Rules\RoadRegionScoreRule.cs" />
     <Compile Include="Rules\IClaimRule.cs" />
     <Compile Include="Rules\IPlayerCreationRule.cs" />

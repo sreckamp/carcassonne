@@ -11,6 +11,7 @@ namespace Carcassonne.Model
         protected readonly List<IClaimRule> WritableClaimRules = new List<IClaimRule>();
         protected readonly List<IPlayerCreationRule> WritablePlayerRules = new List<IPlayerCreationRule>();
         protected readonly List<IScoreRule> WritableScoreRules = new List<IScoreRule>();
+        protected readonly List<IJoinRule> WritableJoinRules = new List<IJoinRule>();
 
         protected ExpansionPack()
         {
@@ -18,6 +19,7 @@ namespace Carcassonne.Model
             ClaimRules = new ReadOnlyCollection<IClaimRule>(WritableClaimRules);
             PlayerCreationRules = new ReadOnlyCollection<IPlayerCreationRule>(WritablePlayerRules);
             ScoreRules = new ReadOnlyCollection<IScoreRule>(WritableScoreRules);
+            JoinRules = new ReadOnlyCollection<IJoinRule>(WritableJoinRules);
         }
 
         public virtual void BeforeDeckShuffle(Deck deck) { }
@@ -26,5 +28,6 @@ namespace Carcassonne.Model
         public ReadOnlyCollection<IClaimRule> ClaimRules { get; }
         public ReadOnlyCollection<IPlayerCreationRule> PlayerCreationRules { get; }
         public ReadOnlyCollection<IScoreRule> ScoreRules { get; }
+        public ReadOnlyCollection<IJoinRule> JoinRules { get; }
     }
 }

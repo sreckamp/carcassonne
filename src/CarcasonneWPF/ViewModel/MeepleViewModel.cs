@@ -17,7 +17,7 @@ namespace Carcassonne.WPF.ViewModel
             Stroke.Freeze();
         }
 
-        public Brush Fill => new SolidColorBrush(Colors.Chartreuse);// PlayerViewModel.ColorsForName[m_meeple.Player.Name];
+        public Brush Fill => PlayerViewModel.ColorsForName[m_meeple.Player.Name];
         public Brush Stroke => new SolidColorBrush(Colors.Transparent);
 
         public void SetRotationAngle(float value)

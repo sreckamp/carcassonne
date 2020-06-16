@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Carcassonne.Model
 {
@@ -11,6 +12,8 @@ namespace Carcassonne.Model
         {
             Type = type;
         }
+
+        public string[] Tiles => m_tiles.Select(t => t.ToString()).ToArray();
 
         public void Add(ITile t)
         {

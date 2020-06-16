@@ -5,12 +5,13 @@ namespace Carcassonne.Model
 {
     public interface ITile
     {
-        ITileRegion TileRegion { get; }
+        ITileRegion TileRegion1 { get; set; }
         IEnumerable<IEdgeRegion> Regions { get; }
         EdgeRegionType GetEdge(EdgeDirection direction);
         IEdgeRegion GetRegion(EdgeDirection direction);
         bool Contains(EdgeRegionType type);
-        void Join(ITile getNeighbor, EdgeDirection dir);
+        bool HasMonastery { get; }
+        bool HasFlowers { get; }
     }
 
     public class NopTile : ITile
@@ -22,7 +23,13 @@ namespace Carcassonne.Model
         }
 
         /// <inheritdoc />
-        public ITileRegion TileRegion => NopTileRegion.Instance;
+        public bool HasMonastery => false;
+
+        /// <inheritdoc />
+        public bool HasFlowers => false;
+
+        /// <inheritdoc />
+        public ITileRegion TileRegion1 { get; set; } = NopTileRegion.Instance;
 
         /// <inheritdoc />
         public IEnumerable<IEdgeRegion> Regions => Enumerable.Empty<IEdgeRegion>();

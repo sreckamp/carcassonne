@@ -8,12 +8,13 @@ using GameBase.Model.Rules;
 
 namespace Carcassonne.Model
 {
-    public class RuleSet : IPlaceRule<IGameBoard, ITile>, IClaimRule, IPlayerCreationRule, IScoreRule
+    public class RuleSet : IPlaceRule<IGameBoard, ITile>, IClaimRule, IPlayerCreationRule, IScoreRule, IJoinRule
     {
         private readonly List<IPlaceRule<IGameBoard, ITile>> m_placeRules = new List<IPlaceRule<IGameBoard, ITile>>();
         private readonly List<IClaimRule> m_claimRules = new List<IClaimRule>();
         private readonly List<IPlayerCreationRule> m_playerRules = new List<IPlayerCreationRule>();
         private readonly List<IScoreRule> m_scoreRules = new List<IScoreRule>();
+        private readonly List<IJoinRule> m_joinRules = new List<IJoinRule>();
         private readonly List<Action<Deck>> m_beforeShuffle = new List<Action<Deck>>();
         private readonly List<Action<Deck>> m_afterShuffle = new List<Action<Deck>>();
 
@@ -35,6 +36,7 @@ namespace Carcassonne.Model
             m_scoreRules.AddRange(pack.ScoreRules);
             m_beforeShuffle.Add(pack.BeforeDeckShuffle);
             m_afterShuffle.Add(pack.AfterDeckShuffle);
+            m_joinRules.AddRange(pack.JoinRules);
         }
 
         #region IPlayerCreationRule Members
@@ -69,13 +71,27 @@ namespace Carcassonne.Model
 
         #region IScoreRule Members
 
-        public bool Applies(IPointContainer region)=> true;
+        public bool Applies(IPointContainer region) => true;
 
         public int GetScore(IPointContainer region) =>
             m_scoreRules.FirstOrDefault(sr => sr.Applies(region))?.GetScore(region) ?? 0;
 
         public int GetEndScore(IPointContainer region) =>
             m_scoreRules.FirstOrDefault(sr => sr.Applies(region))?.GetEndScore(region) ?? 0;
+
+        #endregion
+
+        #region IJoinRule Members
+
+        public bool Applies(ITile newTile, ITile neighbor, EdgeDirection direction) => true;
+
+        public void Join(ITile newTile, ITile neighbor, EdgeDirection direction)
+        {
+            foreach(var rule in m_joinRules.Where(sr => sr.Applies(newTile, neighbor, direction)))
+            {
+                rule.Join(newTile, neighbor, direction);
+            }
+        }
 
         #endregion
 

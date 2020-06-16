@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Carcassonne.Model
 {
-    public class RotatedEdgeRegion : IEdgeRegion, IClaimable
+    public class RotatedEdgeRegion : IEdgeRegion, IClaimable, ICityEdgeRegion
     {
         public RotatedEdgeRegion(IEdgeRegion region, Rotation rot)
         {
@@ -36,8 +36,12 @@ namespace Carcassonne.Model
             set => m_region.Parent = value;
         }
 
+        public bool HasShield => m_region is ICityEdgeRegion cer && cer.HasShield;
+
         public IList<EdgeDirection> Edges => m_region.Edges.Select(d => d.Rotate(Rotation)).ToList();
 
         public IEdgeRegion Duplicate(ITile parent) => new RotatedEdgeRegion(m_region.Duplicate(parent), Rotation);
+        
+        public override string ToString() => Rotation == Rotation.None ? m_region.ToString() : $"{m_region} @ {Rotation}";
     }
 }

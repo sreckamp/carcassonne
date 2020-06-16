@@ -258,7 +258,7 @@ namespace Carcassonne.Model
             var toScore = Board.Placements
                 .Select(p => p.Piece)
                 .SelectMany(t => t.Regions, (t, r) => r.Container)
-                .Union(Board.Placements.Select(p=>p.Piece.TileRegion).Where(tr => tr is IPointContainer).Cast<IPointContainer>())
+                .Union(Board.Placements.Select(p=>p.Piece.TileRegion1).Where(tr => tr is IPointContainer).Cast<IPointContainer>())
                 .Distinct()
                 .Where(p => p.IsClosed && p.Owners.Any()).ToList();
             Debug.WriteLine(toScore.Count);
@@ -292,7 +292,8 @@ namespace Carcassonne.Model
 
             foreach (EdgeDirection dir in Enum.GetValues(typeof(EdgeDirection)))
             {
-                tile.Join(Board.GetNeighbor(location, dir), dir);
+                RuleSet.Join(tile, Board.GetNeighbor(location, dir), dir);
+                // tile.Join(Board.GetNeighbor(location, dir), dir);
             }
             // var available = Enum.GetValues(typeof(EdgeDirection)).Cast<EdgeDirection>().ToList();
             // if (tile.TileRegion is IPointContainer pc)

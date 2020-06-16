@@ -2,19 +2,19 @@
 
 namespace Carcassonne.Model
 {
-    public class CityPointRegion : PointRegion
+    public class CityPointContainer : PointContainer
     {
         private readonly List<ITile> m_shieldTiles = new List<ITile>();
 
-        public CityPointRegion():base(EdgeRegionType.City){ }
+        public CityPointContainer():base(EdgeRegionType.City){ }
 
         public int ShieldCount => m_shieldTiles.Count;
 
         protected override bool UpdateEdges(IEdgeRegion r)
         {
             var updated = base.UpdateEdges(r);
-            if (!(r is CityEdgeRegion cer) || !cer.HasShield || m_shieldTiles.Contains(cer.Parent)) return updated;
-            m_shieldTiles.Add(cer.Parent);
+            if (!(r is ICityEdgeRegion cer) || !cer.HasShield || m_shieldTiles.Contains(r.Parent)) return updated;
+            m_shieldTiles.Add(r.Parent);
             return true;
         }
     }

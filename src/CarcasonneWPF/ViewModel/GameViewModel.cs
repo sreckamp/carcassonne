@@ -9,7 +9,6 @@ using Carcassonne.Model;
 using GalaSoft.MvvmLight.CommandWpf;
 using GameBase.Model;
 using GameBase.WPF;
-using GameBase.WPF.ViewModel;
 
 namespace Carcassonne.WPF.ViewModel
 {
@@ -45,18 +44,29 @@ namespace Carcassonne.WPF.ViewModel
             Game.ActiveTileChanged += Game_ActiveTileChanged;
             Game.GameStateChanged += Game_GameStateChanged;
             PlayerViewModels = new MappingCollection<PlayerViewModel, IPlayer>(Game.Players);
-            var cards = new ObservableList<ITile>();
-            Game.Shuffle();
-            Game.DumpDeck(cards);
-            DeckViewModel = new MappingCollection<PlacementViewModel, ITile>(cards, BoardViewModel);
+            // var cards = new ObservableList<ITile>();
+            // Game.Shuffle();
+            // Game.DumpDeck(cards);
+            // DeckViewModel = new MappingCollection<PlacementViewModel, ITile>(cards, BoardViewModel);
         }
-        public MappingCollection<PlacementViewModel, ITile> DeckViewModel { get; }
+        // public MappingCollection<PlacementViewModel, ITile> DeckViewModel { get; }
+
+        /// <summary>
+        /// TODO:Eliminate
+        /// </summary>
+        public IEnumerable<IPointContainer> PointContainers => Game.Board.Placements.SelectMany(
+            p =>
+            {
+                var pcs = p.Piece.Regions.Select(r => r.Container).Where(c=> !(c is NopPointContainer));
+                return (p.Piece.TileRegion1 is IPointContainer pc) ? pcs.Append(pc) : pcs;
+            }).Distinct();
 
         private void Game_GameStateChanged(object sender, ChangedValueArgs<GameState> e)
         {
             switch (e.NewVal)
             {
                 case GameState.Claim:
+                    NotifyPropertyChanged(nameof(PointContainers));
                     BoardViewModel.MonitorMouse = false;
                     m_active = m_defaultPlacement;
                     BoardViewModel.ClearActiveTile();

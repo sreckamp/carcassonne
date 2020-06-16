@@ -6,12 +6,12 @@
 
         public bool Applies(IPointContainer region)
         {
-            return region is PointRegion;
+            return region is PointContainer;
         }
 
         public int GetScore(IPointContainer region)
         {
-            if (region is PointRegion pr && pr.Type == EdgeRegionType.Road && pr.IsClosed)
+            if (region is PointContainer pr && pr.Type == EdgeRegionType.Road && pr.IsClosed)
             {
                 return pr.TileCount;
             }
@@ -20,7 +20,7 @@
 
         public int GetEndScore(IPointContainer region)
         {
-            if (region is PointRegion pr && pr.Type == EdgeRegionType.Road && !pr.IsClosed)
+            if (region is PointContainer pr && pr.Type == EdgeRegionType.Road && !pr.IsClosed)
             {
                 return pr.TileCount;
             }

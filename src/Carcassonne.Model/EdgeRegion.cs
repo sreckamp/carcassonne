@@ -81,14 +81,14 @@ namespace Carcassonne.Model
         }
     }
 
-    public class CityEdgeRegion:EdgeRegion
+    public class CityEdgeRegion:EdgeRegion, ICityEdgeRegion
     {
         public CityEdgeRegion(params EdgeDirection[] edges)
             : base(EdgeRegionType.City, edges) { }
         private CityEdgeRegion(IEnumerable<EdgeDirection> edges)
             : base(EdgeRegionType.City, edges) { }
 
-        public bool HasShield { get; set; }
+        public bool HasShield { get; internal set; }
 
         public override IEdgeRegion Duplicate(ITile parent)
         {

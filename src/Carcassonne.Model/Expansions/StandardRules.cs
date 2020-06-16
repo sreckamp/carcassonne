@@ -25,6 +25,8 @@ namespace Carcassonne.Model.Expansions
             WritablePlayerRules.Add(new CreateMeeplePlayerCreationRule(7, MeepleType.Meeple));
 
             //After
+            WritableJoinRules.Add(new MonasteryJoinRule());
+            WritableJoinRules.Add(new EdgeRegionJoinRule());
             WritableScoreRules.Add(new TileRegionScoreRule(TileRegionType.Monastery));
             WritableScoreRules.Add(new CityRegionScoreRule());
             WritableScoreRules.Add(new RoadRegionScoreRule());

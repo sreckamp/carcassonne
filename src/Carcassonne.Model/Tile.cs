@@ -13,10 +13,10 @@ namespace Carcassonne.Model
 
         private ITileRegion m_tileRegion = NopTileRegion.Instance;
 
-        public ITileRegion TileRegion
+        public ITileRegion TileRegion1
         {
             get => m_tileRegion;
-            private set
+            set
             {
                 m_tileRegion = value;
                 m_tileRegion.Add(this);
@@ -33,16 +33,16 @@ namespace Carcassonne.Model
 
         public IEnumerable<IEdgeRegion> Regions => m_regions;
 
-        public bool HasMonastery => TileRegion.Type == TileRegionType.Monastery;
+        public bool HasMonastery { get; private set; } // return TileRegion.Type == TileRegionType.Monastery; }
 
-        public bool HasFlower => TileRegion.Type == TileRegionType.Flower;
+        public bool HasFlowers { get; private set; } //=> TileRegion.Type == TileRegionType.Flower;
 
         public IEnumerable<IClaimable> ClaimedRegions
         {
             get
             {
                 var claimed = m_regions.Where(r => r is IClaimable c && c.Claimer.Type != MeepleType.None).Cast<IClaimable>().ToList();
-                if (TileRegion is IClaimable claim && claim.Claimer.Type != MeepleType.None)
+                if (TileRegion1 is IClaimable claim && claim.Claimer.Type != MeepleType.None)
                 {
                     claimed.Add(claim);
                 }
@@ -84,9 +84,11 @@ namespace Carcassonne.Model
         {
             var tile = new Tile
             {
-                TileRegion = TileRegion.Duplicate()
+                TileRegion1 = TileRegion1.Duplicate(),
+                HasFlowers = HasFlowers,
+                HasMonastery = HasMonastery
             };
-
+            
             foreach (var r in Regions)
             {
                 tile.AddRegion(r.Duplicate(tile));
@@ -110,13 +112,23 @@ namespace Carcassonne.Model
                 done.Add(r);
             }
 
-            if (TileRegion.Type == TileRegionType.None) return sb.ToString();
+            if (HasFlowers)
+            {
+                if (sb.Length > 0)
+                {
+                    sb.Append(',');
+                }
+
+                sb.Append("Flowers");
+            }
+
+            if (!HasMonastery) return sb.ToString();
             if (sb.Length > 0)
             {
                 sb.Append(',');
             }
 
-            sb.Append(TileRegion.Type);
+            sb.Append("Monastery");
 
             return sb.ToString();
         }
@@ -126,18 +138,11 @@ namespace Carcassonne.Model
             return Regions.Where(r => r.Type == type).Cast<IClaimable>().Any();
         }
 
-        public void Join(ITile neighbor, EdgeDirection dir)
-        {
-            TileRegion.Add(neighbor);
-            neighbor.TileRegion.Add(this);
-            //TODO: Blend Edge Regions here.
-        }
-
         public List<IClaimable> GetAvailableRegions()
         {
             var claimableRegions = Regions.Where(r =>
                 r.Type.IsValid() && !r.Container.Owners.Any()).Distinct().Cast<IClaimable>().ToList();
-            if (TileRegion is IClaimable c && c.Claimer.Type != MeepleType.None)
+            if (TileRegion1 is IClaimable c && c.Claimer.Type != MeepleType.None)
             {
                 claimableRegions.Add(c);
             }
@@ -184,13 +189,13 @@ namespace Carcassonne.Model
 
             public TileBuilder AddFlowers()
             {
-                Tile.TileRegion = new TileRegion(TileRegionType.Flower);
+                Tile.HasFlowers = true;
                 return this;
             }
 
             public TileBuilder AddMonastery()
             {
-                Tile.TileRegion = new TileRegion(TileRegionType.Monastery);
+                Tile.HasMonastery = true;
                 return this;
             }
 
