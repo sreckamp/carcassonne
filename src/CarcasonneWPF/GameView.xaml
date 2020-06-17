@@ -116,10 +116,8 @@
                 <ItemsControl.Resources>
                     <DataTemplate DataType="{x:Type vm:LocationViewModel}">
                         <Border BorderThickness="3" BorderBrush="{Binding Color}">
-                            <!--TextBlock Text="{Binding Location}"/-->
                             <TextBlock FontSize="11" FontStyle="Italic" Text="{Binding Location}" Foreground="{Binding Color}"/>
                         </Border>
-                        <!--Rectangle StrokeThickness="3" Stroke="{Binding Color}"/-->
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:PlacementViewModel}">
                         <local:TileControl>
