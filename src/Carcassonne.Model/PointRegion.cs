@@ -112,6 +112,11 @@ namespace Carcassonne.Model
 
         public void Merge(PointContainer other)
         {
+            if (other == this)
+            {
+                OpenEdges -= 2;
+                return;
+            }
             foreach (var er in other.m_regions)
             {
                 Add(er);
