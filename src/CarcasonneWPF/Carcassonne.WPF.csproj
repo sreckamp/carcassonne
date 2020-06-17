@@ -136,7 +136,7 @@
     </Compile>
     <Compile Include="ViewModel\BoardViewModel.cs" />
     <Compile Include="ViewModel\GameViewModel.cs" />
-    <Compile Include="ViewModel\PointViewModel.cs" />
+    <Compile Include="ViewModel\LocationViewModel.cs" />
     <Compile Include="ViewModel\TileCommands.cs" />
     <Compile Include="ViewModel\PlacementViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

@@ -10,12 +10,12 @@ namespace Carcassonne.Model.Expansions
         public static readonly StandardRules Instance = new StandardRules();
 
         private readonly Tile.TileBuilder m_builder = new Tile.TileBuilder();
-        private readonly List<IPlaceRule<IGameBoard, ITile>> m_defaultPlaceRules = new List<IPlaceRule<IGameBoard, ITile>>();
+        private readonly List<IPlaceRule<IBoard, ITile>> m_defaultPlaceRules = new List<IPlaceRule<IBoard, ITile>>();
         private readonly Tile m_startTile;
 
         private StandardRules()
         {
-            DefaultPlaceRules = new ReadOnlyCollection<IPlaceRule<IGameBoard, ITile>>(m_defaultPlaceRules);
+            DefaultPlaceRules = new ReadOnlyCollection<IPlaceRule<IBoard, ITile>>(m_defaultPlaceRules);
             //Before
             WritablePlaceRules.Add(new EmptyBoardPlaceRule());
             WritablePlaceRules.Add(new NoneTilePlaceRule());
@@ -37,7 +37,7 @@ namespace Carcassonne.Model.Expansions
                 .AddRoadRegion(EdgeDirection.East, EdgeDirection.West);
         }
 
-        public ReadOnlyCollection<IPlaceRule<IGameBoard, ITile>> DefaultPlaceRules { get; }
+        public ReadOnlyCollection<IPlaceRule<IBoard, ITile>> DefaultPlaceRules { get; }
 
         public override void AfterDeckShuffle(Deck deck)
         {

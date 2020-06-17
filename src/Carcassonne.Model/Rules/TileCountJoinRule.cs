@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 
 namespace Carcassonne.Model.Rules
 {
@@ -24,17 +23,12 @@ namespace Carcassonne.Model.Rules
                 if (newTile.TileRegion.Type != m_type)
                 {
                     newTile.TileRegion = new TileRegion(m_type);
-                    Debug.WriteLine($"{newTile.TileRegion} added to {newTile}");
                 }
-                Debug.Write($"Add {neighbor} to {newTile}:[{string.Join(";", ((TileRegion)newTile.TileRegion).Tiles)}]");
                 newTile.TileRegion.Add(neighbor);
-                Debug.WriteLine($" => {newTile}:[{string.Join(";", ((TileRegion)newTile.TileRegion).Tiles)}]");
             }
 
             if (!m_appliesFunction(neighbor)) return;
-            Debug.Write($"Add {newTile} to {neighbor}:[{string.Join(";", ((TileRegion)neighbor.TileRegion).Tiles)}]");
             neighbor.TileRegion.Add(newTile);
-            Debug.WriteLine($" => {neighbor}:[{string.Join(";", ((TileRegion)neighbor.TileRegion).Tiles)}]");
         }
         
     }

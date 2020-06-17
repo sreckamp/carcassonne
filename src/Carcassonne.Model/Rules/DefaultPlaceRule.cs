@@ -4,16 +4,16 @@ using GameBase.Model.Rules;
 
 namespace Carcassonne.Model.Rules
 {
-    public class DefaultPlaceRule : IPlaceRule<IGameBoard, ITile>
+    public class DefaultPlaceRule : IPlaceRule<IBoard, ITile>
     {
         #region IPlaceRule Members
 
-        public virtual bool Applies(IGameBoard board, ITile tile, Point location)
+        public virtual bool Applies(IBoard board, ITile tile, Point location)
         {
             return true;
         }
 
-        public virtual bool Fits(IGameBoard board, ITile tile, Point location)
+        public virtual bool Fits(IBoard board, ITile tile, Point location)
         {
             if(!(board is Board b)) return false;
             var hasNeighbor = false;

@@ -8,9 +8,9 @@ using GameBase.Model.Rules;
 
 namespace Carcassonne.Model
 {
-    public class RuleSet : IPlaceRule<IGameBoard, ITile>, IClaimRule, IPlayerCreationRule, IScoreRule, IJoinRule
+    public class RuleSet : IPlaceRule<IBoard, ITile>, IClaimRule, IPlayerCreationRule, IScoreRule, IJoinRule
     {
-        private readonly List<IPlaceRule<IGameBoard, ITile>> m_placeRules = new List<IPlaceRule<IGameBoard, ITile>>();
+        private readonly List<IPlaceRule<IBoard, ITile>> m_placeRules = new List<IPlaceRule<IBoard, ITile>>();
         private readonly List<IClaimRule> m_claimRules = new List<IClaimRule>();
         private readonly List<IPlayerCreationRule> m_playerRules = new List<IPlayerCreationRule>();
         private readonly List<IScoreRule> m_scoreRules = new List<IScoreRule>();
@@ -53,9 +53,9 @@ namespace Carcassonne.Model
 
         #region IPlaceRule Members
 
-        public bool Applies(IGameBoard board, ITile tile, Point location) => true;
+        public bool Applies(IBoard board, ITile tile, Point location) => true;
 
-        public bool Fits(IGameBoard board, ITile tile, Point location) =>
+        public bool Fits(IBoard board, ITile tile, Point location) =>
             m_placeRules.FirstOrDefault(r => r.Applies(board, tile, location))?.Fits(board, tile, location) ?? false;
 
         #endregion

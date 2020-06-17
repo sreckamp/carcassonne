@@ -79,7 +79,7 @@ namespace Carcassonne.Model.Expansions
 
         private class RiverFitRule : DefaultPlaceRule
         {
-            public override bool Applies(IGameBoard board, ITile tile, Point location)
+            public override bool Applies(IBoard board, ITile tile, Point location)
             {
                 return tile.Contains(EdgeRegionType.River);
             }

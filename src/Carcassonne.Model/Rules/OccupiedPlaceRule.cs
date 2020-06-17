@@ -3,10 +3,10 @@ using GameBase.Model.Rules;
 
 namespace Carcassonne.Model.Rules
 {
-    public class OccupiedPlaceRule : IPlaceRule<IGameBoard, ITile>
+    public class OccupiedPlaceRule : IPlaceRule<IBoard, ITile>
     {
-        public bool Applies(IGameBoard board, ITile tile, Point location) => board[location] != NopTile.Instance;
+        public bool Applies(IBoard board, ITile tile, Point location) => board[location] != NopTile.Instance;
 
-        public bool Fits(IGameBoard board, ITile tile, Point location) => false;
+        public bool Fits(IBoard board, ITile tile, Point location) => false;
     }
 }

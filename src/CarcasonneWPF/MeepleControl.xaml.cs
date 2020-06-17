@@ -103,7 +103,6 @@ namespace Carcassonne.WPF
 
             if (Outlined)
             {
-                Debug.WriteLine("Outlined!");
                 MeepleFill = SDefaultBrush;
                 MeepleStroke = c;
             }

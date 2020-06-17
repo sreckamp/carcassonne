@@ -6,7 +6,7 @@ using GameBase.Model;
 
 namespace Carcassonne.Model
 {
-    public class Board : Board<ITile>, IGameBoard
+    public class Board : Board<ITile>, IBoard
     {
         public Board() : base(NopTile.Instance)
         { }

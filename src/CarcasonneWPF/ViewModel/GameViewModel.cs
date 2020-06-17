@@ -163,24 +163,20 @@ namespace Carcassonne.WPF.ViewModel
 
         private void Claim(object obj)
         {
-            Debug.WriteLine($"GameViewModel.{nameof(Claim)}");
             Game.ApplyClaim(NopClaimable.Instance, MeepleType.None);
         }
 
         private bool CanClaim(object obj)
         {
-            Debug.WriteLine($"GameViewModel.{nameof(CanClaim)}");
             return true;
         }
 
         private void ChooseMeeple(object obj)
         {
-            Debug.WriteLine($"GameViewModel.{nameof(ChooseMeeple)}");
         }
 
         private bool CanChooseMeeple(object obj)
         {
-            Debug.WriteLine($"GameViewModel.{nameof(CanChooseMeeple)}");
             return true;
         }
         
@@ -190,7 +186,6 @@ namespace Carcassonne.WPF.ViewModel
         {
             m_active.SetCell(args.Cell);
             UpdateActiveFits();
-            Debug.WriteLine($"GameViewModel.{nameof(Move)}");
         }
 
         private void UpdateActiveFits()

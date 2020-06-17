@@ -4,7 +4,7 @@ using GameBase.Model;
 
 namespace Carcassonne.Model
 {
-    public interface IGameBoard:IGameBoard<ITile>
+    public interface IBoard:IGameBoard<ITile>
     {
     }
 }
