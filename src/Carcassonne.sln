@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameBase.Model", "..\..\gam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameBase.WPF", "..\..\game-base\src\GameBase.WPF\GameBase.WPF.csproj", "{8F81666E-B492-4817-80EB-6FBC955B3044}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carcassonne.Model.Tests", "Carcassonne.Model.Tests\Carcassonne.Model.Tests.csproj", "{0666694D-8A26-407C-9347-F9719B764720}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{8F81666E-B492-4817-80EB-6FBC955B3044}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F81666E-B492-4817-80EB-6FBC955B3044}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F81666E-B492-4817-80EB-6FBC955B3044}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0666694D-8A26-407C-9347-F9719B764720}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0666694D-8A26-407C-9347-F9719B764720}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0666694D-8A26-407C-9347-F9719B764720}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0666694D-8A26-407C-9347-F9719B764720}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
