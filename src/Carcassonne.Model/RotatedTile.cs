@@ -14,10 +14,10 @@ namespace Carcassonne.Model
         public ITile RawTile { get; }
         public Rotation Rotation { get; set; }
 
-        public ITileRegion TileRegion1
+        public ITileRegion TileRegion
         {
-            get { return RawTile.TileRegion1; }
-            set { RawTile.TileRegion1 = value; }
+            get { return RawTile.TileRegion; }
+            set { RawTile.TileRegion = value; }
         }
 
         public bool HasFlowers => RawTile.HasFlowers;

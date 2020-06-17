@@ -28,11 +28,11 @@ namespace Carcassonne.WPF.ViewModel
 
         public BoardViewModel(Board board)
         {
-            StartColumnChanged += (sender, args) => Debug.WriteLine($"BoardViewModel.StartColumn {args.OldVal}=>{args.NewVal}");
-            StartRowChanged += (sender, args) => Debug.WriteLine($"BoardViewModel.StartRow {args.OldVal}=>{args.NewVal}");
-            ColumnsChanged += (sender, args) => Debug.WriteLine($"BoardViewModel.Columns {args.OldVal}=>{args.NewVal}");
-            RowsChanged += (sender, args) => Debug.WriteLine($"BoardViewModel.Rows {args.OldVal}=>{args.NewVal}");
-            PropertyChanged += (sender, args) => Debug.WriteLine($"BoardViewModel.Property {args.PropertyName}");
+            StartColumnChanged += (sender, args) => { };
+            StartRowChanged += (sender, args) => { };
+            ColumnsChanged += (sender, args) => { };
+            RowsChanged += (sender, args) => { };
+            PropertyChanged += (sender, args) => { };
 
             var placements = new MappingCollection<PlacementViewModel, Placement<ITile>>(board.Placements, (IGridManager)this);
             Grid = new OverlayObservableList<PlacementViewModel>(m_grid, placements, m_active);
@@ -117,7 +117,6 @@ namespace Carcassonne.WPF.ViewModel
 
         private void board_MinXChanged(object sender, ChangedValueArgs<int> e)
         {
-            Debug.WriteLine($"BoardViewModel.MinXChanged {e.OldVal}=>{e.NewVal}");
             Columns = m_board.MaxX - m_board.MinX + 3;
             StartColumn = m_board.MinX - 1;
             if (e.NewVal < e.OldVal)
@@ -128,7 +127,6 @@ namespace Carcassonne.WPF.ViewModel
 
         private void board_MaxXChanged(object sender, ChangedValueArgs<int> e)
         {
-            Debug.WriteLine($"BoardViewModel.MaxXChanged {e.OldVal}=>{e.NewVal}");
             Columns = m_board.MaxX - m_board.MinX + 3;
             if (e.NewVal > e.OldVal)
             {
@@ -138,7 +136,6 @@ namespace Carcassonne.WPF.ViewModel
 
         private void board_MinYChanged(object sender, ChangedValueArgs<int> e)
         {
-            Debug.WriteLine($"BoardViewModel.MinYChanged {e.OldVal}=>{e.NewVal}");
             Rows = m_board.MaxY - m_board.MinY + 3;
             StartRow = m_board.MinY - 1;
             if (e.NewVal < e.OldVal)
@@ -149,7 +146,6 @@ namespace Carcassonne.WPF.ViewModel
 
         private void board_MaxYChanged(object sender, ChangedValueArgs<int> e)
         {
-            Debug.WriteLine($"BoardViewModel.MaxYChanged {e.OldVal}=>{e.NewVal}");
             Rows = m_board.MaxY - m_board.MinY + 3;
             if (e.NewVal > e.OldVal)
             {
@@ -235,16 +231,7 @@ namespace Carcassonne.WPF.ViewModel
 
         private void NotifyPropertyChanged(string name)
         {
-            // if (Application.Current.Dispatcher.CheckAccess())
-            // {
-                Debug.WriteLine($"BoardViewModel.PropChanged {name}");
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-            // }
-            // else
-            // {
-            //     Debug.WriteLine($"Invoke BoardViewModel.PropChanged {name}");
-            //     Application.Current.Dispatcher.Invoke(new Action<string>(NotifyPropertyChanged), name);
-            // }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         #endregion

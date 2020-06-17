@@ -5,7 +5,7 @@ namespace Carcassonne.Model
 {
     public interface ITile
     {
-        ITileRegion TileRegion1 { get; set; }
+        ITileRegion TileRegion { get; set; }
         IEnumerable<IEdgeRegion> Regions { get; }
         EdgeRegionType GetEdge(EdgeDirection direction);
         IEdgeRegion GetRegion(EdgeDirection direction);
@@ -29,7 +29,7 @@ namespace Carcassonne.Model
         public bool HasFlowers => false;
 
         /// <inheritdoc />
-        public ITileRegion TileRegion1 { get; set; } = NopTileRegion.Instance;
+        public ITileRegion TileRegion { get; set; } = NopTileRegion.Instance;
 
         /// <inheritdoc />
         public IEnumerable<IEdgeRegion> Regions => Enumerable.Empty<IEdgeRegion>();

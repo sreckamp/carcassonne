@@ -33,27 +33,9 @@ namespace Carcassonne.Model.Expansions
             #endregion
         }
         
-        private class FlowerJoinRule : IJoinRule
+        private class FlowerJoinRule : TileCountJoinRule
         {
-            public bool Applies(ITile newTile, ITile neighbor, EdgeDirection direction) =>
-                neighbor != NopTile.Instance && (newTile.HasFlowers || neighbor.HasFlowers);
-
-            public void Join(ITile newTile, ITile neighbor, EdgeDirection direction)
-            {
-                //TODO: All 8 directions, only 4 now.
-                if (newTile.HasFlowers)
-                {
-                    if (newTile.TileRegion1.Type != TileRegionType.Flower)
-                    {
-                        newTile.TileRegion1 = new TileRegion(TileRegionType.Flower);
-                    }
-                    newTile.TileRegion1.Add(neighbor);
-                }
-                if (neighbor.HasFlowers)
-                {
-                    newTile.TileRegion1.Add(newTile);
-                }
-            }
+            public FlowerJoinRule() : base(TileRegionType.Flower, t => t.HasFlowers) { }
         }
     }
 }

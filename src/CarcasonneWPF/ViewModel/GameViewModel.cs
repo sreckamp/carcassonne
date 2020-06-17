@@ -58,7 +58,7 @@ namespace Carcassonne.WPF.ViewModel
             p =>
             {
                 var pcs = p.Piece.Regions.Select(r => r.Container).Where(c=> !(c is NopPointContainer));
-                return (p.Piece.TileRegion1 is IPointContainer pc) ? pcs.Append(pc) : pcs;
+                return (p.Piece.TileRegion is IPointContainer pc) ? pcs.Append(pc) : pcs;
             }).Distinct();
 
         private void Game_GameStateChanged(object sender, ChangedValueArgs<GameState> e)

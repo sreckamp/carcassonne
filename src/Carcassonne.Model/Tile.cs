@@ -13,7 +13,7 @@ namespace Carcassonne.Model
 
         private ITileRegion m_tileRegion = NopTileRegion.Instance;
 
-        public ITileRegion TileRegion1
+        public ITileRegion TileRegion
         {
             get => m_tileRegion;
             set
@@ -42,7 +42,7 @@ namespace Carcassonne.Model
             get
             {
                 var claimed = m_regions.Where(r => r is IClaimable c && c.Claimer.Type != MeepleType.None).Cast<IClaimable>().ToList();
-                if (TileRegion1 is IClaimable claim && claim.Claimer.Type != MeepleType.None)
+                if (TileRegion is IClaimable claim && claim.Claimer.Type != MeepleType.None)
                 {
                     claimed.Add(claim);
                 }
@@ -84,7 +84,7 @@ namespace Carcassonne.Model
         {
             var tile = new Tile
             {
-                TileRegion1 = TileRegion1.Duplicate(),
+                TileRegion = TileRegion.Duplicate(),
                 HasFlowers = HasFlowers,
                 HasMonastery = HasMonastery
             };
@@ -123,6 +123,7 @@ namespace Carcassonne.Model
             }
 
             if (!HasMonastery) return sb.ToString();
+
             if (sb.Length > 0)
             {
                 sb.Append(',');
@@ -142,7 +143,7 @@ namespace Carcassonne.Model
         {
             var claimableRegions = Regions.Where(r =>
                 r.Type.IsValid() && !r.Container.Owners.Any()).Distinct().Cast<IClaimable>().ToList();
-            if (TileRegion1 is IClaimable c && c.Claimer.Type != MeepleType.None)
+            if (TileRegion is IClaimable c && c.Claimer.Type != MeepleType.None)
             {
                 claimableRegions.Add(c);
             }

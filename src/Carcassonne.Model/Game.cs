@@ -25,9 +25,9 @@ namespace Carcassonne.Model
 
         public Game(IEnumerable<ExpansionPack> expansions)
         {
-            ActiveTileChanged += (sender, args) => { Debug.WriteLine($"{nameof(ActiveTileChanged)}: {args.OldVal}=>{args.NewVal}"); };
-            ActivePlayerChanged += (sender, args) => { Debug.WriteLine($"{nameof(ActivePlayerChanged)}: {args.OldVal}=>{args.NewVal}"); };
-            GameStateChanged += (sender, args) => { Debug.WriteLine($"{nameof(GameStateChanged)}: {args.OldVal}=>{args.NewVal}"); };
+            ActiveTileChanged += (sender, args) => { };
+            ActivePlayerChanged += (sender, args) => { };
+            GameStateChanged += (sender, args) => { };
             RuleSet = new RuleSet(expansions);
             Board = new Board();
             Players = new ObservableList<IPlayer>();
@@ -35,7 +35,7 @@ namespace Carcassonne.Model
 
         public Board Board { get; }
 
-        public ObservableList<IPointContainer> PointRegions { get; } = new ObservableList<IPointContainer>();
+        public IEnumerable<IPointContainer> PointRegions { get; } = new ObservableList<IPointContainer>();
 
         private readonly Deck m_deck = new Deck();
 
@@ -258,7 +258,7 @@ namespace Carcassonne.Model
             var toScore = Board.Placements
                 .Select(p => p.Piece)
                 .SelectMany(t => t.Regions, (t, r) => r.Container)
-                .Union(Board.Placements.Select(p=>p.Piece.TileRegion1).Where(tr => tr is IPointContainer).Cast<IPointContainer>())
+                .Union(Board.Placements.Select(p=>p.Piece.TileRegion).Where(tr => tr is IPointContainer).Cast<IPointContainer>())
                 .Distinct()
                 .Where(p => p.IsClosed && p.Owners.Any()).ToList();
             Debug.WriteLine(toScore.Count);

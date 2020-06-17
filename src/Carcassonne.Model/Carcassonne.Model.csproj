@@ -121,6 +121,7 @@
     <Compile Include="Rules\OccupiedPlaceRule.cs" />
     <Compile Include="Rules\NullPlaceRule.cs" />
     <Compile Include="Rules\EmptyBoardPlaceRule.cs" />
+    <Compile Include="Rules\TileCountJoinRule.cs" />
     <Compile Include="Rules\TileRegionScoreRule.cs" />
     <Compile Include="Tile.cs" />
     <Compile Include="TileRegion.cs" />
