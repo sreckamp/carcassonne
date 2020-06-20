@@ -3,6 +3,7 @@
     public interface IPlayer
     {
         string Name { get; }
+        Color Color { get; }
         int Score { get; set; }
         IMoveProvider MoveChooser { get; set; }
         IClaimProvider ClaimChooser { get; set; }
@@ -27,6 +28,9 @@
 
         /// <inheritdoc />
         public string Name => string.Empty;
+
+        /// <inheritdoc />
+        public Color Color => Color.None;
 
         /// <inheritdoc />
         public int Score { get; set; }

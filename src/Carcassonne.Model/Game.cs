@@ -307,10 +307,15 @@ namespace Carcassonne.Model
             return RuleSet.Fits(Board, tile, location);
         }
 
-        public IPlayer AddPlayer(string name)
+        public IPlayer AddPlayer(string name, Color color)
         {
             if (State != GameState.NotStarted) return NopPlayer.Instance;
-            var p = new Player(name);
+            if (color == Color.None)
+            {
+                color = Enum.GetValues(typeof(Color))
+                    .Cast<Color>().First(c => c != Color.None && Players.All(plr => plr.Color != c));
+            }
+            var p = new Player(name, color);
             Players.Add(p);
             return p;
         }

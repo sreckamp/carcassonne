@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="CityPointContainer.cs" />
     <Compile Include="Board.cs" />
+    <Compile Include="Color.cs" />
     <Compile Include="Expansions\StandardRules.cs" />
     <Compile Include="ICityEdgeRegion.cs" />
     <Compile Include="IEdgeRegion.cs" />

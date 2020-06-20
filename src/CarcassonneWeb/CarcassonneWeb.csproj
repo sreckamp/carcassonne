@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>CarcassonneServer</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\game-base\src\GameBase.Model\GameBase.Model.csproj" />
+    <ProjectReference Include="..\Carcassonne.Model\Carcassonne.Model.csproj" />
+    <ProjectReference Include="..\CarcassonneWeb.Models\CarcassonneWeb.Models.csproj" />
+  </ItemGroup>
+
+
+</Project>

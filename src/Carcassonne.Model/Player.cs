@@ -6,14 +6,16 @@ namespace Carcassonne.Model
 {
     public class Player : IPlayer
     {
-        public Player(string name)
+        public Player(string name, Color color)
         {
             Name = name;
+            Color = color;
             ScoreChanged += (sender, args) => { };
             Meeple = new MeepleCollection();
         }
 
         public string Name { get; }
+        public Color Color { get; }
         public IMoveProvider MoveChooser { get; set; } = EmptyMoveProvider.Instance;
         public IClaimProvider ClaimChooser { get; set; } = EmptyClaimProvider.Instance;
         public MeepleCollection Meeple { get; }
