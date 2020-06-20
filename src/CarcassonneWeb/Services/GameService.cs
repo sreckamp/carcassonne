@@ -26,7 +26,7 @@ namespace CarcassonneServer.Services
         {
             var (id, game) = m_games.FirstOrDefault(
                 kvp => kvp.Value.State == GameState.NotStarted
-                       && (color == Color.None || !kvp.Value.Players.Any(p => p.Color == color)));
+                       && (kvp.Value.Players.All(p => !p.Name.Equals(name) && (color == Color.None || p.Color != color))));
 
             if (id == null)
             {
@@ -54,7 +54,10 @@ namespace CarcassonneServer.Services
         private PlayerDto ToPlayerDto(IPlayer player) => new PlayerDto
         {
             Name = player.Name,
-            Color = ToColorDto(player.Color)
+            Color = ToColorDto(player.Color),
+            Score = player.Score,
+            MeepleCount = player.Meeple.GroupBy(m=>m.Type).ToDictionary(g=>g.Key.ToString(), 
+                g=>g.Count())
         };
 
         private ColorDto ToColorDto(Color color) => color switch
