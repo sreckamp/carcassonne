@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows.Input;
-using System.Windows.Media;
 using Carcassonne.Model;
 using GalaSoft.MvvmLight.CommandWpf;
 using GameBase.Model;
 using GameBase.WPF;
+using Color = Carcassonne.Model.Color;
 
 namespace Carcassonne.WPF.ViewModel
 {
@@ -135,9 +134,7 @@ namespace Carcassonne.WPF.ViewModel
 
         internal void AddPlayer(string name, Color color)
         {
-            if (Game.AddPlayer(name) == NopPlayer.Instance) return;
-            PlayerViewModel.ColorsForName[name] = new SolidColorBrush(color);
-            PlayerViewModel.ColorsForName[name].Freeze();
+            Game.AddPlayer(name, color);
         }
         
         private void Place(object args)

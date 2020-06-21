@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Media;
 using Carcassonne.Model;
 using Carcassonne.Model.Expansions;
 using Carcassonne.WPF.ViewModel;
@@ -42,8 +41,8 @@ namespace Carcassonne.WPF
         {
             base.OnInitialized(e);
             DataContext = m_gameVm;
-            m_gameVm.AddPlayer("Luke", Colors.Blue);
-            m_gameVm.AddPlayer("Vader", Colors.Red);
+            m_gameVm.AddPlayer("Luke", Color.Blue);
+            m_gameVm.AddPlayer("Vader", Color.Red);
 
             m_gameVm.Game.Start();
         }
