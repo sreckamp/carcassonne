@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameBase.WPF", "..\..\game-
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carcassonne.Model.Tests", "Carcassonne.Model.Tests\Carcassonne.Model.Tests.csproj", "{0666694D-8A26-407C-9347-F9719B764720}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarcassonneWeb", "CarcassonneWeb\CarcassonneWeb.csproj", "{8DE36517-DEBA-4339-A219-982675BF9AB8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carcassonne.Api", "Carcassonne.Api\Carcassonne.Api.csproj", "{8DE36517-DEBA-4339-A219-982675BF9AB8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarcassonneWeb.Models", "CarcassonneWeb.Models\CarcassonneWeb.Models.csproj", "{CC863995-761C-4A35-9FF1-93C2BA8D1163}"
 EndProject
