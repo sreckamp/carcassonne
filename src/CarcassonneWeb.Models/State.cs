@@ -3,6 +3,9 @@
     public enum State
     {
         WaitingForPlayers,
-        Ready,
+        Place,
+        Claim,
+        Busy,
+        End,
     }
 }

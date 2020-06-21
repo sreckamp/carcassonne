@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using CarcassonneServer.Services;
+using CarcassonneWeb.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -31,6 +32,8 @@ namespace CarcassonneServer
                 .AddJsonOptions(opts =>
                 {
                     opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    opts.JsonSerializerOptions.Converters.Add(new PointJsonConverter());
+                    opts.JsonSerializerOptions.IgnoreNullValues = true;
                 });
             services.AddSingleton<IGameService, GameService>();
         }
