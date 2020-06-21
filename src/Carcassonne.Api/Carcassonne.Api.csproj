@@ -7,8 +7,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\game-base\src\GameBase.Model\GameBase.Model.csproj" />
+    <ProjectReference Include="..\Carcassonne.Dto\Carcassonne.Dto.csproj" />
     <ProjectReference Include="..\Carcassonne.Model\Carcassonne.Model.csproj" />
-    <ProjectReference Include="..\CarcassonneWeb.Models\CarcassonneWeb.Models.csproj" />
   </ItemGroup>
 
 
