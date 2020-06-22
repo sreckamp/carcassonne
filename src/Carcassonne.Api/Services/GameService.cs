@@ -6,19 +6,19 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Carcassonne.Model;
-using CarcassonneWeb.Models;
+using Carcassonne.Dto;
 using GameBase.Model;
 using Color = Carcassonne.Model.Color;
 using Game = Carcassonne.Model.Game;
-using GameDto = CarcassonneWeb.Models.Game;
-using PlayerDto = CarcassonneWeb.Models.Player;
-using ColorDto = CarcassonneWeb.Models.Color;
+using GameDto = Carcassonne.Dto.Game;
+using PlayerDto = Carcassonne.Dto.Player;
+using ColorDto = Carcassonne.Dto.Color;
 using Rotation = Carcassonne.Model.Rotation;
-using RotationDto = CarcassonneWeb.Models.Rotation;
-using SessionDto = CarcassonneWeb.Models.Session;
-using TileDto = CarcassonneWeb.Models.Tile;
+using RotationDto = Carcassonne.Dto.Rotation;
+using SessionDto = Carcassonne.Dto.Session;
+using TileDto = Carcassonne.Dto.Tile;
 
-namespace CarcassonneServer.Services
+namespace Carcassonne.Api.Services
 {
     public class GameService : IGameService
     {

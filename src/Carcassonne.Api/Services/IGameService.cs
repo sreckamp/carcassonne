@@ -1,10 +1,9 @@
 ﻿using System.Drawing;
 using System.Threading.Tasks;
-using CarcassonneWeb.Models;
+using Carcassonne.Dto;
 using Color = Carcassonne.Model.Color;
-using Game = CarcassonneWeb.Models.Game;
 
-namespace CarcassonneServer.Services
+namespace Carcassonne.Api.Services
 {
     public interface IGameService
     {

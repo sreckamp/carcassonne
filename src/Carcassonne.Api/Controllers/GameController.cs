@@ -1,12 +1,12 @@
 ﻿using System.Threading.Tasks;
-using CarcassonneServer.Services;
-using CarcassonneWeb.Models;
+using Carcassonne.Api.Services;
+using Carcassonne.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Color = Carcassonne.Model.Color;
-using Game = CarcassonneWeb.Models.Game;
+using Game = Carcassonne.Dto.Game;
 
-namespace CarcassonneServer.Controllers
+namespace Carcassonne.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]

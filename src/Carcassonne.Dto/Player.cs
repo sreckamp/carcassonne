@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CarcassonneWeb.Models
+namespace Carcassonne.Dto
 {
     public class Player
     {

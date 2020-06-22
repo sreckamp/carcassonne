@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace CarcassonneWeb.Models
+namespace Carcassonne.Dto
 {
     public class PlaceCommand
     {

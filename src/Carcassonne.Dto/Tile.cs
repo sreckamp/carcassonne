@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
-namespace CarcassonneWeb.Models
+namespace Carcassonne.Dto
 {
     public class Tile
     {

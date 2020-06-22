@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CarcassonneServer
+namespace Carcassonne.Api
 {
     public static class IdManager
     {

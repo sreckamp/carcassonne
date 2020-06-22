@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CarcassonneWeb.Models
+namespace Carcassonne.Dto
 {
     public class Game
     {

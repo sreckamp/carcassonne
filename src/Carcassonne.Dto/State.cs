@@ -1,4 +1,4 @@
-﻿namespace CarcassonneWeb.Models
+﻿namespace Carcassonne.Dto
 {
     public enum State
     {

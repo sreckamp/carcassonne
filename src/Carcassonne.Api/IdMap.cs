@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace CarcassonneServer
+namespace Carcassonne.Api
 {
     public class IdMap<T> : IEnumerable<T>
     {
